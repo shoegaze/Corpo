@@ -5,133 +5,31 @@ using Random = UnityEngine.Random;
 
 public class BattleScreen : MonoBehaviour {
   [SerializeField] private GameObject viewFloor;
-  [SerializeField, Range(2, 5)] private int gridWidth = 5;
-  [SerializeField, Range(2, 5)] private int gridHeight = 5;
-  [SerializeField, Range(0f, 1f)] private float wallProbability = 0.125f;
-  [SerializeField, Min(0)] private int maxWalls = 5;
-  
-  [ShowInInspector] private bool[,] edges;
-  [ShowInInspector] private BattleActor[,] actors;
 
-  protected void OnEnable() {
-    BuildScene(Array.Empty<BattleActor>(), Array.Empty<BattleActor>());
+  public void BuildViews(BattleGrid grid) {
+    BuildBackgroundView(grid);
+    BuildFloorViews(grid);
+    BuildActorViews(grid);
+    BuildWallViews(grid);
   }
 
-  public void BuildScene(BattleActor[] allies, BattleActor[] enemies) {
-    BuildEdges();
-    // PlaceActors(allies, enemies);
-    
-    BuildViews();
-  }
-
-  private void BuildEdges() {
-    int n = gridWidth * gridHeight;
-    edges = new bool[n, n];
-
-    for (var x = 0; x < gridWidth; x++) {
-      for (var y = 0; y < gridHeight; y++) {
-        
-        for (int dx = -1; dx <= +1; dx++) {
-          for (int dy = -1; dy <= +1; dy++) {
-            // Exclude self and only consider the bilinear neighborhood 
-            if (dx == 0 && dy == 0 ||
-                dx != 0 && dy != 0) { 
-              continue;
-            }
-            
-            // Coordinate Space (target cell)
-            int s = x + dx; 
-            int t = y + dy;
-            
-            // Ensure:
-            //  s :: [0, w)
-            //  t :: [0, h)
-            if (s < 0 || s >= gridWidth ||
-                t < 0 || t >= gridHeight) {
-              continue;
-            }
-  
-            // Index Space
-            int i = y * gridWidth + x; // :: [0, n)
-            int j = t * gridWidth + s; // :: [0, n)
-            
-            edges[i, j] = edges[j, i] = true;
-          }
-        }              
-      }
-    }
-
-    // Build random walls
-    var walls = 0;
-    for (var x = 0; x < gridWidth; x++) {
-      for (var y = 0; y < gridHeight; y++) {
-        
-        for (int dx = -1; dx <= +1; dx++) {
-          for (int dy = -1; dy <= +1; dy++) {
-            if (dx == 0 && dy == 0 ||
-                dx != 0 && dy != 0) {
-              continue;
-            }
-
-            int s = x + dx;
-            int t = y + dy;
-
-            if (s < 0 || s >= gridWidth ||
-                t < 0 || t >= gridHeight) {
-              continue;
-            }
-
-            int i = y * gridWidth + x; 
-            int j = t * gridWidth + s;
-
-            if (!edges[i, j]) {
-              continue;
-            }
-
-            // TODO: Better wall placing algorithm
-            if (walls < maxWalls && Random.value < wallProbability) {
-              edges[i, j] = false;
-              edges[j, i] = false;
-              walls++;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private void PlaceActors(BattleActor[] allies, BattleActor[] enemies) {
-    // TODO
-    actors = new BattleActor[gridHeight, gridWidth];
-    
-  }
-
-  private void BuildViews() {
-    BuildBackgroundView();
-    BuildFloorViews();
-    // BuildActorViews();
-    BuildWallViews();
-  }
-
-  private void BuildBackgroundView() {
+  private void BuildBackgroundView(BattleGrid grid) {
     var viewBackground = transform.Find("Background");
-    viewBackground.localScale = new Vector3(gridWidth, gridHeight);
-    viewBackground.localPosition = new Vector3(gridWidth - 5f, gridHeight - 5f) / 2f;
+    viewBackground.localScale = new Vector3(grid.Width, grid.Height);
+    viewBackground.localPosition = new Vector3(grid.Width - 5f, grid.Height - 5f) / 2f;
   }
 
-  private void BuildFloorViews() {
+  private void BuildFloorViews(BattleGrid grid) {
     var viewFloorsRoot = transform.Find("Floors");
     var viewRow = transform.Find("Prototypes/Row");
-    
-    Debug.Assert(viewRow != null);
 
-    for (var y = 0; y < gridHeight; y++) {
+    for (var y = 0; y < grid.Height; y++) {
       var viewRowInstance = Instantiate(viewRow, viewFloorsRoot);
       viewRowInstance.gameObject.SetActive(true);
       viewRowInstance.name = $"Row__{y}";
       viewRowInstance.localPosition = y * Vector3.up;
       
-      for (var x = 0; x < gridWidth; x++) {
+      for (var x = 0; x < grid.Width; x++) {
         var floor = Instantiate(viewFloor, viewRowInstance);
         floor.name = $"Floor__{x}";
         floor.transform.localPosition = x * Vector3.right;
@@ -139,14 +37,14 @@ public class BattleScreen : MonoBehaviour {
     }
   }
 
-  private void BuildActorViews() {
+  private void BuildActorViews(BattleGrid grid) {
     // TODO
     var viewActors = transform.Find("Actors");
     viewActors.DetachChildren();
     
   }
   
-  private void BuildWallViews() {
+  private void BuildWallViews(BattleGrid grid) {
     var viewEdgesRoot = transform.Find("Walls");
     var viewEdge = transform.Find("Prototypes/Wall");
     
@@ -154,11 +52,11 @@ public class BattleScreen : MonoBehaviour {
 
     { // Build outer walls
       var viewOuterEdgesTop = viewEdgesRoot.Find("Outer/Top");
-      viewOuterEdgesTop.localPosition = new Vector3(0.5f, gridHeight);
+      viewOuterEdgesTop.localPosition = new Vector3(0.5f, grid.Height);
               
       var viewOuterEdgesBottom = viewEdgesRoot.Find("Outer/Bottom");
 
-      for (var x = 0; x < gridWidth; x++) {
+      for (var x = 0; x < grid.Width; x++) {
         var viewEdgeTop = Instantiate(viewEdge, viewOuterEdgesTop);
         viewEdgeTop.name = $"Wall__{x}";
         viewEdgeTop.localPosition = x * Vector3.right;
@@ -171,11 +69,11 @@ public class BattleScreen : MonoBehaviour {
       }
       
       var viewOuterEdgesRight = viewEdgesRoot.Find("Outer/Right");
-      viewOuterEdgesRight.localPosition = new Vector3(gridWidth, 0.5f);
+      viewOuterEdgesRight.localPosition = new Vector3(grid.Width, 0.5f);
       
       var viewOuterEdgesLeft = viewEdgesRoot.Find("Outer/Left");
 
-      for (var y = 0; y < gridHeight; y++) {
+      for (var y = 0; y < grid.Height; y++) {
         var viewEdgeRight = Instantiate(viewEdge, viewOuterEdgesRight);
         viewEdgeRight.name = $"Wall__{y}";
         viewEdgeRight.localRotation = Quaternion.Euler(0f, 0f, 90f);
@@ -196,14 +94,14 @@ public class BattleScreen : MonoBehaviour {
       { // Instantiate walls
         var viewRow = transform.Find("Prototypes/Row");
 
-        int rows = 2 * gridHeight - 1;
+        long rows = 2 * grid.Height - 1;
         for (var r = 0; r < rows; r++) {
           var viewRowInstance = Instantiate(viewRow, viewInnerEdgesRoot);
           viewRowInstance.gameObject.SetActive(true);
           viewRowInstance.name = $"Row__{r}";
           viewRowInstance.localPosition = new Vector3(0.5f + (r % 2 == 0 ? 0.5f : 0f), 0.5f * r + 0.5f);
           
-          int cols = gridWidth - (r % 2 == 0 ? 1 : 0);
+          long cols = grid.Width - (r % 2 == 0 ? 1 : 0);
           for (var c = 0; c < cols; c++) {
             var viewEdgeInstance = Instantiate(viewEdge, viewRowInstance);
             viewEdgeInstance.gameObject.SetActive(false);
@@ -218,17 +116,16 @@ public class BattleScreen : MonoBehaviour {
       }
 
       { // Activate walls
-        for (var x = 0; x < gridWidth; x++) {
-          for (var y = 0; y < gridHeight; y++) {
+        for (var x = 0; x < grid.Width; x++) {
+          for (var y = 0; y < grid.Height; y++) {
             // Center cell
-            int i = y * gridWidth + x;
+            long i = y * grid.Width + x;
             
             // Scan right
-            if (x < gridWidth - 1) { 
-              int j = y * gridWidth + (x+1);
+            if (x < grid.Width - 1) { 
+              long j = y * grid.Width + (x+1);
               
-              if (!edges[i, j] && !edges[j, i]) {
-                // TODO
+              if (grid.AreConnected(i, j)) {
                 int r = 2 * y;
                 int c = x;
                 var queryRight = $"Row__{r}/Wall__{c}";
@@ -238,10 +135,10 @@ public class BattleScreen : MonoBehaviour {
             }
             
             // Scan top
-            if (y < gridHeight - 1) { 
-              int j = (y+1) * gridWidth + x;
+            if (y < grid.Height - 1) { 
+              long j = (y+1) * grid.Width + x;
             
-              if (!edges[i, j] && !edges[j, i]) {
+              if (grid.AreConnected(i, j)) {
                 int r = 2 * y + 1;
                 int c = x;
                 var queryTop = $"Row__{r}/Wall__{c}";
