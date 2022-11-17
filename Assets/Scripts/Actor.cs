@@ -5,20 +5,23 @@ using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class Actor : MonoBehaviour {
-  public enum ActorTeam {
+  // TODO: Move to single file
+  public enum ActorAlignment {
     Ally,
     Enemy
   }
   
   [SerializeField] private ActorData data;
-  [SerializeField] private ActorTeam team;
+  [SerializeField] private ActorAlignment alignment;
   [SerializeField] private List<Ability> abilities;
   [SerializeField] private uint health;
 
   public string Name => data.Name;
-  public ActorTeam Team => team;
+  public ActorAlignment Alignment => alignment;
+  public uint Health => health;
+  public bool IsAlive => health > 0;
 
-  public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorTeam team) {
+  public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorAlignment team) {
     { // Set sprite
       var renderer = actor.GetComponent<SpriteRenderer>();
       var sprite = cache.GetSprite(actorID);
@@ -43,7 +46,7 @@ public class Actor : MonoBehaviour {
       
       actor.data = actorData;
       actor.health = actorData.MaxHealth;
-      actor.team = team;
+      actor.alignment = team;
       
       { // Set abilities
         var jobData = cache.GetJobData(actorData.Job);
@@ -68,8 +71,6 @@ public class Actor : MonoBehaviour {
   }
   
   // TODO:
-  
-  // public bool IsAlive => health > 0;
 
   // public void TakeHealth(uint damage) {
   //   if (damage >= health) {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,7 +9,7 @@ namespace Battle {
     public uint Height { get; }
   
     private bool[,] Edges { get; }
-    public List<(Actor, (long x, long y))> Actors { get; }
+    public List<(Actor actor, Vector2Int position)> GridActors { get; }
   
     public BattleGrid(uint width, uint height) {
       Width = width;
@@ -18,7 +19,7 @@ namespace Battle {
       Edges = new bool[n, n];
       BuildEdges();
 
-      Actors = new List<(Actor, (long x, long y))>();
+      GridActors = new List<(Actor, Vector2Int)>();
     }
   
     private void BuildEdges() {
@@ -96,30 +97,36 @@ namespace Battle {
     }
 
     public void RandomlyPlaceActors(IEnumerable<Actor> actors) {
-      var placements = new HashSet<(long x, long y)>();
-      var count = 0;
-      
-      foreach (var actor in actors) {
-        var placed = false;
-        
-        count++;
+      // BUG: Overflow error on sufficiently large Width, Height
+      var max = (int)(Width * Height);
+      var candidates = new List<Vector2Int>(max);
 
-        // Prevent infinite loop on filled grid
-        while (!placed && placements.Count < count) {
-          var pos = (
-                  (long)(Width * Random.value),
-                  (long)(Height * Random.value)
-          );
-
-          if (placements.Contains(pos)) {
-            continue;
-          }
-
-          Actors.Add((actor, pos));
-            
-          placements.Add(pos);
-          placed = true;
+      // Populate candidates
+      for (var x = 0; x < Width; x++) {
+        for (var y = 0; y < Height; y++) {
+          candidates.Add(new Vector2Int(x, y));
         }
+      }
+
+      foreach (var actor in actors) {
+        // No more available spots!
+        if (max == 0) {
+          Debug.LogWarning("No more available spots to place an actor.\nIgnoring...");
+          return;
+        }
+
+        var j = (int)(max * Random.value);
+        var position = candidates[j];
+        
+        { // Swap items to end of window
+          var tmp = candidates[j];
+          candidates[j] = candidates[max - 1];
+          candidates[max - 1] = tmp;
+        }
+
+        GridActors.Add((actor, position));
+
+        max--;
       }
     }
 
@@ -128,7 +135,7 @@ namespace Battle {
       return !Edges[i, j] && !Edges[j, i];
     }
   
-    public bool CanMove(Vector2Int from, Vector2Int to) {
+    private bool CanMove(Vector2Int from, Vector2Int to) {
       if (from.x < 0 || from.x >= Width ||
           from.y < 0 || from.y >= Height) {
         return false;
@@ -144,6 +151,25 @@ namespace Battle {
       long j = to.y * Width + to.x;
     
       return Edges[i, j];
+    }
+
+    public bool TryMoveActor(Actor actor, Vector2Int dp) {
+      var (target, position) = GridActors.First(v => v.actor == actor);
+
+      if (target != null) {
+        return false;
+      }
+
+      var from = position;
+      var to = from + dp;
+      
+      if (!CanMove(from, to)) {
+        return false;
+      }
+      
+      actor.transform.localPosition = new Vector3(to.x, to.y);
+
+      return true;
     }
   }
 }

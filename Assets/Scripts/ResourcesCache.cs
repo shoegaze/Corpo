@@ -16,7 +16,7 @@ public class ResourcesCache : MonoBehaviour {
   private readonly Dictionary<string, Ability> abilities = new Dictionary<string, Ability>();
 
   private Transform actorsRoot;
-  private Transform abilitiesRoot;
+  private Transform effectsRoot;
   
   public Sprite GetSprite(string spriteID) {
     sprites.TryGetValue(spriteID, out var sprite);
@@ -38,7 +38,7 @@ public class ResourcesCache : MonoBehaviour {
     return abilityData;
   }
   
-  public Actor GetActor(string actorID, Actor.ActorTeam team) {
+  public Actor GetActor(string actorID, Actor.ActorAlignment team) {
     if (!actors.ContainsKey(actorID)) {
       var go = Instantiate(prototypeActor, actorsRoot);
       go.gameObject.SetActive(false);
@@ -61,7 +61,7 @@ public class ResourcesCache : MonoBehaviour {
 
   public Ability GetAbility(string abilityID) {
     if (!abilities.ContainsKey(abilityID)) {
-      var go = Instantiate(prototypeAbility, abilitiesRoot);
+      var go = Instantiate(prototypeAbility, effectsRoot);
       go.gameObject.SetActive(false);
 
       var ability = go.GetComponent<Ability>();
@@ -82,10 +82,12 @@ public class ResourcesCache : MonoBehaviour {
   
   private void Awake() {
     actorsRoot = transform.Find("Cache/Actors");
-    abilitiesRoot = transform.Find("Cache/Abilities");
+    effectsRoot = transform.Find("Cache/Effects");
+    
+    Debug.Assert(actorsRoot != null);
+    Debug.Assert(effectsRoot != null);
     
     LoadAll();
-    CreateAll();
   }
 
   private void LoadAll() {
@@ -166,23 +168,5 @@ public class ResourcesCache : MonoBehaviour {
       
       abilitiesData[id] = abilityData;
     }
-  }
-
-  private void CreateAll() {
-    CreateActors();
-    CreateEffects();
-    CreateAbilities();
-  }
-
-  private void CreateActors() {
-    // TODO
-  }
-
-  private void CreateEffects() {
-    // TODO
-  }
-
-  private void CreateAbilities() {
-    // TODO
   }
 }

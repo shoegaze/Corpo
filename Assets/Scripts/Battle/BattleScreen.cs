@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {
@@ -42,13 +42,13 @@ namespace Battle {
       var viewAllies = transform.Find("Actors/Allies");
       var viewEnemies = transform.Find("Actors/Enemies");
     
-      foreach (var (actor, (x, y)) in grid.Actors) {
-        var viewRoot = actor.Team == Actor.ActorTeam.Ally ? viewAllies : viewEnemies;
+      foreach (var (actor, pos) in grid.GridActors) {
+        var viewRoot = actor.Alignment == Actor.ActorAlignment.Ally ? viewAllies : viewEnemies;
         
         var viewActor = actor.GetView(viewRoot);
         viewActor.name = viewActor.GetComponent<Actor>().Name;
+        viewActor.transform.localPosition = new Vector3(pos.x, pos.y);
         viewActor.SetActive(true);
-        viewActor.transform.localPosition = new Vector3(x, y);
       }
     }
   
