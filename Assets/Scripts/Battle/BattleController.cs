@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -73,15 +73,67 @@ namespace Battle {
 
     public Actor RandomEnemy() {
       // DEBUG:
-      return cache.GetActor("oeur", Actor.ActorTeam.Enemy);
+      return cache.GetActor("oeur", Actor.ActorAlignment.Enemy);
     }
 
-    // private void DoTurn() {
-    //   // TODO
-    // }
+    private void IncrementTurn() {
+      turn = (turn + 1) % order.Count;
+    }
+    
+    private IEnumerator StartBattle() {
+      // Wait for SetUp to be called
+      while (order.Count == 0) {
+        yield return null;
+      }
+      
+      var alliesAreDead = false;
+      var enemiesAreDead = false;
+      
+      while (!alliesAreDead && !enemiesAreDead) {
+        DoTurn();
+      
+        alliesAreDead = order.All(a => !a.IsAlive);
+        enemiesAreDead = order.All(a => !a.IsAlive);
 
-    // private void WaitForPlayerDecision() {
-    //   // TODO
-    // }
+        yield return null;
+      }
+      
+      // TODO:
+      if (alliesAreDead) {
+        // TODO: Win procedure
+        Debug.Log("YOU WIN!");
+      }
+      else { // enemiesAreDead
+        // TODO: Lose procedure
+        Debug.Log("YOU LOSE!");
+      }
+
+      game.EndBattle();
+    }
+    
+    private void DoTurn() {
+      // TODO
+      var actor = order[turn];
+
+      if (actor.Alignment == Actor.ActorAlignment.Ally) {
+        WaitForPlayerDecision();
+      }
+      else { // actor.Alignment == Actor.ActorAlignment.Enemy
+        WaitForComputerDecision();
+      }
+      
+    }
+
+    private void WaitForPlayerDecision() {
+      // TODO
+      waitingForPlayer = true;
+      
+      // IncrementTurn();
+    }
+
+    private void WaitForComputerDecision() {
+      // TODO
+      waitingForPlayer = false;
+    }
   }
 }
