@@ -3,56 +3,96 @@ using Data;
 using UnityEngine;
 
 public class ResourcesCache : MonoBehaviour {
+  [SerializeField] private GameObject prototypeActor;
+  [SerializeField] private GameObject prototypeAbility;
+  
+  // TODO: Separate into actorSprites & effectSprites
   private readonly Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
-  private readonly Dictionary<string, ActorData> actors = new Dictionary<string, ActorData>();
-  private readonly Dictionary<string, JobData> jobs = new Dictionary<string, JobData>();
-  private readonly Dictionary<string, AbilityData> abilities = new Dictionary<string, AbilityData>();
+  private readonly Dictionary<string, ActorData> actorsData = new Dictionary<string, ActorData>();
+  private readonly Dictionary<string, JobData> jobsData = new Dictionary<string, JobData>();
+  private readonly Dictionary<string, AbilityData> abilitiesData = new Dictionary<string, AbilityData>();
 
+  private readonly Dictionary<string, Actor> actors = new Dictionary<string, Actor>();
+  private readonly Dictionary<string, Ability> abilities = new Dictionary<string, Ability>();
+
+  private Transform actorsRoot;
+  private Transform abilitiesRoot;
+  
   public Sprite GetSprite(string spriteID) {
     sprites.TryGetValue(spriteID, out var sprite);
     return sprite;
   }
 
   public ActorData GetActorData(string actorID) {
-    actors.TryGetValue(actorID, out var actorData);
+    actorsData.TryGetValue(actorID, out var actorData);
     return actorData;
   }
 
   public JobData GetJobData(string jobID) {
-    jobs.TryGetValue(jobID, out var jobData);
+    jobsData.TryGetValue(jobID, out var jobData);
     return jobData;
   }
 
   public AbilityData GetAbilityData(string abilityID) {
-    abilities.TryGetValue(abilityID, out var abilityData);
+    abilitiesData.TryGetValue(abilityID, out var abilityData);
     return abilityData;
   }
   
+  public Actor GetActor(string actorID, Actor.ActorTeam team) {
+    if (!actors.ContainsKey(actorID)) {
+      var go = Instantiate(prototypeActor, actorsRoot);
+      go.gameObject.SetActive(false);
+      
+      var actor = go.GetComponent<Actor>();
+      actor.name = $"{actorID}";
+      
+      Actor.Load(ref actor, this, actorID, team);
+
+      if (actor == null) {
+        Debug.LogError($"Could not create actor \"{actorID}\"!");
+        return null;
+      }
+      
+      actors[actorID] = actor;
+    }
+
+    return actors[actorID];
+  }
+
+  public Ability GetAbility(string abilityID) {
+    if (!abilities.ContainsKey(abilityID)) {
+      var go = Instantiate(prototypeAbility, abilitiesRoot);
+      go.gameObject.SetActive(false);
+
+      var ability = go.GetComponent<Ability>();
+      ability.name = $"{abilityID}";
+      
+      Ability.Load(ref ability, this, abilityID);
+
+      if (ability == null) {
+        Debug.LogError($"Could not create ability \"{abilityID}\"!");
+        return null;
+      }
+
+      abilities[abilityID] = ability;
+    }
+
+    return abilities[abilityID];
+  }
+  
   private void Awake() {
+    actorsRoot = transform.Find("Cache/Actors");
+    abilitiesRoot = transform.Find("Cache/Abilities");
+    
     LoadAll();
+    CreateAll();
   }
 
   private void LoadAll() {
     LoadSprites();
-    LoadActors();
-    LoadJobs();
-    LoadAbilities();
-    
-    foreach (var id in sprites.Keys) {
-      Debug.Log($"Sprite: {id} => {GetSprite(id)})");
-    }
-    
-    foreach (var id in actors.Keys) {
-      Debug.Log($"Actor: {id} => {GetActorData(id)}");
-    }
-    
-    foreach (var id in jobs.Keys) {
-      Debug.Log($"Job: {id} => {GetJobData(id)}");
-    }
-    
-    foreach (var id in abilities.Keys) {
-      Debug.Log($"Ability: {id} => {GetAbilityData(id)}");
-    }
+    LoadActorsData();
+    LoadJobsData();
+    LoadAbilitiesData();
   }
 
   private void LoadSprites() {
@@ -71,54 +111,78 @@ public class ResourcesCache : MonoBehaviour {
     }
   }
 
-  private void LoadActors() {
+  private void LoadActorsData() {
     var resources = Resources.LoadAll<TextAsset>("Actors");
 
     foreach (var res in resources) {
       var actorData = JsonUtility.FromJson<ActorData>(res.text);
       var id = $"{actorData.Name.ToLower()}";
 
-      if (actors.ContainsKey(id)) {
-        Debug.Log($" ! Duplicate actor ID \"{id}\"!");
-        Debug.Log( "   * Ignoring...");
+      if (actorsData.ContainsKey(id)) {
+        Debug.LogError(
+                $" ! Duplicate actor ID \"{id}\"!\n" + 
+                "   * Ignoring..."
+        );
         continue;
       }
 
-      actors[id] = actorData;
+      actorsData[id] = actorData;
     }
   }
 
-  private void LoadJobs() {
+  private void LoadJobsData() {
     var resources = Resources.LoadAll<TextAsset>("Jobs");
     
     foreach (var res in resources) {
       var jobData = JsonUtility.FromJson<JobData>(res.text);
       var id = $"{jobData.Name.ToLower()}";
 
-      if (jobs.ContainsKey(id)) {
-        Debug.Log($" ! Duplicate actor ID \"{id}\"!");
-        Debug.Log( "   * Ignoring...");
+      if (jobsData.ContainsKey(id)) {
+        Debug.LogError(
+                $" ! Duplicate actor ID \"{id}\"!" + 
+                "   * Ignoring..."
+        );
         continue;
       }
 
-      jobs[id] = jobData;
+      jobsData[id] = jobData;
     }
   }
 
-  private void LoadAbilities() {
+  private void LoadAbilitiesData() {
     var resources = Resources.LoadAll<TextAsset>("Abilities");
     
     foreach (var res in resources) {
       var abilityData = JsonUtility.FromJson<AbilityData>(res.text);
       var id = $"{abilityData.Name.ToLower()}";
       
-      if (abilities.ContainsKey(id)) {
-        Debug.Log($" ! Duplicate ability ID \"{id}\"!");
-        Debug.Log( "   * Ignoring...");
+      if (abilitiesData.ContainsKey(id)) {
+        Debug.LogError(
+                $" ! Duplicate ability ID \"{id}\"!" + 
+                "   * Ignoring..."
+        );
         continue;
       }
       
-      abilities[id] = abilityData;
+      abilitiesData[id] = abilityData;
     }
+  }
+
+  private void CreateAll() {
+    CreateActors();
+    CreateEffects();
+    CreateAbilities();
+  }
+
+  private void CreateActors() {
+    // TODO
+  }
+
+  private void CreateEffects() {
+    // TODO
+  }
+
+  private void CreateAbilities() {
+    // TODO
   }
 }
