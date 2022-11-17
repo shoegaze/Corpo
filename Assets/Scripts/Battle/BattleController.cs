@@ -9,9 +9,9 @@ namespace Battle {
     [SerializeField] private uint width;
     [SerializeField] private uint height;
 
-    private List<Actor> order = new List<Actor>();
-    private int turn;
-    private bool waitingForPlayer;
+    [SerializeField] private List<Actor> order = new List<Actor>();
+    [SerializeField] private int turn;
+    [SerializeField] private bool waitingForPlayer;
 
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
@@ -33,6 +33,7 @@ namespace Battle {
 
     protected void Update() {
       if (waitingForPlayer) {
+        // TODO: Configure input to be hard-edged in settings
         var h = Mathf.RoundToInt(Input.GetAxis("Horizontal"));
         var v = Mathf.RoundToInt(Input.GetAxis("Vertical"));
 
@@ -49,8 +50,10 @@ namespace Battle {
         var actor = order[turn];
         var dp = new Vector2Int(h, v);
         var moved = Grid.TryMoveActor(actor, dp);
-
+        
         if (moved) {
+          BattleScreen.UpdateActorView(actor, Grid);
+          
           waitingForPlayer = false;
           IncrementTurn();
         }
@@ -121,7 +124,6 @@ namespace Battle {
       else { // actor.Alignment == Actor.ActorAlignment.Enemy
         WaitForComputerDecision();
       }
-      
     }
 
     private void WaitForPlayerDecision() {

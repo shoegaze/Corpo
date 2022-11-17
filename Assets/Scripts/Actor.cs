@@ -16,10 +16,13 @@ public class Actor : MonoBehaviour {
   [SerializeField] private List<Ability> abilities;
   [SerializeField] private uint health;
 
+  private GameObject view;
+  
   public string Name => data.Name;
   public ActorAlignment Alignment => alignment;
   public uint Health => health;
   public bool IsAlive => health > 0;
+  public GameObject View => view;
 
   public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorAlignment team) {
     { // Set sprite
@@ -63,8 +66,8 @@ public class Actor : MonoBehaviour {
     }
   }
 
-  public GameObject GetView(Transform viewRoot) {
-    var view = Instantiate(gameObject, viewRoot);
+  public GameObject CreateView(Transform viewRoot) {
+    view = Instantiate(gameObject, viewRoot);
     view.SetActive(true);
 
     return view;

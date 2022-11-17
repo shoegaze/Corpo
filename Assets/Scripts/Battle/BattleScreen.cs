@@ -1,9 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {
     [SerializeField] private GameObject viewFloor;
 
+    public static void UpdateActorView(Actor actor, BattleGrid grid) {
+      var view = actor.View;
+      var position = grid.GridActors
+                         .Find(v => v.actor == actor)
+                         .position;
+
+      view.transform.localPosition = new Vector3(position.x, position.y);
+    }
+    
     public void BuildViews(BattleGrid grid, ResourcesCache cache) {
       BuildBackgroundView(grid);
       BuildFloorViews(grid);
@@ -43,9 +53,10 @@ namespace Battle {
       var viewEnemies = transform.Find("Actors/Enemies");
     
       foreach (var (actor, pos) in grid.GridActors) {
+        // TODO: Collapse Allies/Enemies transforms into parent
         var viewRoot = actor.Alignment == Actor.ActorAlignment.Ally ? viewAllies : viewEnemies;
         
-        var viewActor = actor.GetView(viewRoot);
+        var viewActor = actor.CreateView(viewRoot);
         viewActor.name = viewActor.GetComponent<Actor>().Name;
         viewActor.transform.localPosition = new Vector3(pos.x, pos.y);
         viewActor.SetActive(true);
