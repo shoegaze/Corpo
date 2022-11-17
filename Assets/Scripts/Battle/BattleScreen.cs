@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {
@@ -12,9 +12,12 @@ namespace Battle {
     }
 
     private void BuildBackgroundView(BattleGrid grid) {
+      const float w = 5f;
+      const float h = 5f;
+      
       var viewBackground = transform.Find("Background");
       viewBackground.localScale = new Vector3(grid.Width, grid.Height);
-      viewBackground.localPosition = new Vector3(grid.Width - 5f, grid.Height - 5f) / 2f;
+      viewBackground.localPosition = new Vector3(grid.Width - w, grid.Height - h) / 2f;
     }
 
     private void BuildFloorViews(BattleGrid grid) {
@@ -23,9 +26,9 @@ namespace Battle {
 
       for (var y = 0; y < grid.Height; y++) {
         var viewRowInstance = Instantiate(viewRow, viewFloorsRoot);
-        viewRowInstance.gameObject.SetActive(true);
         viewRowInstance.name = $"Row.{y}";
         viewRowInstance.localPosition = y * Vector3.up;
+        viewRowInstance.gameObject.SetActive(true);
       
         for (var x = 0; x < grid.Width; x++) {
           var floor = Instantiate(viewFloor, viewRowInstance);
@@ -100,16 +103,16 @@ namespace Battle {
           long rows = 2 * grid.Height - 1;
           for (var r = 0; r < rows; r++) {
             var viewRowInstance = Instantiate(viewRow, viewInnerEdgesRoot);
-            viewRowInstance.gameObject.SetActive(true);
             viewRowInstance.name = $"Row.{r}";
             viewRowInstance.localPosition = new Vector3(0.5f + (r % 2 == 0 ? 0.5f : 0f), 0.5f * r + 0.5f);
+            viewRowInstance.gameObject.SetActive(true);
           
             long cols = grid.Width - (r % 2 == 0 ? 1 : 0);
             for (var c = 0; c < cols; c++) {
               var viewEdgeInstance = Instantiate(viewEdge, viewRowInstance);
-              viewEdgeInstance.gameObject.SetActive(false);
               viewEdgeInstance.name = $"Wall.{c}";
               viewEdgeInstance.localPosition = c * Vector3.right;
+              viewEdgeInstance.gameObject.SetActive(false);
 
               if (r % 2 == 0) {
                 viewEdgeInstance.localRotation = Quaternion.Euler(0f, 0f, 90f);
