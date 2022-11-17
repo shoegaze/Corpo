@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Data {
   [System.Serializable]
-  public struct JobData {
+  public class JobData {
     [SerializeField] private string name;
     [SerializeField] private string[] baseAbilities;
 

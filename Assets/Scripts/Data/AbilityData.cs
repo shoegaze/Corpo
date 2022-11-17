@@ -2,12 +2,12 @@
 
 namespace Data {
   [System.Serializable]
-  public struct AbilityData {
+  public class AbilityData {
     [SerializeField] private string name;
     [SerializeField] private string type; // :: "passive" | "active" 
     [SerializeField] private int cost;
 
-    // public string getTargetSpaces; // lua: (origin) => [coord] 
+    // public string getTargets; // lua: (origin) => [coord] 
     // public string onHit;  // lua: (Actor) => ()
     // public string onMiss; // lua: (Actor) => ()
 

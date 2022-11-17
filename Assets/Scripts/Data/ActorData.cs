@@ -2,7 +2,7 @@
 
 namespace Data {
   [System.Serializable]
-  public struct ActorData {
+  public class ActorData {
     [SerializeField] private string name;
     [SerializeField] private string job;
     [SerializeField] private uint maxHealth;
