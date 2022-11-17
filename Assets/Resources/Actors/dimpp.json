@@ -1,0 +1,6 @@
+{
+  "name": "dimpp",
+  "job": "minion",
+  "maxHealth": 3,
+  "payRate": 500
+}
