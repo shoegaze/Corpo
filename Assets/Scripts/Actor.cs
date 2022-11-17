@@ -19,9 +19,6 @@ public class Actor : MonoBehaviour {
   public ActorTeam Team => team;
 
   public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorTeam team) {
-    // ?? Enforce actorID lowercase
-    actorID = actorID.ToLower();
-            
     { // Set sprite
       var renderer = actor.GetComponent<SpriteRenderer>();
       var sprite = cache.GetSprite(actorID);
