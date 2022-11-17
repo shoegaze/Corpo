@@ -9,16 +9,17 @@ namespace Battle {
     public uint Height { get; }
   
     private bool[,] Edges { get; }
+    // Synchronize order with parameters concat order
     public List<(Actor actor, Vector2Int position)> GridActors { get; }
   
     public BattleGrid(uint width, uint height) {
       Width = width;
       Height = height;
-    
+      
       uint n = width * height;
       Edges = new bool[n, n];
       BuildEdges();
-
+      
       GridActors = new List<(Actor, Vector2Int)>();
     }
   
@@ -58,6 +59,7 @@ namespace Battle {
     }
   
     public void GenerateRandomWalls(uint maxWalls, float probability) {
+      // TODO: Make sure there is a main island where all actors preside
       uint walls = 0;
       for (var x = 0; x < Width; x++) {
         for (var y = 0; y < Height; y++) {
@@ -154,9 +156,10 @@ namespace Battle {
     }
 
     public bool TryMoveActor(Actor actor, Vector2Int dp) {
-      var (target, position) = GridActors.First(v => v.actor == actor);
+      var i = GridActors.FindIndex(v => v.actor == actor);
+      var (target, position) = GridActors[i];
 
-      if (target != null) {
+      if (target == null) {
         return false;
       }
 
@@ -167,7 +170,7 @@ namespace Battle {
         return false;
       }
       
-      actor.transform.localPosition = new Vector3(to.x, to.y);
+      GridActors[i] = (target, to);
 
       return true;
     }
