@@ -5,25 +5,29 @@ using Battle;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(ResourcesCache), typeof(Team))]
 public class GameController : MonoBehaviour {
-  public enum GameMode {
+  private enum GameMode {
     World,
     Battle
   }
   
   [SerializeField] private GameMode mode = GameMode.World;
-  [SerializeField] private List<Actor> team;
+  // TODO: Move to Team definition?
   [SerializeField] private int money;
   [SerializeField] private uint year;
-  [SerializeField, Range(0, 4)] private uint quarter;
+  [SerializeField, Range(0, 3)] private uint quarter;
 
+  private Team team;
   private BattleController battle;
+
+  protected void Awake() {
+    team = GetComponent<Team>();
+  }
 
   protected void Start() {
     // DEBUG
-    var cache = GetComponent<ResourcesCache>();
-    var ally = cache.GetActor("dimpp", Actor.ActorTeam.Ally);
-    team.Add(ally);
+    team.Add("dimpp");
     
     // DEBUG
     StartCoroutine(LoadBattleScene());
@@ -71,14 +75,14 @@ public class GameController : MonoBehaviour {
         enemies.Add(enemy);  
       }
       
-      battle.SetUp(team, enemies);
+      battle.SetUp(team.Actors, enemies);
     }
   }
 
-  // private void EndBattle() {
-  //   mode = GameMode.World;
-  //   
-  //   // TODO
-  //   StartCoroutine(UnloadBattleScene());
-  // }
+  public void EndBattle() {
+    mode = GameMode.World;
+    
+    // TODO
+    StartCoroutine(UnloadBattleScene());
+  }
 }
