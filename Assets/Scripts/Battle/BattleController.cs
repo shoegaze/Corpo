@@ -34,24 +34,59 @@ namespace Battle {
     protected void Update() {
       if (waitingForPlayer) {
         // TODO: Configure input to be hard-edged in settings
-        var h = Mathf.RoundToInt(Input.GetAxis("Horizontal"));
-        var v = Mathf.RoundToInt(Input.GetAxis("Vertical"));
+        var h = Input.GetButtonDown("Horizontal");
+        var v = Input.GetButtonDown("Vertical");
 
         // Ignore idling
-        if (h == 0 && v == 0) {
+        if (!h && !v) {
           return;
         }
 
         // Prevent diagonal movement
-        if (h != 0 && v != 0) {
+        if (h && v) {
           return;
         }
 
         var actor = order[turn];
-        var dp = new Vector2Int(h, v);
-        var moved = Grid.TryMoveActor(actor, dp);
+        var from = Grid.GetPosition(actor);
+
+        if (from == null) {
+          return;
+        }
+
+        var x = Mathf.RoundToInt(Input.GetAxis("Horizontal"));
+        var y = Mathf.RoundToInt(Input.GetAxis("Vertical"));
+        var to = from.Value + new Vector2Int(x, y);
         
-        if (moved) {
+        // Try attacking
+        if (Grid.HasActor(to) /*&& Grid.AreConnected(from.Value, to.Value)*/) {
+          var target = Grid.GetActor(to);
+          
+          Debug.Assert(target != null);
+
+          // Do attack if different alignments
+          if (actor.Alignment != target.Alignment) {
+            // TODO: Attack animation
+            target.TakeHealth(1);
+
+            if (!target.IsAlive) {
+              // TODO: Actor.Die(Grid)
+              var removed = Grid.TryRemoveActor(target);
+              Debug.Assert(removed);
+              
+              target.View.SetActive(false);
+              target.gameObject.SetActive(false);
+            }
+
+            waitingForPlayer = false;
+            IncrementTurn();
+          }
+
+          return;
+        }
+        
+        // Try moving
+        if (Grid.TryMoveActor(actor, to)) {
           BattleScreen.UpdateActorView(actor, Grid);
           
           waitingForPlayer = false;
@@ -74,9 +109,16 @@ namespace Battle {
       screen.BuildViews(Grid, cache);
     }
 
-    public Actor RandomEnemy() {
+    public Actor GetRandomEnemy() {
       // DEBUG:
-      return cache.GetActor("oeur", Actor.ActorAlignment.Enemy);
+      // Battlefield/Instances
+      var instanceRoot = transform.Find("Instances");
+      
+      Debug.Assert(instanceRoot != null);
+      
+      var actor = cache.GetActor("oeur", Actor.ActorAlignment.Enemy);
+      var instance = Instantiate(actor, instanceRoot);
+      return instance;
     }
 
     private void IncrementTurn() {
@@ -89,20 +131,20 @@ namespace Battle {
         yield return null;
       }
       
-      var alliesAreDead = false;
-      var enemiesAreDead = false;
+      var alliesAreAlive = true;
+      var enemiesAreAlive = true;
       
-      while (!alliesAreDead && !enemiesAreDead) {
+      while (alliesAreAlive && enemiesAreAlive) {
         DoTurn();
       
-        alliesAreDead = order.All(a => !a.IsAlive);
-        enemiesAreDead = order.All(a => !a.IsAlive);
+        alliesAreAlive = order.Exists(a => a.IsAlive);
+        enemiesAreAlive = order.Exists(a => a.IsAlive);
 
         yield return null;
       }
       
       // TODO:
-      if (alliesAreDead) {
+      if (enemiesAreAlive) {
         // TODO: Win procedure
         Debug.Log("YOU WIN!");
       }
@@ -127,15 +169,50 @@ namespace Battle {
     }
 
     private void WaitForPlayerDecision() {
-      // TODO
       waitingForPlayer = true;
       
-      // IncrementTurn();
+      // TODO
     }
 
     private void WaitForComputerDecision() {
-      // TODO
       waitingForPlayer = false;
+
+      var actor = order[turn];
+
+      // Dead
+      if (!actor.IsAlive) {
+        IncrementTurn();
+        return;
+      }
+      
+      var from = Grid.GetPosition(actor);
+      
+      Debug.Assert(from != null);
+
+      { // DEBUG: Go to random neighbor
+        var candidates = new[] {
+                from.Value + new Vector2Int(-1,  0),
+                from.Value + new Vector2Int(+1,  0),
+                from.Value + new Vector2Int( 0, -1),
+                from.Value + new Vector2Int( 0, +1)
+        };
+
+        // TODO: Implement attack
+        candidates = candidates.Where(to => Grid.CanMove(from.Value, to))
+                               .ToArray();
+
+        // If we can't do anything, just idle
+        if (candidates.Length > 0) {
+          var i = (int)(candidates.Length * Random.value);
+          var to = candidates[i];
+
+          var moved = Grid.TryMoveActor(actor, to);
+          Debug.Assert(moved);
+        }
+      }
+
+      BattleScreen.UpdateActorView(actor, Grid);
+      IncrementTurn();
     }
   }
 }
