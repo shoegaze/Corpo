@@ -29,8 +29,14 @@ public class Team : MonoBehaviour {
       return;
     }
     
-    var ally = cache.GetActor(actorID, Actor.ActorAlignment.Ally);
-    actors.Add(ally);
+    // GameController/Instances
+    var instanceRoot = transform.Find("Instances");
+    
+    Debug.Assert(instanceRoot != null);
+    
+    var actor = cache.GetActor(actorID, Actor.ActorAlignment.Ally);
+    var instance = Instantiate(actor, instanceRoot);
+    actors.Add(instance);
   }
   
   //public bool CanRemove() {}

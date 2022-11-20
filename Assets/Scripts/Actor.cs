@@ -10,7 +10,8 @@ public class Actor : MonoBehaviour {
     Ally,
     Enemy
   }
-  
+
+  // [SerializeField] private uint instanceID;
   [SerializeField] private ActorData data;
   [SerializeField] private ActorAlignment alignment;
   [SerializeField] private List<Ability> abilities;
@@ -73,16 +74,14 @@ public class Actor : MonoBehaviour {
     return view;
   }
   
-  // TODO:
-
-  // public void TakeHealth(uint damage) {
-  //   if (damage >= health) {
-  //     health = 0;
-  //     return;
-  //   }
-  //
-  //   health -= damage;
-  // }
+  public void TakeHealth(uint damage) {
+    if (damage >= health) {
+      health = 0;
+      return;
+    }
+  
+    health -= damage;
+  }
   
   // public void GiveHealth(uint heal) {
   //   health += heal;
