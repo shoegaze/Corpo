@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = System.Object;
 using Random = UnityEngine.Random;
 
 namespace Battle {
@@ -136,15 +138,90 @@ namespace Battle {
       // TODO: Support one-way walls
       return !Edges[i, j] && !Edges[j, i];
     }
+
+    public bool AreConnected(Vector2Int from, Vector2Int to) {
+      // Convert to index space
+      long i = from.y * Width + from.x;
+      long j = to.y * Width + to.x;
+
+      return AreConnected(i, j);
+    }
   
-    private bool CanMove(Vector2Int from, Vector2Int to) {
+    // TODO: Check if to-position has an actor
+    public bool TryMoveActor(Actor actor, Vector2Int to) {
+      var i = GridActors.FindIndex(v => v.actor == actor);
+      var (target, position) = GridActors[i];
+
+      if (target == null) {
+        return false;
+      }
+
+      var from = position;
+      
+      if (!CanMove(from, to)) {
+        return false;
+      }
+      
+      GridActors[i] = (target, to);
+
+      return true;
+    }
+
+    public Actor GetActor(Vector2Int position) {
+      // TODO: Compare by instance ID
+      var i = GridActors.FindIndex(v => v.position == position);
+
+      if (i < 0) {
+        return null;
+      }
+
+      return GridActors[i].actor;
+    }
+
+    public bool TryRemoveActor(Actor actor) {
+      var i = GridActors.FindIndex(v => v.actor == actor);
+
+      if (i < 0) {
+        return false;
+      }
+      
+      GridActors.RemoveAt(i);
+
+      return true;
+    }
+    
+    public Vector2Int? GetPosition(Actor actor) {
+      // TODO: Compare by instance ID
+      var i = GridActors.FindIndex(v => v.actor == actor);
+
+      if (i < 0) {
+        return null;
+      }
+
+      return GridActors[i].position;
+    }
+            
+    public bool HasActor(Vector2Int position) {
+      return GridActors.Exists(v => v.position == position);
+    }
+    
+    public bool CanMove(Vector2Int from, Vector2Int to) {
       if (from.x < 0 || from.x >= Width ||
           from.y < 0 || from.y >= Height) {
         return false;
       }
-
+      
       if (to.x < 0 || to.x >= Width ||
           to.y < 0 || to.y >= Height) {
+        return false;
+      }
+
+      // Assert `from` and `to` are adjacent
+      if ((to - from).sqrMagnitude != 1) {
+        return false;
+      }
+      
+      if (HasActor(to)) {
         return false;
       }
 
@@ -155,24 +232,5 @@ namespace Battle {
       return Edges[i, j];
     }
 
-    public bool TryMoveActor(Actor actor, Vector2Int dp) {
-      var i = GridActors.FindIndex(v => v.actor == actor);
-      var (target, position) = GridActors[i];
-
-      if (target == null) {
-        return false;
-      }
-
-      var from = position;
-      var to = from + dp;
-      
-      if (!CanMove(from, to)) {
-        return false;
-      }
-      
-      GridActors[i] = (target, to);
-
-      return true;
-    }
   }
 }

@@ -11,12 +11,19 @@ namespace Battle {
 
     [SerializeField] private List<Actor> order = new List<Actor>();
     [SerializeField] private int turn;
-    [SerializeField] private bool waitingForPlayer;
 
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
     private GameController game;
     private ResourcesCache cache;
+
+    private Actor ActiveActor => order[turn];
+
+    private bool AlliesAlive => order.Where(a => a.Alignment == Actor.ActorAlignment.Ally)
+                                     .Any(a => a.IsAlive);
+
+    private bool EnemiesAlive => order.Where(a => a.Alignment == Actor.ActorAlignment.Enemy)
+                                      .Any(e => e.IsAlive);
 
     protected void Awake() {
       Grid = new BattleGrid(width, height);
@@ -27,90 +34,10 @@ namespace Battle {
       var go = GameObject.FindWithTag("GameController");
       game = go.GetComponent<GameController>();
       cache = go.GetComponent<ResourcesCache>();
-      
-      StartCoroutine(StartBattle());
     }
 
-    protected void Update() {
-      if (waitingForPlayer) {
-        // TODO: Configure input to be hard-edged in settings
-        var h = Input.GetButtonDown("Horizontal");
-        var v = Input.GetButtonDown("Vertical");
-
-        // Ignore idling
-        if (!h && !v) {
-          return;
-        }
-
-        // Prevent diagonal movement
-        if (h && v) {
-          return;
-        }
-
-        var actor = order[turn];
-        var from = Grid.GetPosition(actor);
-
-        if (from == null) {
-          return;
-        }
-
-        var x = Mathf.RoundToInt(Input.GetAxis("Horizontal"));
-        var y = Mathf.RoundToInt(Input.GetAxis("Vertical"));
-        var to = from.Value + new Vector2Int(x, y);
-        
-        // Try attacking
-        if (Grid.HasActor(to) /*&& Grid.AreConnected(from.Value, to.Value)*/) {
-          var target = Grid.GetActor(to);
-          
-          Debug.Assert(target != null);
-
-          // Do attack if different alignments
-          if (actor.Alignment != target.Alignment) {
-            // TODO: Attack animation
-            target.TakeHealth(1);
-
-            if (!target.IsAlive) {
-              // TODO: Actor.Die(Grid)
-              var removed = Grid.TryRemoveActor(target);
-              Debug.Assert(removed);
-              
-              target.View.SetActive(false);
-              target.gameObject.SetActive(false);
-            }
-
-            waitingForPlayer = false;
-            IncrementTurn();
-          }
-
-          return;
-        }
-        
-        // Try moving
-        if (Grid.TryMoveActor(actor, to)) {
-          BattleScreen.UpdateActorView(actor, Grid);
-          
-          waitingForPlayer = false;
-          IncrementTurn();
-        }
-      }
-    }
-
-    public void SetUp(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
-      // TODO: Shuffle turnOrder?
-      order = allies.Concat(enemies).ToList();
-      
-      // TODO: Read level from presets?
-      Grid.GenerateRandomWalls(10, 0.125f);
-
-      { // DEBUG: Place Actors
-        Grid.RandomlyPlaceActors(order);
-      }
-
-      screen.BuildViews(Grid, cache);
-    }
-
+    // DEBUG:
     public Actor GetRandomEnemy() {
-      // DEBUG:
       // Battlefield/Instances
       var instanceRoot = transform.Find("Instances");
       
@@ -124,69 +51,134 @@ namespace Battle {
     private void IncrementTurn() {
       turn = (turn + 1) % order.Count;
     }
-    
-    private IEnumerator StartBattle() {
-      // Wait for SetUp to be called
-      while (order.Count == 0) {
-        yield return null;
-      }
-      
-      var alliesAreAlive = true;
-      var enemiesAreAlive = true;
-      
-      while (alliesAreAlive && enemiesAreAlive) {
-        DoTurn();
-      
-        alliesAreAlive = order.Exists(a => a.IsAlive);
-        enemiesAreAlive = order.Exists(a => a.IsAlive);
 
-        yield return null;
-      }
+    private void SetUp(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
+      // TODO: Shuffle turnOrder?
+      order = allies.Concat(enemies).ToList();
+      turn = 0;
       
-      // TODO:
-      if (enemiesAreAlive) {
-        // TODO: Win procedure
+      // TODO: Read level from presets?
+      Grid.GenerateRandomWalls(10, 0.125f);
+
+      { // DEBUG: Place Actors
+        Grid.RandomlyPlaceActors(order);
+      }
+
+      screen.BuildViews(Grid, cache);
+    }
+
+    public void StartBattle(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
+      SetUp(allies, enemies);
+
+      StartCoroutine(DoBattle());
+    }
+
+    private void EndBattle() {
+      // TODO
+      if (AlliesAlive) {
         Debug.Log("YOU WIN!");
       }
-      else { // enemiesAreDead
-        // TODO: Lose procedure
+      else {
         Debug.Log("YOU LOSE!");
       }
-
-      game.EndBattle();
-    }
-    
-    private void DoTurn() {
-      // TODO
-      var actor = order[turn];
-
-      if (actor.Alignment == Actor.ActorAlignment.Ally) {
-        WaitForPlayerDecision();
-      }
-      else { // actor.Alignment == Actor.ActorAlignment.Enemy
-        WaitForComputerDecision();
-      }
     }
 
-    private void WaitForPlayerDecision() {
-      waitingForPlayer = true;
+    private IEnumerator DoBattle() {
+      while (AlliesAlive && EnemiesAlive) {
+        while (true) { // Do turn
+          var decided = false;
+
+          if (ActiveActor.Alignment == Actor.ActorAlignment.Ally) {
+            decided = DoPlayerTurn();
+          }
+          else { // Enemy CPU
+            decided = DoComputerTurn();
+          }
+          
+          if (decided) {
+            break;
+          }
+
+          yield return null;
+        }
+        
+        IncrementTurn();
+
+        yield return null;
+      }
+
+      EndBattle();
+    }
+   
+    private bool DoPlayerTurn() {
+      var h = Input.GetButtonDown("Horizontal");
+      var v = Input.GetButtonDown("Vertical");
+
+      // Ignore idling
+      if (!h && !v) {
+        return false;
+      }
+
+      // Prevent diagonal movement
+      if (h && v) {
+        return false;
+      }
+
+      var actor = ActiveActor;
+      var from = Grid.GetPosition(actor);
+
+      if (from == null) {
+        return false;
+      }
+
+      var x = Mathf.RoundToInt(Input.GetAxis("Horizontal"));
+      var y = Mathf.RoundToInt(Input.GetAxis("Vertical"));
+      var to = from.Value + new Vector2Int(x, y);
       
-      // TODO
+      // Try attacking
+      // TODO: Make sure the target is not behind a wall
+      if (Grid.HasActor(to) /*&& Grid.AreConnected(from.Value, to)*/) {
+        var target = Grid.GetActor(to);
+        Debug.Assert(target != null);
+
+        // Do attack if different alignments
+        if (actor.Alignment != target.Alignment) {
+          // TODO: Attack animation
+          // StartCoroutine(actor.StartAttackAnimation());
+          
+          target.TakeHealth(1);
+
+          if (!target.IsAlive) {
+            // TODO: Actor.Die(Grid)
+            var removed = Grid.TryRemoveActor(target);
+            Debug.Assert(removed);
+            
+            target.View.SetActive(false);
+            target.gameObject.SetActive(false);
+          }
+
+          return true;
+        }
+      }
+      
+      // Try moving
+      if (Grid.TryMoveActor(actor, to)) {
+        BattleScreen.UpdateActorView(actor, Grid);
+        return true;
+      }
+
+      return false;
     }
 
-    private void WaitForComputerDecision() {
-      waitingForPlayer = false;
-
-      var actor = order[turn];
+    private bool DoComputerTurn() {
+      var actor = ActiveActor;
 
       // Dead
       if (!actor.IsAlive) {
-        IncrementTurn();
-        return;
+        return true;
       }
       
       var from = Grid.GetPosition(actor);
-      
       Debug.Assert(from != null);
 
       { // DEBUG: Go to random neighbor
@@ -212,7 +204,8 @@ namespace Battle {
       }
 
       BattleScreen.UpdateActorView(actor, Grid);
-      IncrementTurn();
+      
+      return true;
     }
   }
 }
