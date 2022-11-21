@@ -91,8 +91,15 @@ public class Actor : MonoBehaviour {
 
 
   public void Attack(AttackContext ctx) {
-    var anim = view.GetComponent<ActorAnimation>();
-    anim.StartAttack(ctx);
+    { // TODO: Cache ActorAnimation
+      var anim = view.GetComponent<ActorAnimation>();
+      anim.StartAttack(ctx);
+    }
+
+    { // TODO: Make hurt animation public
+      var anim = ctx.Target.view.GetComponent<ActorAnimation>();
+      anim.StartHurt(ctx);
+    }
 
     var target = ctx.Target;
     target.TakeHealth(1);
@@ -109,7 +116,7 @@ public class Actor : MonoBehaviour {
     var removed = grid.TryRemoveActor(target);
     Debug.Assert(removed);
     
-    target.View.SetActive(false);
-    target.gameObject.SetActive(false);
+    View.SetActive(false);
+    gameObject.SetActive(false);
   }
 }

@@ -145,8 +145,15 @@ namespace Battle {
 
         // Do attack if different alignments
         if (actor.Alignment != target.Alignment) {
-          var context = new AttackContext(target, Grid, from.Value, to);
-          actor.Attack(context);
+          var ctx = new AttackContext(
+                  actor, 
+                  target, 
+                  Grid, 
+                  from.Value, 
+                  to
+          );
+          
+          actor.Attack(ctx);
           
           return true;
         }
@@ -162,6 +169,8 @@ namespace Battle {
     }
 
     private bool DoComputerTurn() {
+      // TODO: Wait t seconds
+      
       var actor = ActiveActor;
 
       // Dead
