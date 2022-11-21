@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Battle;
 using Data;
 using UnityEngine;
 
@@ -87,4 +88,28 @@ public class Actor : MonoBehaviour {
   //   health += heal;
   //   health = health > data.maxHealth ? data.maxHealth : health;
   // }
+
+
+  public void Attack(AttackContext ctx) {
+    var anim = view.GetComponent<ActorAnimation>();
+    anim.StartAttack(ctx);
+
+    var target = ctx.Target;
+    target.TakeHealth(1);
+
+    if (!target.IsAlive) {
+      target.Die(ctx);
+    }
+  }
+
+  private void Die(AttackContext ctx) {
+    var grid = ctx.Grid;
+    var target = ctx.Target;
+    
+    var removed = grid.TryRemoveActor(target);
+    Debug.Assert(removed);
+    
+    target.View.SetActive(false);
+    target.gameObject.SetActive(false);
+  }
 }

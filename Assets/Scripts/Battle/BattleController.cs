@@ -145,20 +145,9 @@ namespace Battle {
 
         // Do attack if different alignments
         if (actor.Alignment != target.Alignment) {
-          // TODO: Attack animation
-          // StartCoroutine(actor.StartAttackAnimation());
+          var context = new AttackContext(target, Grid, from.Value, to);
+          actor.Attack(context);
           
-          target.TakeHealth(1);
-
-          if (!target.IsAlive) {
-            // TODO: Actor.Die(Grid)
-            var removed = Grid.TryRemoveActor(target);
-            Debug.Assert(removed);
-            
-            target.View.SetActive(false);
-            target.gameObject.SetActive(false);
-          }
-
           return true;
         }
       }
