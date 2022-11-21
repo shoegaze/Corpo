@@ -57,8 +57,9 @@ public class GameController : MonoBehaviour {
       yield return null;
     }
 
-    var worldScene = SceneManager.GetSceneByName("WorldScene");
-    SceneManager.SetActiveScene(worldScene);
+    // TODO: Set WorldScene as active scene 
+    var baseScene = SceneManager.GetSceneByName("BaseScene");
+    SceneManager.SetActiveScene(baseScene);
 
     battle = null;
   }

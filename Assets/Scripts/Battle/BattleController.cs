@@ -14,6 +14,7 @@ namespace Battle {
 
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
+    private GameController game;
     private ResourcesCache cache;
 
     private Actor ActiveActor => order[turn];
@@ -31,7 +32,7 @@ namespace Battle {
 
     protected void Start() {
       var go = GameObject.FindWithTag("GameController");
-      // game = go.GetComponent<GameController>();
+      game = go.GetComponent<GameController>();
       cache = go.GetComponent<ResourcesCache>();
     }
 
@@ -81,7 +82,7 @@ namespace Battle {
         Debug.Log("YOU LOSE!");
       }
 
-      // game.EndBattle();
+      game.EndBattle();
     }
 
     private IEnumerator DoBattle() {
