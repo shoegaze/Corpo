@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using Object = System.Object;
 using Random = UnityEngine.Random;
 
 namespace Battle {
@@ -134,7 +131,7 @@ namespace Battle {
       }
     }
 
-    public bool AreConnected(long i, long j) {
+    private bool AreConnected(long i, long j) {
       // TODO: Support one-way walls
       return !Edges[i, j] && !Edges[j, i];
     }
@@ -231,6 +228,5 @@ namespace Battle {
     
       return Edges[i, j];
     }
-
   }
 }

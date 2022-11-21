@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {
@@ -136,13 +135,13 @@ namespace Battle {
           for (var x = 0; x < grid.Width; x++) {
             for (var y = 0; y < grid.Height; y++) {
               // Center cell
-              long i = y * grid.Width + x;
+              var from = new Vector2Int(x, y);
             
               // Scan right
               if (x < grid.Width - 1) { 
-                long j = y * grid.Width + (x+1);
+                var to = new Vector2Int(x + 1, y);
               
-                if (grid.AreConnected(i, j)) {
+                if (grid.AreConnected(from, to)) {
                   int r = 2 * y;
                   int c = x;
                   var queryRight = $"Row.{r}/Wall.{c}";
@@ -153,9 +152,9 @@ namespace Battle {
             
               // Scan top
               if (y < grid.Height - 1) { 
-                long j = (y+1) * grid.Width + x;
+                var to = new Vector2Int(x, y + 1);
             
-                if (grid.AreConnected(i, j)) {
+                if (grid.AreConnected(from, to)) {
                   int r = 2 * y + 1;
                   int c = x;
                   var queryTop = $"Row.{r}/Wall.{c}";

@@ -14,7 +14,6 @@ namespace Battle {
 
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
-    private GameController game;
     private ResourcesCache cache;
 
     private Actor ActiveActor => order[turn];
@@ -32,7 +31,7 @@ namespace Battle {
 
     protected void Start() {
       var go = GameObject.FindWithTag("GameController");
-      game = go.GetComponent<GameController>();
+      // game = go.GetComponent<GameController>();
       cache = go.GetComponent<ResourcesCache>();
     }
 
@@ -81,12 +80,14 @@ namespace Battle {
       else {
         Debug.Log("YOU LOSE!");
       }
+
+      // game.EndBattle();
     }
 
     private IEnumerator DoBattle() {
       while (AlliesAlive && EnemiesAlive) {
         while (true) { // Do turn
-          var decided = false;
+          bool decided;
 
           if (ActiveActor.Alignment == Actor.ActorAlignment.Ally) {
             decided = DoPlayerTurn();
