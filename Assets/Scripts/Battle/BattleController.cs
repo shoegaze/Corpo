@@ -17,7 +17,6 @@ namespace Battle {
     private GameController game;
     private ResourcesCache cache;
 
-    
     public int Turn => turn;
     public Actor ActiveActor => order[turn % order.Count];
     public bool AlliesWin => AlliesAlive && !EnemiesAlive;

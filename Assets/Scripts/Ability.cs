@@ -5,6 +5,10 @@ using UnityEngine;
 public class Ability : MonoBehaviour {
   [SerializeField] private AbilityData data;
 
+  public string Name => data.Name;
+  // public string Type => data.Type;
+  public int Cost => data.Cost;
+
   public static void Load(ref Ability ability, ResourcesCache cache, string abilityID) {
     { // Set sprite
       // TODO

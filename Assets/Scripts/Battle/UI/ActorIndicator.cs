@@ -11,11 +11,11 @@ namespace Battle.UI {
       var actor = battle.ActiveActor;
 
       if (actor != null) {
-        nameLabel.text = actor.Name;
+        nameLabel.text = $"* {actor.Name}";
         healthLabel.text = $"{actor.Health}/{actor.MaxHealth}";
       }
       else {
-        nameLabel.text = "error";
+        nameLabel.text = "* error";
         healthLabel.text = "0/0";
       }
     }

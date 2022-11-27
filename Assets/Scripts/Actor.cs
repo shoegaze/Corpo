@@ -15,9 +15,11 @@ public class Actor : MonoBehaviour {
   [SerializeField] private uint health;
 
   public string Name => data.Name;
-  public ActorAlignment Alignment => alignment;
-  public uint Health => health;
   public uint MaxHealth => data.MaxHealth;
+  
+  public ActorAlignment Alignment => alignment;
+  public Ability[] Abilities => abilities.ToArray();
+  public uint Health => health;
   public bool IsAlive => health > 0;
 
   // TODO: Change type to ActorView
