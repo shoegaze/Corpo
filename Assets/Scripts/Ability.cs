@@ -6,9 +6,6 @@ public class Ability : MonoBehaviour {
   [SerializeField] private AbilityData data;
 
   public static void Load(ref Ability ability, ResourcesCache cache, string abilityID) {
-    // ?? Enforce abilityID lowercase
-    abilityID = abilityID.ToLower();
-
     { // Set sprite
       // TODO
       var renderer = ability.GetComponent<SpriteRenderer>();

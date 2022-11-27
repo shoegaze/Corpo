@@ -4,6 +4,15 @@ namespace Battle {
   public class BattleScreen : MonoBehaviour {
     [SerializeField] private GameObject viewFloor;
 
+    public static void UpdateActorView(Actor actor, BattleGrid grid) {
+      var view = actor.View;
+      var position = grid.GridActors
+                         .Find(v => v.actor == actor)
+                         .position;
+
+      view.transform.localPosition = new Vector3(position.x, position.y);
+    }
+    
     public void BuildViews(BattleGrid grid, ResourcesCache cache) {
       BuildBackgroundView(grid);
       BuildFloorViews(grid);
@@ -12,9 +21,12 @@ namespace Battle {
     }
 
     private void BuildBackgroundView(BattleGrid grid) {
+      const float w = 5f;
+      const float h = 5f;
+      
       var viewBackground = transform.Find("Background");
       viewBackground.localScale = new Vector3(grid.Width, grid.Height);
-      viewBackground.localPosition = new Vector3(grid.Width - 5f, grid.Height - 5f) / 2f;
+      viewBackground.localPosition = new Vector3(grid.Width - w, grid.Height - h) / 2f;
     }
 
     private void BuildFloorViews(BattleGrid grid) {
@@ -23,9 +35,9 @@ namespace Battle {
 
       for (var y = 0; y < grid.Height; y++) {
         var viewRowInstance = Instantiate(viewRow, viewFloorsRoot);
-        viewRowInstance.gameObject.SetActive(true);
         viewRowInstance.name = $"Row.{y}";
         viewRowInstance.localPosition = y * Vector3.up;
+        viewRowInstance.gameObject.SetActive(true);
       
         for (var x = 0; x < grid.Width; x++) {
           var floor = Instantiate(viewFloor, viewRowInstance);
@@ -39,13 +51,14 @@ namespace Battle {
       var viewAllies = transform.Find("Actors/Allies");
       var viewEnemies = transform.Find("Actors/Enemies");
     
-      foreach (var (actor, (x, y)) in grid.Actors) {
-        var viewRoot = actor.Team == Actor.ActorTeam.Ally ? viewAllies : viewEnemies;
+      foreach (var (actor, pos) in grid.GridActors) {
+        // TODO: Collapse Allies/Enemies transforms into parent
+        var viewRoot = actor.Alignment == ActorAlignment.Ally ? viewAllies : viewEnemies;
         
-        var viewActor = actor.GetView(viewRoot);
+        var viewActor = actor.CreateView(viewRoot);
         viewActor.name = viewActor.GetComponent<Actor>().Name;
+        viewActor.transform.localPosition = new Vector3(pos.x, pos.y);
         viewActor.SetActive(true);
-        viewActor.transform.localPosition = new Vector3(x, y);
       }
     }
   
@@ -100,16 +113,16 @@ namespace Battle {
           long rows = 2 * grid.Height - 1;
           for (var r = 0; r < rows; r++) {
             var viewRowInstance = Instantiate(viewRow, viewInnerEdgesRoot);
-            viewRowInstance.gameObject.SetActive(true);
             viewRowInstance.name = $"Row.{r}";
             viewRowInstance.localPosition = new Vector3(0.5f + (r % 2 == 0 ? 0.5f : 0f), 0.5f * r + 0.5f);
+            viewRowInstance.gameObject.SetActive(true);
           
             long cols = grid.Width - (r % 2 == 0 ? 1 : 0);
             for (var c = 0; c < cols; c++) {
               var viewEdgeInstance = Instantiate(viewEdge, viewRowInstance);
-              viewEdgeInstance.gameObject.SetActive(false);
               viewEdgeInstance.name = $"Wall.{c}";
               viewEdgeInstance.localPosition = c * Vector3.right;
+              viewEdgeInstance.gameObject.SetActive(false);
 
               if (r % 2 == 0) {
                 viewEdgeInstance.localRotation = Quaternion.Euler(0f, 0f, 90f);
@@ -122,13 +135,13 @@ namespace Battle {
           for (var x = 0; x < grid.Width; x++) {
             for (var y = 0; y < grid.Height; y++) {
               // Center cell
-              long i = y * grid.Width + x;
+              var from = new Vector2Int(x, y);
             
               // Scan right
               if (x < grid.Width - 1) { 
-                long j = y * grid.Width + (x+1);
+                var to = new Vector2Int(x + 1, y);
               
-                if (grid.AreConnected(i, j)) {
+                if (grid.AreConnected(from, to)) {
                   int r = 2 * y;
                   int c = x;
                   var queryRight = $"Row.{r}/Wall.{c}";
@@ -139,9 +152,9 @@ namespace Battle {
             
               // Scan top
               if (y < grid.Height - 1) { 
-                long j = (y+1) * grid.Width + x;
+                var to = new Vector2Int(x, y + 1);
             
-                if (grid.AreConnected(i, j)) {
+                if (grid.AreConnected(from, to)) {
                   int r = 2 * y + 1;
                   int c = x;
                   var queryTop = $"Row.{r}/Wall.{c}";

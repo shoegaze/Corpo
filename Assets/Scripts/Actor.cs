@@ -1,27 +1,28 @@
 using System.Collections.Generic;
 using System.Linq;
+using Battle;
 using Data;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class Actor : MonoBehaviour {
-  public enum ActorTeam {
-    Ally,
-    Enemy
-  }
-  
+  // TODO: Move to single file
+  // TODO: Separate to ActorModel and ActorView
+
   [SerializeField] private ActorData data;
-  [SerializeField] private ActorTeam team;
+  [SerializeField] private ActorAlignment alignment;
   [SerializeField] private List<Ability> abilities;
   [SerializeField] private uint health;
 
   public string Name => data.Name;
-  public ActorTeam Team => team;
+  public ActorAlignment Alignment => alignment;
+  public uint Health => health;
+  public bool IsAlive => health > 0;
 
-  public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorTeam team) {
-    // ?? Enforce actorID lowercase
-    actorID = actorID.ToLower();
-            
+  // TODO: Change type to ActorView
+  public GameObject View { get; private set; }
+
+  public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorAlignment team) {
     { // Set sprite
       var renderer = actor.GetComponent<SpriteRenderer>();
       var sprite = cache.GetSprite(actorID);
@@ -46,7 +47,7 @@ public class Actor : MonoBehaviour {
       
       actor.data = actorData;
       actor.health = actorData.MaxHealth;
-      actor.team = team;
+      actor.alignment = team;
       
       { // Set abilities
         var jobData = cache.GetJobData(actorData.Job);
@@ -63,28 +64,57 @@ public class Actor : MonoBehaviour {
     }
   }
 
-  public GameObject GetView(Transform viewRoot) {
-    var view = Instantiate(gameObject, viewRoot);
-    view.SetActive(true);
+  public GameObject CreateView(Transform viewRoot) {
+    View = Instantiate(gameObject, viewRoot);
+    // TODO: Add ActorView behavior to instanced view
+    View.SetActive(true);
 
-    return view;
+    return View;
   }
   
-  // TODO:
+  public void TakeHealth(uint damage) {
+    if (damage >= health) {
+      health = 0;
+      return;
+    }
   
-  // public bool IsAlive => health > 0;
-
-  // public void TakeHealth(uint damage) {
-  //   if (damage >= health) {
-  //     health = 0;
-  //     return;
-  //   }
-  //
-  //   health -= damage;
-  // }
+    health -= damage;
+  }
   
   // public void GiveHealth(uint heal) {
   //   health += heal;
   //   health = health > data.maxHealth ? data.maxHealth : health;
   // }
+
+
+  public void Attack(AttackContext ctx) {
+    { // TODO: Cache ActorAnimation
+      var anim = View.GetComponent<ActorAnimation>();
+      anim.StartAttack(ctx);
+    }
+
+    { // TODO: Make hurt animation public
+      var anim = ctx.Target.View.GetComponent<ActorAnimation>();
+      anim.StartHurt(ctx);
+    }
+
+    var target = ctx.Target;
+    target.TakeHealth(1);
+
+    if (!target.IsAlive) {
+      target.Die(ctx);
+    }
+  }
+
+  private void Die(AttackContext ctx) {
+    var grid = ctx.Grid;
+    var target = ctx.Target;
+    
+    var removed = grid.TryRemoveActor(target);
+    Debug.Assert(removed);
+    
+    // Deactivate view
+    View.SetActive(false);
+    gameObject.SetActive(false);
+  }
 }

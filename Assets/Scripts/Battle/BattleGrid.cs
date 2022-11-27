@@ -8,17 +8,18 @@ namespace Battle {
     public uint Height { get; }
   
     private bool[,] Edges { get; }
-    public List<(Actor, (long x, long y))> Actors { get; }
+    // Synchronize order with parameters concat order
+    public List<(Actor actor, Vector2Int position)> GridActors { get; }
   
     public BattleGrid(uint width, uint height) {
       Width = width;
       Height = height;
-    
+      
       uint n = width * height;
       Edges = new bool[n, n];
       BuildEdges();
-
-      Actors = new List<(Actor, (long x, long y))>();
+      
+      GridActors = new List<(Actor, Vector2Int)>();
     }
   
     private void BuildEdges() {
@@ -57,6 +58,7 @@ namespace Battle {
     }
   
     public void GenerateRandomWalls(uint maxWalls, float probability) {
+      // TODO: Make sure there is a main island where all actors preside
       uint walls = 0;
       for (var x = 0; x < Width; x++) {
         for (var y = 0; y < Height; y++) {
@@ -96,46 +98,126 @@ namespace Battle {
     }
 
     public void RandomlyPlaceActors(IEnumerable<Actor> actors) {
-      var placements = new HashSet<(long x, long y)>();
-      var count = 0;
-      
-      foreach (var actor in actors) {
-        var placed = false;
-        
-        count++;
+      // BUG: Overflow error on sufficiently large Width, Height
+      var max = (int)(Width * Height);
+      var candidates = new List<Vector2Int>(max);
 
-        // Prevent infinite loop on filled grid
-        while (!placed && placements.Count < count) {
-          var pos = (
-                  (long)(Width * Random.value),
-                  (long)(Height * Random.value)
-          );
-
-          if (placements.Contains(pos)) {
-            continue;
-          }
-
-          Actors.Add((actor, pos));
-            
-          placements.Add(pos);
-          placed = true;
+      // Populate candidates
+      for (var x = 0; x < Width; x++) {
+        for (var y = 0; y < Height; y++) {
+          candidates.Add(new Vector2Int(x, y));
         }
+      }
+
+      foreach (var actor in actors) {
+        // No more available spots!
+        if (max == 0) {
+          Debug.LogWarning("No more available spots to place an actor.\nIgnoring...");
+          return;
+        }
+
+        var j = (int)(max * Random.value);
+        var position = candidates[j];
+        
+        { // Swap items to end of window
+          var tmp = candidates[j];
+          candidates[j] = candidates[max - 1];
+          candidates[max - 1] = tmp;
+        }
+
+        GridActors.Add((actor, position));
+
+        max--;
       }
     }
 
-    public bool AreConnected(long i, long j) {
+    private bool AreConnected(long i, long j) {
       // TODO: Support one-way walls
       return !Edges[i, j] && !Edges[j, i];
     }
+
+    public bool AreConnected(Vector2Int from, Vector2Int to) {
+      // Convert to index space
+      long i = from.y * Width + from.x;
+      long j = to.y * Width + to.x;
+
+      return AreConnected(i, j);
+    }
   
+    // TODO: Check if to-position has an actor
+    public bool TryMoveActor(Actor actor, Vector2Int to) {
+      var i = GridActors.FindIndex(v => v.actor == actor);
+      var (target, position) = GridActors[i];
+
+      if (target == null) {
+        return false;
+      }
+
+      var from = position;
+      
+      if (!CanMove(from, to)) {
+        return false;
+      }
+      
+      GridActors[i] = (target, to);
+
+      return true;
+    }
+
+    public Actor GetActor(Vector2Int position) {
+      // TODO: Compare by instance ID
+      var i = GridActors.FindIndex(v => v.position == position);
+
+      if (i < 0) {
+        return null;
+      }
+
+      return GridActors[i].actor;
+    }
+
+    public bool TryRemoveActor(Actor actor) {
+      var i = GridActors.FindIndex(v => v.actor == actor);
+
+      if (i < 0) {
+        return false;
+      }
+      
+      GridActors.RemoveAt(i);
+
+      return true;
+    }
+    
+    public Vector2Int? GetPosition(Actor actor) {
+      var i = GridActors.FindIndex(v => v.actor == actor);
+
+      if (i < 0) {
+        return null;
+      }
+
+      return GridActors[i].position;
+    }
+            
+    public bool HasActor(Vector2Int position) {
+      return GridActors.Exists(v => v.position == position);
+    }
+    
     public bool CanMove(Vector2Int from, Vector2Int to) {
       if (from.x < 0 || from.x >= Width ||
           from.y < 0 || from.y >= Height) {
         return false;
       }
-
+      
       if (to.x < 0 || to.x >= Width ||
           to.y < 0 || to.y >= Height) {
+        return false;
+      }
+
+      // Assert `from` and `to` are adjacent
+      if ((to - from).sqrMagnitude != 1) {
+        return false;
+      }
+      
+      if (HasActor(to)) {
         return false;
       }
 
