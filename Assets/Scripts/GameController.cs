@@ -7,11 +7,6 @@ using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(ResourcesCache), typeof(Team))]
 public class GameController : MonoBehaviour {
-  private enum GameMode {
-    World,
-    Battle
-  }
-  
   [SerializeField] private GameMode mode = GameMode.World;
   // TODO: Move to Team definition?
   [SerializeField] private int money;
@@ -81,6 +76,8 @@ public class GameController : MonoBehaviour {
 
   public void EndBattle() {
     mode = GameMode.World;
+
+    Debug.Log("Unloading battle scene");
     
     // TODO
     StartCoroutine(UnloadBattleScene());

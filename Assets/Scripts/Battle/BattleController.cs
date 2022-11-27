@@ -10,19 +10,23 @@ namespace Battle {
     [SerializeField] private uint height;
 
     [SerializeField] private List<Actor> order = new List<Actor>();
-    [SerializeField] private int turn;
+    [SerializeField, Min(0)] private int turn;
 
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
     private GameController game;
     private ResourcesCache cache;
 
-    private Actor ActiveActor => order[turn];
-
-    private bool AlliesAlive => order.Where(a => a.Alignment == Actor.ActorAlignment.Ally)
+    
+    public int Turn => turn;
+    public Actor ActiveActor => order[turn % order.Count];
+    public bool AlliesWin => AlliesAlive && !EnemiesAlive;
+    public bool EnemiesWin => !AlliesAlive;
+    
+    private bool AlliesAlive => order.Where(a => a.Alignment == ActorAlignment.Ally)
                                      .Any(a => a.IsAlive);
 
-    private bool EnemiesAlive => order.Where(a => a.Alignment == Actor.ActorAlignment.Enemy)
+    private bool EnemiesAlive => order.Where(a => a.Alignment == ActorAlignment.Enemy)
                                       .Any(e => e.IsAlive);
 
     protected void Awake() {
@@ -40,16 +44,17 @@ namespace Battle {
     public Actor GetRandomEnemy() {
       // Battlefield/Instances
       var instanceRoot = transform.Find("Instances");
-      
       Debug.Assert(instanceRoot != null);
+
+      var actorIDs = new[] {"oeur", "floton", "kabey"};
+      var actorID = actorIDs[(int)(actorIDs.Length * Random.value)];
       
-      var actor = cache.GetActor("oeur", Actor.ActorAlignment.Enemy);
-      var instance = Instantiate(actor, instanceRoot);
-      return instance;
+      var actor = cache.GetActor(actorID, ActorAlignment.Enemy);
+      return Instantiate(actor, instanceRoot);
     }
 
     private void IncrementTurn() {
-      turn = (turn + 1) % order.Count;
+      turn++;
     }
 
     private void SetUp(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
@@ -69,31 +74,21 @@ namespace Battle {
 
     public void StartBattle(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
       SetUp(allies, enemies);
-
       StartCoroutine(DoBattle());
     }
 
-    private void EndBattle() {
-      // TODO
-      if (AlliesAlive) {
-        Debug.Log("YOU WIN!");
-      }
-      else {
-        Debug.Log("YOU LOSE!");
-      }
-
-      game.EndBattle();
-    }
-
     private IEnumerator DoBattle() {
-      while (AlliesAlive && EnemiesAlive) {
+      while (!AlliesWin && !EnemiesWin) {
         while (true) { // Do turn
           bool decided;
 
-          if (ActiveActor.Alignment == Actor.ActorAlignment.Ally) {
+          if (ActiveActor.Alignment == ActorAlignment.Ally) {
             decided = DoPlayerTurn();
           }
           else { // Enemy CPU
+            // DEBUG:
+            yield return new WaitForSeconds(0.25f);
+            
             decided = DoComputerTurn();
           }
           
@@ -104,14 +99,37 @@ namespace Battle {
           yield return null;
         }
         
+        { // Wait for actor animations to end
+          var anims = Grid.GridActors
+                          .Select(v => v.actor)
+                          .Where(a => a.IsAlive)
+                          .Select(a => a.View.GetComponent<ActorAnimation>());
+          
+          while (anims.Any(a => a.IsPlaying)) {
+            yield return null;
+          }
+        }
+        
         IncrementTurn();
 
+        yield return null;
+      }
+      
+      // Wait for t seconds before input
+      yield return new WaitForSeconds(0.5f);
+      
+      // Wait for player input before unloading scene
+      while (!Input.GetButtonDown("Submit")) {
         yield return null;
       }
 
       EndBattle();
     }
    
+    private void EndBattle() {
+      game.EndBattle();
+    }
+    
     private bool DoPlayerTurn() {
       var h = Input.GetButtonDown("Horizontal");
       var v = Input.GetButtonDown("Vertical");
@@ -169,34 +187,43 @@ namespace Battle {
     }
 
     private bool DoComputerTurn() {
-      // TODO: Wait t seconds
-      
       var actor = ActiveActor;
 
-      // Dead
+      // Ignore dead actors
       if (!actor.IsAlive) {
         return true;
       }
       
       var from = Grid.GetPosition(actor);
       Debug.Assert(from != null);
+      
+      var candidates = new[] {
+              from.Value + new Vector2Int(-1,  0),
+              from.Value + new Vector2Int(+1,  0),
+              from.Value + new Vector2Int( 0, -1),
+              from.Value + new Vector2Int( 0, +1)
+      };
 
-      { // DEBUG: Go to random neighbor
-        var candidates = new[] {
-                from.Value + new Vector2Int(-1,  0),
-                from.Value + new Vector2Int(+1,  0),
-                from.Value + new Vector2Int( 0, -1),
-                from.Value + new Vector2Int( 0, +1)
-        };
+      var neighbors = candidates.Select(to => Grid.GetActor(to))
+                                .Where(a => a != null);
 
-        // TODO: Implement attack
-        candidates = candidates.Where(to => Grid.CanMove(from.Value, to))
-                               .ToArray();
-
+      var allies = neighbors.Where(a => a.Alignment != ActorAlignment.Enemy);
+      
+      if (allies.Any()) { // DEBUG: Attack if possible
+        var target = allies.First();
+        var to = Grid.GetPosition(target);
+        var ctx = new AttackContext(actor, target, Grid, from.Value, to.Value);
+        
+        actor.Attack(ctx);
+      }
+      else { // DEBUG: Random walk
+        var squares = candidates.Where(to => Grid.CanMove(from.Value, to))
+                                .ToArray();
+        
         // If we can't do anything, just idle
-        if (candidates.Length > 0) {
-          var i = (int)(candidates.Length * Random.value);
-          var to = candidates[i];
+        if (squares.Length > 0) {
+          var i = (int)(squares.Length * Random.value);
+          var to = squares[i];
 
           var moved = Grid.TryMoveActor(actor, to);
           Debug.Assert(moved);

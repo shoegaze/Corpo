@@ -14,12 +14,13 @@ public class Team : MonoBehaviour {
   
   protected void Start() {
     var game = GameObject.FindGameObjectWithTag("GameController");
-    cache = game.GetComponent<ResourcesCache>();
     
+    cache = game.GetComponent<ResourcesCache>();
     Debug.Assert(cache != null);
   }
   
   public bool CanAdd(/*string actorID*/) {
+    // TODO: actorID not in actors.Select(a => a.name)
     return (actors.Count + 1) < maxCount;
   }
   
@@ -31,10 +32,9 @@ public class Team : MonoBehaviour {
     
     // GameController/Instances
     var instanceRoot = transform.Find("Instances");
-    
     Debug.Assert(instanceRoot != null);
     
-    var actor = cache.GetActor(actorID, Actor.ActorAlignment.Ally);
+    var actor = cache.GetActor(actorID, ActorAlignment.Ally);
     var instance = Instantiate(actor, instanceRoot);
     actors.Add(instance);
   }

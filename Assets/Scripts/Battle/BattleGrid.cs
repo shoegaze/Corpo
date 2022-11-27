@@ -188,7 +188,6 @@ namespace Battle {
     }
     
     public Vector2Int? GetPosition(Actor actor) {
-      // TODO: Compare by instance ID
       var i = GridActors.FindIndex(v => v.actor == actor);
 
       if (i < 0) {

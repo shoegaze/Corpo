@@ -7,24 +7,20 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class Actor : MonoBehaviour {
   // TODO: Move to single file
-  public enum ActorAlignment {
-    Ally,
-    Enemy
-  }
+  // TODO: Separate to ActorModel and ActorView
 
-  // [SerializeField] private uint instanceID;
   [SerializeField] private ActorData data;
   [SerializeField] private ActorAlignment alignment;
   [SerializeField] private List<Ability> abilities;
   [SerializeField] private uint health;
 
-  private GameObject view;
-  
   public string Name => data.Name;
   public ActorAlignment Alignment => alignment;
   public uint Health => health;
   public bool IsAlive => health > 0;
-  public GameObject View => view;
+
+  // TODO: Change type to ActorView
+  public GameObject View { get; private set; }
 
   public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorAlignment team) {
     { // Set sprite
@@ -69,10 +65,11 @@ public class Actor : MonoBehaviour {
   }
 
   public GameObject CreateView(Transform viewRoot) {
-    view = Instantiate(gameObject, viewRoot);
-    view.SetActive(true);
+    View = Instantiate(gameObject, viewRoot);
+    // TODO: Add ActorView behavior to instanced view
+    View.SetActive(true);
 
-    return view;
+    return View;
   }
   
   public void TakeHealth(uint damage) {
@@ -92,12 +89,12 @@ public class Actor : MonoBehaviour {
 
   public void Attack(AttackContext ctx) {
     { // TODO: Cache ActorAnimation
-      var anim = view.GetComponent<ActorAnimation>();
+      var anim = View.GetComponent<ActorAnimation>();
       anim.StartAttack(ctx);
     }
 
     { // TODO: Make hurt animation public
-      var anim = ctx.Target.view.GetComponent<ActorAnimation>();
+      var anim = ctx.Target.View.GetComponent<ActorAnimation>();
       anim.StartHurt(ctx);
     }
 
@@ -116,6 +113,7 @@ public class Actor : MonoBehaviour {
     var removed = grid.TryRemoveActor(target);
     Debug.Assert(removed);
     
+    // Deactivate view
     View.SetActive(false);
     gameObject.SetActive(false);
   }

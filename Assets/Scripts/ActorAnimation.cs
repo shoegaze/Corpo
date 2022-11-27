@@ -6,6 +6,8 @@ public class ActorAnimation : MonoBehaviour {
   [SerializeField, Min(0f)] private float attackDuration;
   [SerializeField, Min(0f)] private float hurtDuration;
   
+  public bool IsPlaying { get; private set; }
+  
   // private static float BoomerangLerp(float a, float b, float t) {
   //   // f(t) := saturate(1.0 - 2 * abs(t - 0.5))
   //   return a + (b - a) * Mathf.Clamp01(1f - 2f  * Mathf.Abs(t - 0.5f));
@@ -28,6 +30,8 @@ public class ActorAnimation : MonoBehaviour {
   }
   
   private IEnumerator DoAttack(AttackContext ctx) {
+    IsPlaying = true;
+    
     var source = new Vector3(ctx.From.x, ctx.From.y);
     var dir = ctx.To - ctx.From;
     var destination = source + new Vector3(dir.x, dir.y).normalized / 2f;
@@ -46,9 +50,13 @@ public class ActorAnimation : MonoBehaviour {
     }
    
     transform.localPosition = source;
+
+    IsPlaying = false;
   }
 
   private IEnumerator DoHurt(AttackContext ctx) {
+    IsPlaying = true;
+
     var source = new Vector3(ctx.To.x, ctx.To.y);
     var startTime = Time.time;
     
@@ -70,5 +78,7 @@ public class ActorAnimation : MonoBehaviour {
     }
 
     transform.localPosition = source;
+
+    IsPlaying = false;
   }
 }

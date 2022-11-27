@@ -53,7 +53,7 @@ namespace Battle {
     
       foreach (var (actor, pos) in grid.GridActors) {
         // TODO: Collapse Allies/Enemies transforms into parent
-        var viewRoot = actor.Alignment == Actor.ActorAlignment.Ally ? viewAllies : viewEnemies;
+        var viewRoot = actor.Alignment == ActorAlignment.Ally ? viewAllies : viewEnemies;
         
         var viewActor = actor.CreateView(viewRoot);
         viewActor.name = viewActor.GetComponent<Actor>().Name;

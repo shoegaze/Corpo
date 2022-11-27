@@ -38,7 +38,7 @@ public class ResourcesCache : MonoBehaviour {
     return abilityData;
   }
   
-  public Actor GetActor(string actorID, Actor.ActorAlignment team) {
+  public Actor GetActor(string actorID, ActorAlignment team) {
     if (!actors.ContainsKey(actorID)) {
       var go = Instantiate(prototypeActor, actorsRoot);
       go.gameObject.SetActive(false);

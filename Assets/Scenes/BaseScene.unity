@@ -134,10 +134,6 @@ PrefabInstance:
       propertyPath: mode
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1619703684, guid: be26d57a52fb04c26bf7da81d06d037f, type: 3}
-      propertyPath: quarter
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3701496312312920736, guid: be26d57a52fb04c26bf7da81d06d037f, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -214,6 +210,14 @@ PrefabInstance:
     - target: {fileID: 5679047343220837565, guid: 0914cb8e223514c4bba0a73880505c8d, type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 5679047343220837566, guid: 0914cb8e223514c4bba0a73880505c8d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5679047343220837566, guid: 0914cb8e223514c4bba0a73880505c8d, type: 3}
+      propertyPath: orthographic size
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0914cb8e223514c4bba0a73880505c8d, type: 3}
