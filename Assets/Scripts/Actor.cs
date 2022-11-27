@@ -17,6 +17,7 @@ public class Actor : MonoBehaviour {
   public string Name => data.Name;
   public ActorAlignment Alignment => alignment;
   public uint Health => health;
+  public uint MaxHealth => data.MaxHealth;
   public bool IsAlive => health > 0;
 
   // TODO: Change type to ActorView

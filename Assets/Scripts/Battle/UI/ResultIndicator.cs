@@ -12,6 +12,7 @@ namespace Battle.UI {
 
     protected void Awake() {
       renderer = GetComponent<CanvasRenderer>();
+      renderer.SetAlpha(0f);
     }
 
     protected void OnGUI() {
