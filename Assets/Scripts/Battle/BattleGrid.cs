@@ -9,7 +9,7 @@ namespace Battle {
   
     private bool[,] Edges { get; }
     // Synchronize order with parameters concat order
-    public List<(Actor actor, Vector2Int position)> GridActors { get; }
+    public List<(Actor.Actor actor, Vector2Int position)> GridActors { get; }
   
     public BattleGrid(uint width, uint height) {
       Width = width;
@@ -19,7 +19,7 @@ namespace Battle {
       Edges = new bool[n, n];
       BuildEdges();
       
-      GridActors = new List<(Actor, Vector2Int)>();
+      GridActors = new List<(Actor.Actor, Vector2Int)>();
     }
   
     private void BuildEdges() {
@@ -97,7 +97,7 @@ namespace Battle {
       }
     }
 
-    public void RandomlyPlaceActors(IEnumerable<Actor> actors) {
+    public void RandomlyPlaceActors(IEnumerable<Actor.Actor> actors) {
       // BUG: Overflow error on sufficiently large Width, Height
       var max = (int)(Width * Height);
       var candidates = new List<Vector2Int>(max);
@@ -145,7 +145,7 @@ namespace Battle {
     }
   
     // TODO: Check if to-position has an actor
-    public bool TryMoveActor(Actor actor, Vector2Int to) {
+    public bool TryMoveActor(Actor.Actor actor, Vector2Int to) {
       var i = GridActors.FindIndex(v => v.actor == actor);
       var (target, position) = GridActors[i];
 
@@ -164,7 +164,7 @@ namespace Battle {
       return true;
     }
 
-    public Actor GetActor(Vector2Int position) {
+    public Actor.Actor GetActor(Vector2Int position) {
       // TODO: Compare by instance ID
       var i = GridActors.FindIndex(v => v.position == position);
 
@@ -175,7 +175,7 @@ namespace Battle {
       return GridActors[i].actor;
     }
 
-    public bool TryRemoveActor(Actor actor) {
+    public bool TryRemoveActor(Actor.Actor actor) {
       var i = GridActors.FindIndex(v => v.actor == actor);
 
       if (i < 0) {
@@ -187,7 +187,7 @@ namespace Battle {
       return true;
     }
     
-    public Vector2Int? GetPosition(Actor actor) {
+    public Vector2Int? GetPosition(Actor.Actor actor) {
       var i = GridActors.FindIndex(v => v.actor == actor);
 
       if (i < 0) {

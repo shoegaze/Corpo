@@ -6,7 +6,7 @@ namespace Battle.UI {
     [SerializeField] private Transform entriesRoot;
     [SerializeField] private GameObject entryPrototype;
 
-    private Actor previousActor;
+    private Actor.Actor previousActor;
 
     protected void OnGUI() {
       var actor = battle.ActiveActor;

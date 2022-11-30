@@ -4,7 +4,7 @@ namespace Battle {
   public class BattleScreen : MonoBehaviour {
     [SerializeField] private GameObject viewFloor;
 
-    public static void UpdateActorView(Actor actor, BattleGrid grid) {
+    public static void UpdateActorView(Actor.Actor actor, BattleGrid grid) {
       var view = actor.View;
       var position = grid.GridActors
                          .Find(v => v.actor == actor)
@@ -56,7 +56,7 @@ namespace Battle {
         var viewRoot = actor.Alignment == ActorAlignment.Ally ? viewAllies : viewEnemies;
         
         var viewActor = actor.CreateView(viewRoot);
-        viewActor.name = viewActor.GetComponent<Actor>().Name;
+        viewActor.name = viewActor.GetComponent<Actor.Actor>().Name;
         viewActor.transform.localPosition = new Vector3(pos.x, pos.y);
         viewActor.SetActive(true);
       }

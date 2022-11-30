@@ -12,7 +12,7 @@ public class ResourcesCache : MonoBehaviour {
   private readonly Dictionary<string, JobData> jobsData = new Dictionary<string, JobData>();
   private readonly Dictionary<string, AbilityData> abilitiesData = new Dictionary<string, AbilityData>();
 
-  private readonly Dictionary<string, Actor> actors = new Dictionary<string, Actor>();
+  private readonly Dictionary<string, Actor.Actor> actors = new Dictionary<string, Actor.Actor>();
   private readonly Dictionary<string, Ability> abilities = new Dictionary<string, Ability>();
 
   private Transform actorsRoot;
@@ -38,15 +38,15 @@ public class ResourcesCache : MonoBehaviour {
     return abilityData;
   }
   
-  public Actor GetActor(string actorID, ActorAlignment team) {
+  public Actor.Actor GetActor(string actorID, ActorAlignment team) {
     if (!actors.ContainsKey(actorID)) {
       var go = Instantiate(prototypeActor, actorsRoot);
       go.gameObject.SetActive(false);
       
-      var actor = go.GetComponent<Actor>();
+      var actor = go.GetComponent<Actor.Actor>();
       actor.name = $"{actorID}";
       
-      Actor.Load(ref actor, this, actorID, team);
+      Actor.Actor.Load(ref actor, this, actorID, team);
 
       if (actor == null) {
         Debug.LogError($"Could not create actor \"{actorID}\"!");

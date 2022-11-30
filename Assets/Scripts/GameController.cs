@@ -62,7 +62,7 @@ public class GameController : MonoBehaviour {
   private void StartBattle() {
     mode = GameMode.Battle;
     
-    var enemies = new List<Actor>();
+    var enemies = new List<Actor.Actor>();
     { // Generate random battle
       const uint n = 1;
       for (var i = 0; i < n; i++) {

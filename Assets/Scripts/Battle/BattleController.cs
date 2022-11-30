@@ -9,7 +9,7 @@ namespace Battle {
     [SerializeField] private uint width;
     [SerializeField] private uint height;
 
-    [SerializeField] private List<Actor> order = new List<Actor>();
+    [SerializeField] private List<Actor.Actor> order = new List<Actor.Actor>();
     [SerializeField, Min(0)] private int turn;
 
     private BattleGrid Grid { get; set; }
@@ -18,7 +18,7 @@ namespace Battle {
     private ResourcesCache cache;
 
     public int Turn => turn;
-    public Actor ActiveActor => order[turn % order.Count];
+    public Actor.Actor ActiveActor => order[turn % order.Count];
     public bool AlliesWin => AlliesAlive && !EnemiesAlive;
     public bool EnemiesWin => !AlliesAlive;
     
@@ -40,7 +40,7 @@ namespace Battle {
     }
 
     // DEBUG:
-    public Actor GetRandomEnemy() {
+    public Actor.Actor GetRandomEnemy() {
       // Battlefield/Instances
       var instanceRoot = transform.Find("Instances");
       Debug.Assert(instanceRoot != null);
@@ -56,7 +56,7 @@ namespace Battle {
       turn++;
     }
 
-    private void SetUp(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
+    private void SetUp(IEnumerable<Actor.Actor> allies, IEnumerable<Actor.Actor> enemies) {
       // TODO: Shuffle turnOrder?
       order = allies.Concat(enemies).ToList();
       turn = 0;
@@ -71,7 +71,7 @@ namespace Battle {
       screen.BuildViews(Grid, cache);
     }
 
-    public void StartBattle(IEnumerable<Actor> allies, IEnumerable<Actor> enemies) {
+    public void StartBattle(IEnumerable<Actor.Actor> allies, IEnumerable<Actor.Actor> enemies) {
       SetUp(allies, enemies);
       StartCoroutine(DoBattle());
     }

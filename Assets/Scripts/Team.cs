@@ -6,11 +6,11 @@ using UnityEngine;
 public class Team : MonoBehaviour {
   // [SerializeField] private int money;
   [SerializeField] private uint maxCount = 4;
-  [SerializeField] private List<Actor> actors;
+  [SerializeField] private List<Actor.Actor> actors;
   
   private ResourcesCache cache;
 
-  public IEnumerable<Actor> Actors => actors;
+  public IEnumerable<Actor.Actor> Actors => actors;
   
   protected void Start() {
     var game = GameObject.FindGameObjectWithTag("GameController");
