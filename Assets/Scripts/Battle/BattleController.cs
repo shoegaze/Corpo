@@ -18,7 +18,8 @@ namespace Battle {
     private ResourcesCache cache;
 
     public int Turn => turn;
-    public Actor.Actor ActiveActor => order[turn % order.Count];
+    // order.Count == 0 until SetUp is called
+    public Actor.Actor ActiveActor => order.Any() ? order[turn % order.Count] : null;
     public bool AlliesWin => AlliesAlive && !EnemiesAlive;
     public bool EnemiesWin => !AlliesAlive;
     
