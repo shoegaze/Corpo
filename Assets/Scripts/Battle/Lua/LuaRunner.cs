@@ -2,27 +2,28 @@ using MoonSharp.Interpreter;
 using UnityEngine;
 
 namespace Battle.Lua {
-  public class LuaExecutor : MonoBehaviour {
+  public class LuaRunner : MonoBehaviour {
     protected void Awake() {
-      var lua = @"
-        function factorial(n) do
-          if (n == 0) then
+      const string lua = @"
+        function factorial(n)
+          if n == 0 then
             return 1
           end
 
           return n * factorial(n - 1)
         end
-
-        return factorial(my_number)
       ";
 
       var script = new Script();
       script.Globals["my_number"] = 7;
 
-      var foo = script.Globals["my_number"];
-      
-      var result = script.DoString(lua);
-      Debug.Log($"lua factorial({7}) = {result.Number}");
+      script.DoString(lua);
+
+      const int n = 7;
+      var result = script.Call(script.Globals["factorial"], n);
+      Debug.Log($"lua: factorial({n}) = {result.Number}");
     }
+    
+    // TODO
   }
 }
