@@ -207,13 +207,14 @@ namespace Battle {
       var neighbors = candidates.Select(to => Grid.GetActor(to))
                                 .Where(a => a != null);
 
-      var allies = neighbors.Where(a => a.Alignment != ActorAlignment.Enemy);
+      var allies = neighbors.Where(a => a.Alignment != actor.Alignment);
       
       if (allies.Any()) { // DEBUG: Attack if possible
         var target = allies.First();
         var to = Grid.GetPosition(target);
-        var ctx = new AttackContext(actor, target, Grid, from.Value, to.Value);
+        Debug.Assert(to != null);
         
+        var ctx = new AttackContext(actor, target, Grid, from.Value, to.Value);
         actor.Attack(ctx);
       }
       else { // DEBUG: Random walk

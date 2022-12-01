@@ -18,7 +18,6 @@ public class ActiveIndicatorController : MonoBehaviour {
     var actor = battle.ActiveActor;
     var isValid = actor != null && actor.IsAlive;
     
-    // TODO: Set alpha := isValid ? 1f : 0f;
     renderer.enabled = isValid;
 
     if (!isValid) {
