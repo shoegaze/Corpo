@@ -19,7 +19,7 @@ namespace Battle {
 
     public int Turn => turn;
     // order.Count == 0 until SetUp is called
-    public Actor.Actor ActiveActor => order.Any() ? order[turn % order.Count] : null;
+    public Actor.Actor ActiveActor => order.Count > 0 ? order[turn % order.Count] : null;
     public bool AlliesWin => AlliesAlive && !EnemiesAlive;
     public bool EnemiesWin => !AlliesAlive;
     
