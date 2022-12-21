@@ -50,6 +50,7 @@ namespace Battle {
               long i = y * Width + x; // :: [0, n)
               long j = t * Width + s; // :: [0, n)
             
+              // Initialize as connected
               Edges[i, j] = Edges[j, i] = true;
             }
           }              
@@ -132,11 +133,20 @@ namespace Battle {
     }
 
     private bool AreConnected(long i, long j) {
-      // TODO: Support one-way walls
-      return !Edges[i, j] && !Edges[j, i];
+      return Edges[i, j];
     }
 
     public bool AreConnected(Vector2Int from, Vector2Int to) {
+      if (from.x < 0 || from.x >= Width ||
+          from.y < 0 || from.y >= Height) {
+        return false;
+      }
+      
+      if (to.x < 0 || to.x >= Width ||
+          to.y < 0 || to.y >= Height) {
+        return false;
+      }
+
       // Convert to index space
       long i = from.y * Width + from.x;
       long j = to.y * Width + to.x;
@@ -202,13 +212,7 @@ namespace Battle {
     }
     
     public bool CanMove(Vector2Int from, Vector2Int to) {
-      if (from.x < 0 || from.x >= Width ||
-          from.y < 0 || from.y >= Height) {
-        return false;
-      }
-      
-      if (to.x < 0 || to.x >= Width ||
-          to.y < 0 || to.y >= Height) {
+      if (!AreConnected(from, to)) {
         return false;
       }
 

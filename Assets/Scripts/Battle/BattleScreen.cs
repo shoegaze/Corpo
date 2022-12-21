@@ -24,6 +24,7 @@ namespace Battle {
       const float w = 5f;
       const float h = 5f;
       
+      // TODO: Scale according to resolution
       var viewBackground = transform.Find("Background");
       viewBackground.localScale = new Vector3(grid.Width, grid.Height);
       viewBackground.localPosition = new Vector3(grid.Width - w, grid.Height - h) / 2f;
@@ -40,7 +41,8 @@ namespace Battle {
         viewRowInstance.gameObject.SetActive(true);
       
         for (var x = 0; x < grid.Width; x++) {
-          var viewFloor = viewsFloor[(int)(Random.value * viewsFloor.Length)];
+          var i = (int)(Random.value * viewsFloor.Length);
+          var viewFloor = viewsFloor[i];
           var floor = Instantiate(viewFloor, viewRowInstance);
           floor.name = $"Floor.{x}";
           floor.transform.localPosition = x * Vector3.right;
@@ -142,7 +144,7 @@ namespace Battle {
               if (x < grid.Width - 1) { 
                 var to = new Vector2Int(x + 1, y);
                 
-                if (grid.AreConnected(from, to)) {
+                if (!grid.AreConnected(from, to)) {
                   int r = 2 * y;
                   int c = x;
                   var queryRight = $"Row.{r}/Wall.{c}";
@@ -155,7 +157,7 @@ namespace Battle {
               if (y < grid.Height - 1) { 
                 var to = new Vector2Int(x, y + 1);
                 
-                if (grid.AreConnected(from, to)) {
+                if (!grid.AreConnected(from, to)) {
                   int r = 2 * y + 1;
                   int c = x;
                   var queryTop = $"Row.{r}/Wall.{c}";

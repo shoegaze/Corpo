@@ -58,17 +58,17 @@ namespace Battle {
     }
 
     private void SetUp(IEnumerable<Actor.Actor> allies, IEnumerable<Actor.Actor> enemies) {
-      // TODO: Shuffle turnOrder?
+      // TODO: Shuffle order?
       order = allies.Concat(enemies).ToList();
       turn = 0;
       
       // TODO: Read level from presets?
       Grid.GenerateRandomWalls(10, 0.125f);
-
+      
       { // DEBUG: Place Actors
         Grid.RandomlyPlaceActors(order);
       }
-
+      
       screen.BuildViews(Grid, cache);
     }
 
@@ -157,7 +157,7 @@ namespace Battle {
       
       // Try attacking
       // TODO: Make sure the target is not behind a wall
-      if (Grid.HasActor(to) /*&& Grid.AreConnected(from.Value, to)*/) {
+      if (Grid.HasActor(to) && Grid.AreConnected(from.Value, to)) {
         var target = Grid.GetActor(to);
         Debug.Assert(target != null);
 
