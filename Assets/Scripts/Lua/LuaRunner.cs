@@ -1,7 +1,8 @@
 using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Interop;
 using UnityEngine;
 
-namespace Battle.Lua {
+namespace Lua {
   public class LuaRunner : MonoBehaviour {
     protected void Awake() {
       const string lua = @"
@@ -14,7 +15,7 @@ namespace Battle.Lua {
         end
       ";
 
-      var script = new Script();
+      var script = new Script(CoreModules.Preset_SoftSandbox);
       script.Globals["my_number"] = 7;
 
       script.DoString(lua);
