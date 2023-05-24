@@ -1,0 +1,58 @@
+-- globals:
+--  duration: float [seconds] :: [0,+inf)
+--  grid: BattleGrid
+
+-- TODO: Make async?
+-- @return success_flag: bool
+function start()
+  -- TODO: Get ref to Tackle: AnimatedSprite
+
+
+end
+
+-- source: { actor: Actor, cell: [i, j] }
+-- @return cells: [[i, j]]
+function get_candidate_cells(source)
+  local i, j = source.cell
+
+  -- TODO: Filter cells that collide with wall
+  -- TODO: Helper function for these types of constructs
+  --  => addv(vec2 a, vec2 b) -> vec2
+  --  => zip(addv, [vec2] as, [vec2] bs) -> [vec2]
+  --  => can_access(BattleGrid grid, [i,j] source, [i,j] target) -> bool
+  --  => filter(can_access, ...)
+  return [
+    [i - 1, j + 1],
+    [i    , j + 1],
+    [i + 1, j + 1],
+    [i - 1, j - 1],
+    [i + 1, j + 1]
+  ]
+end
+
+-- @params
+--  source: { actor: Actor, cell: [i, j] }
+-- @return void
+function before_animation(source)
+  -- TODO: Store actor's original position
+
+end
+
+-- @params
+--  source: { actor: Actor, cell: [i, j] }
+-- @return void
+function after_animation(source)
+  -- TODO: Set actor position to its original position
+
+end
+
+-- @params
+--  t: float :: [0,1]
+--  source: { actor: Actor, cell: [i, j] }
+--  target: { actor: Actor?, cell: [i, j]}
+-- @return (t: float :: [0,1]) => void
+function animate(t, source, target)
+  -- TODO: Helper function for procedural animations
+  --  such as 'hurt', 'death', 'heal', etc.
+
+end

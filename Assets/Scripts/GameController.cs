@@ -14,7 +14,8 @@ public class GameController : MonoBehaviour {
   [SerializeField, Range(0, 3)] private uint quarter;
 
   private Team team;
-  private BattleController battle;
+
+  public BattleController Battle { get; private set; }
 
   protected void Awake() {
     team = GetComponent<Team>();
@@ -40,12 +41,14 @@ public class GameController : MonoBehaviour {
     SceneManager.SetActiveScene(battleScene);
     
     var battleRoot = battleScene.GetRootGameObjects().First();
-    battle = battleRoot.GetComponent<BattleController>();
+    Battle = battleRoot.GetComponent<BattleController>();
     
     StartBattle();
   }
 
   private IEnumerator UnloadBattleScene() {
+    Battle = null;
+    
     var load = SceneManager.UnloadSceneAsync("BattleScene");
 
     while (!load.isDone) {
@@ -55,8 +58,6 @@ public class GameController : MonoBehaviour {
     // TODO: Set WorldScene as active scene 
     var baseScene = SceneManager.GetSceneByName("BaseScene");
     SceneManager.SetActiveScene(baseScene);
-
-    battle = null;
   }
   
   private void StartBattle() {
@@ -66,17 +67,17 @@ public class GameController : MonoBehaviour {
     { // Generate random battle
       const uint n = 1;
       for (var i = 0; i < n; i++) {
-        var enemy = battle.GetRandomEnemy();
+        var enemy = Battle.GetRandomEnemy();
         enemies.Add(enemy);  
       }
     }
     
-    battle.StartBattle(team.Actors, enemies);
+    Battle.StartBattle(team.Actors, enemies);
   }
 
   public void EndBattle() {
     mode = GameMode.World;
-
+    
     Debug.Log("Unloading battle scene");
     
     // TODO

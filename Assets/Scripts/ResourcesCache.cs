@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Data;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class ResourcesCache : MonoBehaviour {
   private readonly Dictionary<string, ActorData> actorsData = new Dictionary<string, ActorData>();
   private readonly Dictionary<string, JobData> jobsData = new Dictionary<string, JobData>();
   private readonly Dictionary<string, AbilityData> abilitiesData = new Dictionary<string, AbilityData>();
+  private readonly Dictionary<string, AbilityScript> abilitiesScripts = new Dictionary<string, AbilityScript>();
 
   private readonly Dictionary<string, Actor.Actor> actors = new Dictionary<string, Actor.Actor>();
   private readonly Dictionary<string, Ability> abilities = new Dictionary<string, Ability>();
@@ -37,7 +39,13 @@ public class ResourcesCache : MonoBehaviour {
     abilitiesData.TryGetValue(abilityID, out var abilityData);
     return abilityData;
   }
-  
+
+  public AbilityScript GetAbilityScript(string abilityID) {
+    // HACK: Append .lua extension because Resource.Load* won't natively load lua files
+    abilitiesScripts.TryGetValue(abilityID + ".lua", out var abilityScript);
+    return abilityScript;
+  }
+
   public Actor.Actor GetActor(string actorID, ActorAlignment team) {
     if (!actors.ContainsKey(actorID)) {
       var go = Instantiate(prototypeActor, actorsRoot);
@@ -95,17 +103,22 @@ public class ResourcesCache : MonoBehaviour {
     LoadActorsData();
     LoadJobsData();
     LoadAbilitiesData();
+    LoadAbilitiesScripts();
   }
 
   private void LoadSprites() {
     var resources = Resources.LoadAll<Sprite>("Sprites");
 
+    Debug.Log("Loading sprites...");
+
     foreach (var res in resources) {
       var id = $"{res.name.ToLower()}";
 
       if (sprites.ContainsKey(id)) {
-        Debug.Log($" ! Duplicate sprite ID \"{id}\"!");
-        Debug.Log( "   * Ignoring...");
+        Debug.LogError(
+                $" ! Duplicate sprite ID \"{id}\"!\n" + 
+                "   * Ignoring..."
+        );
         continue;
       }
 
@@ -115,6 +128,8 @@ public class ResourcesCache : MonoBehaviour {
 
   private void LoadActorsData() {
     var resources = Resources.LoadAll<TextAsset>("Actors");
+
+    Debug.Log("Loading actors data...");
 
     foreach (var res in resources) {
       var actorData = JsonUtility.FromJson<ActorData>(res.text);
@@ -134,6 +149,8 @@ public class ResourcesCache : MonoBehaviour {
 
   private void LoadJobsData() {
     var resources = Resources.LoadAll<TextAsset>("Jobs");
+
+    Debug.Log("Loading jobs data...");
     
     foreach (var res in resources) {
       var jobData = JsonUtility.FromJson<JobData>(res.text);
@@ -141,7 +158,7 @@ public class ResourcesCache : MonoBehaviour {
 
       if (jobsData.ContainsKey(id)) {
         Debug.LogError(
-                $" ! Duplicate actor ID \"{id}\"!" + 
+                $" ! Duplicate actor ID \"{id}\"!\n" + 
                 "   * Ignoring..."
         );
         continue;
@@ -152,7 +169,9 @@ public class ResourcesCache : MonoBehaviour {
   }
 
   private void LoadAbilitiesData() {
-    var resources = Resources.LoadAll<TextAsset>("Abilities");
+    var resources = Resources.LoadAll<TextAsset>("Abilities/Data");
+
+    Debug.Log("Loading abilities data...");
     
     foreach (var res in resources) {
       var abilityData = JsonUtility.FromJson<AbilityData>(res.text);
@@ -160,13 +179,36 @@ public class ResourcesCache : MonoBehaviour {
       
       if (abilitiesData.ContainsKey(id)) {
         Debug.LogError(
-                $" ! Duplicate ability ID \"{id}\"!" + 
+                $" ! Duplicate ability ID \"{id}\"!\n" + 
                 "   * Ignoring..."
         );
         continue;
       }
       
       abilitiesData[id] = abilityData;
+    }
+  }
+
+  private void LoadAbilitiesScripts() {
+    var resources = Resources.LoadAll<TextAsset>("Abilities/Scripts");
+
+    Debug.Log("Loading abilities scripts...");
+    
+    foreach (var res in resources) {
+      var abilityScript = res.text;
+      var id = $"{res.name.ToLower()}";
+
+      Debug.Log($" > Loading ability script \"{id}\"");
+      
+      if (abilitiesScripts.ContainsKey(id)) {
+        Debug.LogError(
+                $" ! Duplicate ability ID \"{id}\"!\n" + 
+                "   * Ignoring..."
+        );
+        continue;
+      }
+      
+      abilitiesScripts[id] = new AbilityScript(abilityScript);
     }
   }
 }

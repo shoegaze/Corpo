@@ -4,10 +4,12 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class Ability : MonoBehaviour {
   [SerializeField] private AbilityData data;
+  [SerializeField] private AbilityScript script;
 
   public string Name => data.Name;
   // public string Type => data.Type;
   public int Cost => data.Cost;
+  public AbilityScript Script => script;
 
   public static void Load(ref Ability ability, ResourcesCache cache, string abilityID) {
     { // Set sprite
@@ -35,12 +37,23 @@ public class Ability : MonoBehaviour {
 
       ability.data = abilityData;
     }
+
+    { // Set ability script
+      var abilityScript = cache.GetAbilityScript(abilityID);
+
+      if (abilityScript == null) {
+        Debug.LogError($"Ability script with ability ID \"{abilityID}\" could not be found!");
+        ability = null;
+        return;
+      }
+              
+      ability.script = abilityScript;
+    }
   }
   
   // TODO:
-  
-  // public void ExecuteGetTargets() {}
-  // public void ExecuteOnHit() {}
-  // public void ExecuteOnMiss() {}
+  // public void ExecuteGetTargets(LuaRunner runner) {}
+  // public void ExecuteOnHit(LuaRunner runner) {}
+  // public void ExecuteOnMiss(LuaRunner runner) {}
 }
 
