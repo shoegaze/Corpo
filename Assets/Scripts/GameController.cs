@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Battle;
+using Lua;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,6 +15,7 @@ public class GameController : MonoBehaviour {
   [SerializeField, Range(0, 3)] private uint quarter;
 
   private Team team;
+  private readonly LuaRunner luaRunner = new LuaRunner();
 
   public BattleController Battle { get; private set; }
 
@@ -31,13 +33,13 @@ public class GameController : MonoBehaviour {
 
   // ReSharper disable Unity.PerformanceAnalysis
   private IEnumerator LoadBattleScene() {
-    var load = SceneManager.LoadSceneAsync("Scenes/BattleScene", LoadSceneMode.Additive);
+    var load = SceneManager.LoadSceneAsync("Scenes/Battle", LoadSceneMode.Additive);
     
     while (!load.isDone) {
       yield return null;
     }
 
-    var battleScene = SceneManager.GetSceneByName("BattleScene");
+    var battleScene = SceneManager.GetSceneByName("Battle");
     SceneManager.SetActiveScene(battleScene);
     
     var battleRoot = battleScene.GetRootGameObjects().First();
@@ -49,14 +51,14 @@ public class GameController : MonoBehaviour {
   private IEnumerator UnloadBattleScene() {
     Battle = null;
     
-    var load = SceneManager.UnloadSceneAsync("BattleScene");
+    var load = SceneManager.UnloadSceneAsync("Battle");
 
     while (!load.isDone) {
       yield return null;
     }
 
     // TODO: Set WorldScene as active scene 
-    var baseScene = SceneManager.GetSceneByName("BaseScene");
+    var baseScene = SceneManager.GetSceneByName("Base");
     SceneManager.SetActiveScene(baseScene);
   }
   

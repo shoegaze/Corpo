@@ -1325,7 +1325,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You have been sent to unsheathe the curtains of violent nature and collect
+  m_text: You have been sent to strike the curtains of violent nature and collect
     all its forgotten gold.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4bf6803a9adca403a9df8b28766a83a5, type: 2}
@@ -1418,7 +1418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1566195923
 RectTransform:
   m_ObjectHideFlags: 0
