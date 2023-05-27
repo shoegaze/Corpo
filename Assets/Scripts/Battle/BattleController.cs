@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Battle.UI;
 using UnityEngine;
 
 namespace Battle {
+  [RequireComponent(typeof(BattleScreen))]
+  [RequireComponent(typeof(BattleUI))]
   public class BattleController : MonoBehaviour {
     // TODO: Make configurable from GameController
     [SerializeField] private uint width;
@@ -12,6 +15,7 @@ namespace Battle {
     [SerializeField] private List<Actor.Actor> order = new List<Actor.Actor>();
     [SerializeField, Min(0)] private int turn;
 
+    private BattleUI UI { get; set; }
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
     private GameController game;
@@ -30,6 +34,7 @@ namespace Battle {
                                       .Any(e => e.IsAlive);
 
     protected void Awake() {
+      UI = GetComponent<BattleUI>();
       Grid = new BattleGrid(width, height);
       screen = GetComponent<BattleScreen>();
     }

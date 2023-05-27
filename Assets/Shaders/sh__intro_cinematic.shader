@@ -1,6 +1,7 @@
 Shader "Custom/Intro Cinematic" {
   Properties {
     _MainTex ("Texture", 2D) = "white" {}
+    
     _NoiseAmplitude ("Noise Amplitude", Float) = 0.025
     _NoiseRate ("Noise Rate", Float) = 0.5
     
@@ -65,21 +66,22 @@ Shader "Custom/Intro Cinematic" {
         float2 st = i.uv;
    
         { // Noise
-            float2 t = float2(
-                0.5 * sin(PI * _Time.y * _NoiseRate) + 0.5,
-                0.5 * cos(PI * _Time.y * _NoiseRate) + 0.5
-            );
-            float2 u = float2(-t.y, t.x);
-            float2 dp = float2(
-              rand(st + t),
-              rand(st + u)
-            );
-            
-            float ampl = _NoiseAmplitude;
-            ampl *= 0.5 * sin(PI * _Time.y) + 0.5;
-            ampl += 0.0025;
-            
-            uv += dp * ampl;
+          float2 t = float2(
+              0.5 * sin(PI * _Time.y * _NoiseRate) + 0.5,
+              0.5 * cos(PI * _Time.y * _NoiseRate) + 0.5
+          );
+          float2 u = float2(-t.y, t.x);
+          float2 dp = float2(
+            rand(st + t),
+            rand(st + u)
+          );
+
+          // DEBUG
+          float ampl = _NoiseAmplitude;
+          ampl *= 0.5 * sin(PI * _Time.y) + 0.5;
+          ampl += 0.0025;
+          
+          uv += dp * ampl;
         }
      
         { // Horizontal Distortion
