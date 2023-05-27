@@ -1,5 +1,5 @@
-namespace Debug {
-  public class AbilityTackle : AbilityEffect {
+namespace Debug_ {
+  public class AbilityTackle {
     
   }
 }
