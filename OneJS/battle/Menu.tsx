@@ -2,7 +2,9 @@ import { h } from "preact"
 
 export const Menu = () => {
   return (
-    <div>
+    <div class='' style={{
+      backgroundColor: 'cyan'
+    }}>
       Menu
     </div>
   )

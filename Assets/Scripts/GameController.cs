@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,10 @@ public class GameController : MonoBehaviour {
   private Team team;
   private readonly LuaRunner luaRunner = new LuaRunner();
 
+  public GameMode Mode => mode;
   public BattleController Battle { get; private set; }
+
+  public event Action<GameMode> OnModeChanged;
 
   protected void Awake() {
     team = GetComponent<Team>();
@@ -64,6 +68,7 @@ public class GameController : MonoBehaviour {
   
   private void StartBattle() {
     mode = GameMode.Battle;
+    OnModeChanged?.Invoke(mode);
     
     var enemies = new List<Actor.Actor>();
     { // Generate random battle
@@ -79,6 +84,7 @@ public class GameController : MonoBehaviour {
 
   public void EndBattle() {
     mode = GameMode.World;
+    OnModeChanged?.Invoke(mode);
     
     Debug.Log("Unloading battle scene");
     
