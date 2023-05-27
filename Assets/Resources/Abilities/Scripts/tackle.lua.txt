@@ -7,7 +7,6 @@
 function start()
   -- TODO: Get ref to Tackle: AnimatedSprite
 
-
 end
 
 -- source: { actor: Actor, cell: [i, j] }
@@ -49,7 +48,7 @@ end
 -- @params
 --  t: float :: [0,1]
 --  source: { actor: Actor, cell: [i, j] }
---  target: { actor: Actor?, cell: [i, j]}
+--  target: { actor: Actor?, cell: [i, j] }
 -- @return (t: float :: [0,1]) => void
 function animate(t, source, target)
   -- TODO: Helper function for procedural animations

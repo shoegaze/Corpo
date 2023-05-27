@@ -1,0 +1,21 @@
+function start()
+
+end
+
+function get_candidate_cells(source)
+  local i, j = source.cell
+
+  return []
+end
+
+function before_animation(source)
+
+end
+
+function after_animation(source)
+
+end
+
+function animate(t, source, target)
+
+end
