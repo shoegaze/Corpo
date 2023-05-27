@@ -7,10 +7,9 @@ var Statusbar_1 = require("./Statusbar");
 var Result_1 = require("./Result");
 var Battle = function (_a) {
     var battle = _a.battle;
-    var ui = battle.UI;
     return ((0, preact_1.h)("div", { class: "w-full h-full flex" },
         (0, preact_1.h)(Menu_1.Menu, null),
-        (0, preact_1.h)(Statusbar_1.Statusbar, { ui: ui }),
+        (0, preact_1.h)(Statusbar_1.Statusbar, { battle: battle }),
         (0, preact_1.h)(Result_1.Result, null)));
 };
 exports.Battle = Battle;

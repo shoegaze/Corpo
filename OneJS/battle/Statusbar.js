@@ -8,7 +8,8 @@ var preload_1 = require("preload");
 var TeamIndicator_1 = require("./TeamIndicator");
 var TurnIndicator_1 = require("./TurnIndicator");
 var Statusbar = function (_a) {
-    var ui = _a.ui;
+    var battle = _a.battle;
+    var ui = battle.UI;
     var _b = (0, onejs_1.useEventfulState)(ui, 'Mode'), mode = _b[0], _0 = _b[1];
     var _c = (0, onejs_1.useEventfulState)(ui, 'Team'), team = _c[0], _1 = _c[1];
     var _d = (0, onejs_1.useEventfulState)(ui, 'Turn'), turn = _d[0], _2 = _d[1];

@@ -5,7 +5,8 @@ import { font } from "preload"
 import { TeamIndicator } from "./TeamIndicator"
 import { TurnIndicator } from "./TurnIndicator"
 
-export const Statusbar = ({ ui }: { ui: any }) => {
+export const Statusbar = ({ battle }: { battle: any }) => {
+  const ui = battle.UI
   const [mode, _0] = useEventfulState(ui, 'Mode')
   const [team, _1] = useEventfulState(ui, 'Team')
   const [turn, _2] = useEventfulState(ui, 'Turn')
