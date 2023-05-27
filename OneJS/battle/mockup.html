@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battle Mockup</title>
+  <style>
+    body, html {
+      padding: 0;
+      margin: 0;
+    }
+
+    .grid {
+      background-color: black;
+
+      position: absolute;
+      width: 19.5em;
+      height: 19.5em;
+
+      margin: 0.5em;
+    }
+
+    .menu {
+      background-color: pink;
+
+      position: absolute;
+      margin: 0.5em;
+      width: 45%;
+      right: 0;
+      top: 0;
+      bottom: 1.25em;
+    }
+
+    .menu-title {
+      background-color: teal;
+
+      display: flex;
+    }
+
+    .menu-title-name {
+      background-color: yellow;
+
+      margin-left: 0.5em;
+    }
+
+    .menu-title-health {
+      background-color: orange;
+
+      margin-right: 0.5em;
+    }
+
+    .abilities-list-labels {
+      background-color: skyblue;
+    }
+
+    .abilities-list-entry {
+      display: flex;
+      padding: 0 1.5em;
+    }
+
+    .abilities-list .abilities-list-entry:nth-child(odd) {
+      background-color: salmon;
+    }
+
+    .abilities-list .abilities-list-entry:nth-child(even) {
+      background-color: violet;
+    }
+
+    .result {
+      position: absolute;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+    }
+
+    .result-label {
+      background-color: cyan;
+      text-align: center;
+      font-size: 3.5em;
+    }
+
+    .statusbar {
+      background-color: red;
+
+      display: flex;
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+    }
+
+    .mode {
+      background-color: blue;
+      padding: 0 0.5em;
+    }
+
+    .team {
+      background-color: green;
+      padding: 0 0.5em;
+    }
+
+    .turn {
+      background-color: purple;
+      padding: 0 0.5em;
+    }
+
+    .grow {
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+
+  <!--
+  <div class="result">
+    <div class="grow"></div>
+    <div class="result-label">YOU WON!</div>
+    <div class="grow"></div>
+  </div>
+  -->
+
+  <div class="menu">
+    <div class="menu-title">
+      <div class="menu-title-name">
+        * dimpp
+      </div>
+      <div class="grow"></div>
+      <div class="menu-title-health">4 / 4</div>
+    </div>
+    <div class="abilities-list-labels abilities-list-entry">
+      <span class="abilities-list-icon-label">Icon</span>
+      <div class="grow"></div>
+      <span class="abilities-list-name-label">Name</span>
+      <div class="grow"></div>
+      <span class="abilities-list-cost-label">Cost</span>
+    </div>
+    <div class="abilities-list">
+      <div class="abilities-list-entry">
+        <span class="abilities-list-icon">%</span>
+        <div class="grow"></div>
+        <span class="abilities-list-name">Tackle</span>
+        <div class="grow"></div>
+        <span class="abilities-list-cost">20</span>
+      </div>
+
+      <div class="abilities-list-entry">
+        <span class="abilities-list-icon">@</span>
+        <div class="grow"></div>
+        <span class="abilities-list-name">Snap</span>
+        <div class="grow"></div>
+        <span class="abilities-list-cost">30</span>
+      </div>
+
+      <div class="abilities-list-entry">
+        <span class="abilities-list-icon">#</span>
+        <div class="grow"></div>
+        <span class="abilities-list-name">Censor</span>
+        <div class="grow"></div>
+        <span class="abilities-list-cost">50</span>
+      </div>
+    </div>
+  </div>
+
+  <div class='statusbar'>
+    <span class="mode">MODE: GRID</span>
+    <div class="grow"></div>
+    <span class="team">ALLY</span>
+    <div class="grow"></div>
+    <span class="turn">TURN: 0001</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+export const font = resource.loadFontDefinition('Fonts/IBM-Plex-Mono/IBMPlexMono-Regular.ttf')
