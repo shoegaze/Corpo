@@ -3,13 +3,17 @@ using UnityEngine;
 namespace Data {
   [System.Serializable]
   public class AbilityScript {
-    [SerializeField] private string script;
+    [SerializeField] private string rawScript;
     
-    // TODO: Expose script string
+    // TODO: Store AbilityData to get animation parameters
+    // private AbilityData data;
+    
+    public string RawScript => rawScript;
 
-    public AbilityScript(string script) {
-      // TODO: Validate script with LuaRunner.loadString
-      this.script = script;
+    public AbilityScript(string rawScript) {
+      this.rawScript = rawScript;
     }
+
+    // public bool IsValid() { ... }
   }
 }

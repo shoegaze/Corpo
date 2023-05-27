@@ -6,6 +6,10 @@ const App = () => {
   const game = require('game')
   const [mode, _] = useEventfulState(game, 'Mode')
 
+  Object.keys(game).forEach(v => {
+    log(`game[${v}] => ${game[v]}`)
+  })
+
   switch (mode) {
     // TODO: Compare with C# enum GameMode
     // world
@@ -18,7 +22,7 @@ const App = () => {
 
     // battle
     case 1:
-      return <Battle />
+      return <Battle battle={game.Battle} />
 
     default:
       return <div></div>

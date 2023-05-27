@@ -8,6 +8,8 @@ namespace Data {
     [SerializeField] private uint maxHealth;
     [SerializeField] private int payRate;
 
+    // public s†ring scriptGetIdea; // lua: (ctx) => "move" | "attack" | "ability" ...
+    
     public string Name => name;
     public string Job => job;
     public uint MaxHealth => maxHealth;
