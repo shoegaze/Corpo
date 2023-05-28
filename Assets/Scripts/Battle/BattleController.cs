@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Battle {
   [RequireComponent(typeof(BattleScreen))]
-  [RequireComponent(typeof(BattleUI))]
   public class BattleController : MonoBehaviour {
     // TODO: Make configurable from GameController
     [SerializeField] private uint width;
@@ -24,23 +23,25 @@ namespace Battle {
     public int Turn => turn;
     // order.Count == 0 until SetUp is called
     public Actor.Actor ActiveActor => order.Count > 0 ? order[turn % order.Count] : null;
-    public bool AlliesWin => AlliesAlive && !EnemiesAlive;
-    public bool EnemiesWin => !AlliesAlive;
+    public bool DoAlliesWin => AreAlliesAlive && !AreEnemiesAlive;
+    public bool DoEnemiesWin => !AreAlliesAlive;
     
-    private bool AlliesAlive => order.Where(a => a.Alignment == ActorAlignment.Ally)
-                                     .Any(a => a.IsAlive);
+    private bool AreAlliesAlive => order.Where(a => a.Alignment == ActorAlignment.Ally)
+                                        .Any(a => a.IsAlive);
 
-    private bool EnemiesAlive => order.Where(a => a.Alignment == ActorAlignment.Enemy)
-                                      .Any(e => e.IsAlive);
+    private bool AreEnemiesAlive => order.Where(a => a.Alignment == ActorAlignment.Enemy)
+                                         .Any(e => e.IsAlive);
 
     protected void Awake() {
-      UI = GetComponent<BattleUI>();
       Grid = new BattleGrid(width, height);
       screen = GetComponent<BattleScreen>();
+      UI = GetComponent<BattleUI>();
     }
 
     protected void Start() {
       var go = GameObject.FindWithTag("GameController");
+      Debug.Assert(go != null);
+      
       game = go.GetComponent<GameController>();
       cache = go.GetComponent<ResourcesCache>();
     }
@@ -83,7 +84,7 @@ namespace Battle {
     }
 
     private IEnumerator DoBattle() {
-      while (!AlliesWin && !EnemiesWin) {
+      while (!DoAlliesWin && !DoEnemiesWin) {
         while (true) { // Do turn
           bool decided;
 
@@ -92,7 +93,7 @@ namespace Battle {
           }
           else { // Enemy CPU
             // DEBUG:
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.5f);
             
             decided = DoComputerTurn();
           }

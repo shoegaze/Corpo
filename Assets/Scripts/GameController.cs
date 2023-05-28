@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour {
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 
-  private Team team;
+  private Team allies;
   private readonly LuaRunner luaRunner = new LuaRunner();
 
   public GameMode Mode => mode;
@@ -24,12 +24,12 @@ public class GameController : MonoBehaviour {
   public event Action<GameMode> OnModeChanged;
 
   protected void Awake() {
-    team = GetComponent<Team>();
+    allies = GetComponent<Team>();
   }
 
   protected void Start() {
     // DEBUG
-    team.Add("dimpp");
+    allies.Add("dimpp");
     
     // DEBUG
     StartCoroutine(LoadBattleScene());
@@ -79,7 +79,7 @@ public class GameController : MonoBehaviour {
       }
     }
     
-    Battle.StartBattle(team.Actors, enemies);
+    Battle.StartBattle(allies.Actors, enemies);
   }
 
   public void EndBattle() {

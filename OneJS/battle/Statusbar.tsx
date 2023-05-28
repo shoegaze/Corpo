@@ -5,11 +5,10 @@ import { font } from "preload"
 import { TeamIndicator } from "./TeamIndicator"
 import { TurnIndicator } from "./TurnIndicator"
 
-export const Statusbar = ({ battle }: { battle: any }) => {
-  const ui = battle.UI
-  const [mode, _0] = useEventfulState(ui, 'Mode')
-  const [team, _1] = useEventfulState(ui, 'Team')
-  const [turn, _2] = useEventfulState(ui, 'Turn')
+export const Statusbar = ({ battleUI }: { battleUI: any }) => {
+  const [mode, _0] = useEventfulState(battleUI, 'Mode')
+  const [team, _1] = useEventfulState(battleUI, 'Team')
+  const [turn, _2] = useEventfulState(battleUI, 'Turn')
 
   return (
     <div class='absolute flex flex-row w-full bottom-0 bg-slate-400 text-3xl font-bold' style={{

@@ -1,14 +1,18 @@
-import { h } from "preact"
+import { h, render } from "preact"
 import { Menu } from "./Menu"
 import { Statusbar } from "./Statusbar"
 import { Result } from "./Result"
 
-export const Battle = ({ battle }: { battle: any }) => {
+const Battle = () => {
+  const battleUI = require('battle_ui')
+
   return (
-    <div class="w-full h-full flex">
+    <div class="absolute flex w-full h-full">
       <Menu />
-      <Statusbar battle={battle} />
+      <Statusbar battleUI={battleUI} />
       <Result />
     </div>
   )
 }
+
+render(<Battle />, document.body)

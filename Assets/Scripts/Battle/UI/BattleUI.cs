@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Battle.UI {
@@ -13,21 +13,27 @@ namespace Battle.UI {
     public event Action<ActorAlignment> OnTeamChanged;
     public event Action<int> OnTurnChanged;
 
-    protected void Awake() {
+    protected void Start() {
       Mode = BattleUIMode.Grid;
-      Team = battle.ActiveActor.Alignment;
+      // HACK:
+      Team = ActorAlignment.Ally;
       Turn = battle.Turn;
+      
+      OnModeChanged?.Invoke(Mode);
+      OnTeamChanged?.Invoke(Team);
+      OnTurnChanged?.Invoke(Turn);
     }
 
     protected void Update() {
+      // Move input management to BattleUIModeManager
       if (Input.GetButtonDown("Toggle")) {
         Mode = Mode.Next();
         OnModeChanged?.Invoke(Mode);
       }
 
-      var team = battle.ActiveActor.Alignment;
-      if (team != Team) {
-        Team = team;
+      var activeActor = battle.ActiveActor;
+      if (activeActor != null && activeActor.Alignment != Team) {
+        Team = activeActor.Alignment;
         OnTeamChanged?.Invoke(Team);
       }
 

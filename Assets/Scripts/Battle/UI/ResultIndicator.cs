@@ -15,11 +15,11 @@ namespace Battle.UI {
     }
 
     protected void OnGUI() {
-      var battleEnded = battle.AlliesWin || battle.EnemiesWin;
+      var battleEnded = battle.DoAlliesWin || battle.DoEnemiesWin;
       renderer.SetAlpha(battleEnded ? 1f: 0f);
       
-      winLabel.SetActive(battle.AlliesWin);     
-      loseLabel.SetActive(battle.EnemiesWin);
+      winLabel.SetActive(battle.DoAlliesWin);     
+      loseLabel.SetActive(battle.DoEnemiesWin);
     }
   }
 }

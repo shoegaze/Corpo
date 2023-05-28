@@ -2,9 +2,11 @@ import { h } from "preact"
 
 export const TurnIndicator = ({ turn }: { turn: number }) => {
   return (
-    <span class='relative px-4 text-3xl bg-slate-500 font-bold text-slate-50'>
-      {/* TURN: {turn} */}
-      TURN: 0000
+    <span class='relative flex flex-row w-[250px] px-4 text-3xl bg-[#4D626F] text-slate-50'>
+      <span>TURN: </span>
+      <span class='grow'></span>
+      <span>{turn.toString().padStart(4, '0')}</span>
+      <span class='grow'></span>
     </span>
   )
 }
