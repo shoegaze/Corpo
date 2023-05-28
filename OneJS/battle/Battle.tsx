@@ -10,7 +10,7 @@ const Battle = () => {
     <div class="absolute flex w-full h-full">
       <Menu />
       <Statusbar battleUI={battleUI} />
-      <Result />
+      <Result battleUI={battleUI}/>
     </div>
   )
 }

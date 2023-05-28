@@ -9,6 +9,6 @@ var Battle = function () {
     return ((0, preact_1.h)("div", { class: "absolute flex w-full h-full" },
         (0, preact_1.h)(Menu_1.Menu, null),
         (0, preact_1.h)(Statusbar_1.Statusbar, { battleUI: battleUI }),
-        (0, preact_1.h)(Result_1.Result, null)));
+        (0, preact_1.h)(Result_1.Result, { battleUI: battleUI })));
 };
 (0, preact_1.render)((0, preact_1.h)(Battle, null), document.body);

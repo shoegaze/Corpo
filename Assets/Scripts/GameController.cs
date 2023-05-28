@@ -11,7 +11,6 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour {
   [SerializeField] private GameMode mode = GameMode.World;
   // TODO: Move to Team definition?
-  [SerializeField] private int money;
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 

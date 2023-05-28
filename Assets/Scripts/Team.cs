@@ -4,8 +4,8 @@ using UnityEngine;
 // TODO: Make ally/enemy agnostic
 // TODO: Attach to GameController then copy to BattleController
 public class Team : MonoBehaviour {
-  // [SerializeField] private int money;
-  [SerializeField] private uint maxCount = 4;
+  [SerializeField] private int money;
+  [SerializeField] private uint maxMembers = 4;
   [SerializeField] private List<Actor.Actor> actors;
   
   private ResourcesCache cache;
@@ -21,7 +21,7 @@ public class Team : MonoBehaviour {
   
   public bool CanAdd(/*string actorID*/) {
     // TODO: actorID not in actors.Select(a => a.name)
-    return (actors.Count + 1) < maxCount;
+    return (actors.Count + 1) < maxMembers;
   }
   
   public void Add(string actorID) {
