@@ -8,7 +8,7 @@ const Battle = () => {
 
   return (
     <div class="absolute flex w-full h-full">
-      <Menu />
+      <Menu battleUI={battleUI} />
       <Statusbar battleUI={battleUI} />
       <Result battleUI={battleUI}/>
     </div>
