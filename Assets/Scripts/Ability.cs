@@ -6,8 +6,9 @@ public class Ability : MonoBehaviour {
   [SerializeField] private AbilityData data;
   [SerializeField] private AbilityScript script;
 
-  // TODO: Cache SpriteRenderer
-  public Sprite Icon => GetComponent<SpriteRenderer>().sprite;
+  // ReSharper disable once MemberCanBePrivate.Global
+  // ReSharper disable once UnusedAutoPropertyAccessor.Global
+  public Sprite Icon { get; private set; }
   public string Name => data.Name;
   // public string Type => data.Type;
   public int Cost => data.Cost;
@@ -25,6 +26,7 @@ public class Ability : MonoBehaviour {
         return;
       }
 
+      ability.Icon = sprite;
       renderer.sprite = sprite;
     }
 

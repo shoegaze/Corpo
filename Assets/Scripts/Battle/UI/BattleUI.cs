@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable EventNeverSubscribedTo.Global
 
 namespace Battle.UI {
   public class BattleUI : MonoBehaviour {

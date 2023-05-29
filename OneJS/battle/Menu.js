@@ -7,7 +7,6 @@ var preload_1 = require("preload");
 var Menu = function (_a) {
     var battleUI = _a.battleUI;
     var _b = (0, onejs_1.useEventfulState)(battleUI, 'ActiveActor'), activeActor = _b[0], _setActiveActor = _b[1];
-    log(activeActor === null || activeActor === void 0 ? void 0 : activeActor.Abilities);
     return ((0, preact_1.h)("div", { class: 'absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px]', style: {
             unityFontDefinition: preload_1.font,
             backgroundColor: 'cyan'

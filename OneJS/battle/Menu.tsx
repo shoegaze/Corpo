@@ -5,8 +5,6 @@ import { font } from "preload"
 export const Menu = ({ battleUI }: { battleUI: any }) => {
   const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
 
-  log(activeActor?.Abilities)
-
   return (
     <div class='absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px]' style={{
       unityFontDefinition: font,
