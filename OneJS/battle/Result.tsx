@@ -9,13 +9,14 @@ export const Result = ({ battleUI }: { battleUI: any }) => {
 
   return (
     <div class='absolute flex flex-col w-full h-full'>
-      <span class='grow'></span>
+      <div class='grow'></div>
+      {/* TODO: Use <label text='' /> instead */}
       <div class={baseClass} style={{
         visibility: doAlliesWin || doEnemiesWin ? 'Visible' : 'Hidden'
       }}>
         {doAlliesWin ? 'WIN' : 'GAME OVER'}
       </div>
-      <span class='grow'></span>
+      <div class='grow'></div>
     </div>
   )
 }

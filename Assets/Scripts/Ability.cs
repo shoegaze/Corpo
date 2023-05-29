@@ -6,6 +6,8 @@ public class Ability : MonoBehaviour {
   [SerializeField] private AbilityData data;
   [SerializeField] private AbilityScript script;
 
+  // TODO: Cache SpriteRenderer
+  public Sprite Icon => GetComponent<SpriteRenderer>().sprite;
   public string Name => data.Name;
   // public string Type => data.Type;
   public int Cost => data.Cost;
@@ -50,10 +52,5 @@ public class Ability : MonoBehaviour {
       ability.script = abilityScript;
     }
   }
-  
-  // TODO:
-  // public void ExecuteGetTargets(LuaRunner runner) {}
-  // public void ExecuteOnHit(LuaRunner runner) {}
-  // public void ExecuteOnMiss(LuaRunner runner) {}
 }
 

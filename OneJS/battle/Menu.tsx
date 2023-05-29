@@ -3,7 +3,9 @@ import { h } from "preact"
 import { font } from "preload"
 
 export const Menu = ({ battleUI }: { battleUI: any }) => {
-  // const [activeActor, _] = useEventfulState(battleUI, 'ActiveActor')
+  const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
+
+  log(activeActor?.Abilities)
 
   return (
     <div class='absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px]' style={{
@@ -11,49 +13,34 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
       backgroundColor: 'cyan'
     }}>
       <div class='flex flex-row px-6 py-2 text-5xl bg-teal-400'>
-        <span>* djimpp</span>
-        <span class='grow'></span>
-        <span>4 / 4</span>
+        <label text={`* ${activeActor?.Name}`} />
+        <div class='grow'></div>
+        <label text={`${activeActor?.Health} / ${activeActor?.MaxHealth}`} />
       </div>
 
       <div class='flex flex-row px-6 text-4xl' style={{
         backgroundColor: 'skyblue'
       }}>
-        <span>Icon</span>
-        <span class='grow'></span>
-        <span>Name</span>
-        <span class='grow'></span>
-        <span>Cost</span>
+        <label text="Icon" />
+        <div class='grow'></div>
+        <label text="Name" />
+        <div class='grow'></div>
+        <label text="Cost" />
       </div>
 
       <div class='text-4xl'>
-        <div class='flex flex-row px-6 py-3' style={{
-          backgroundColor: 'salmon'
-        }}>
-          <span class=''>%</span>
-          <span class='grow'></span>
-          <span class=''>Tackle</span>
-          <span class='grow'></span>
-          <span class=''>20</span>
-        </div>
-        <div class='flex flex-row px-6 py-3' style={{
-          backgroundColor: 'violet'
-        }}>
-          <span class=''>!</span>
-          <span class='grow'></span>
-          <span class=''>Snap</span>
-          <span class='grow'></span>
-          <span class=''>30</span>
-        </div>
-        <div class='flex flex-row px-6 py-3' style={{
-          backgroundColor: 'salmon'
-        }}>
-          <span class=''>#</span>
-          <span class='grow'></span>
-          <span class=''>Censor</span>
-          <span class='grow'></span>
-          <span class=''>50</span>
-        </div>
+        {/* TODO: Change ability type to Ability def */}
+        {activeActor?.Abilities.map((ability: any, i: number) => (
+          <div class='flex flex-row px-6 py-3' style={{
+            backgroundColor: i % 2 === 0 ? 'salmon' : 'violet'
+          }}>
+            <image class='w-[64px] h-[64px]' sprite={ability.Icon} />
+            <div class='grow'></div>
+            <label text={ability.Name} />
+            <div class='grow'></div>
+            <label text={ability.Cost.toString()} />
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -5,6 +5,11 @@ namespace Battle.UI {
   public class BattleUI : MonoBehaviour {
     [SerializeField] private BattleController battle;
     
+    // Menu
+    public Actor.Actor ActiveActor { get; private set; }
+
+    public event Action<Actor.Actor> OnActiveActorChanged;
+    
     // Statusbar
     public BattleUIMode Mode { get; private set; }
     public ActorAlignment Team { get; private set; }
@@ -47,7 +52,10 @@ namespace Battle.UI {
       }
 
       var activeActor = battle.ActiveActor;
-      if (activeActor != null && activeActor.Alignment != Team) {
+      if (activeActor != ActiveActor) {
+        ActiveActor = activeActor;
+        OnActiveActorChanged?.Invoke(ActiveActor);
+
         Team = activeActor.Alignment;
         OnTeamChanged?.Invoke(Team);
       }
