@@ -16,14 +16,13 @@ namespace Battle {
     [SerializeField] private List<Actor.Actor> order = new List<Actor.Actor>();
     [SerializeField, Min(0)] private int turn;
 
-    private BattleUI UI { get; set; }
     private BattleGrid Grid { get; set; }
     private BattleScreen screen;
     private GameController game;
     private ResourcesCache cache;
 
     public int Turn => turn;
-    // order.Count == 0 until SetUp is called
+    // GOTCHA: order.Count == 0 until SetUp is called
     public Actor.Actor ActiveActor => order.Count > 0 ? order[turn % order.Count] : null;
     public bool DoAlliesWin => AreAlliesAlive && !AreEnemiesAlive;
     public bool DoEnemiesWin => !AreAlliesAlive;
@@ -37,7 +36,6 @@ namespace Battle {
     protected void Awake() {
       Grid = new BattleGrid(width, height);
       screen = GetComponent<BattleScreen>();
-      UI = GetComponent<BattleUI>();
     }
 
     protected void Start() {

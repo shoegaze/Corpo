@@ -25,26 +25,46 @@ namespace Battle.UI {
       if (ui.Mode != Mode.Menu) {
         return;
       }
+
+      var actor = ui.ActiveActor;
+      if (actor == null) {
+        return;
+      }
       
       bool select = Input.GetButtonDown("Submit");
       if (select) {
-        // TODO: Select ability
-        Debug.Log("Selecting ability");
-        
+        SelectAbility(actor);
         return;
       }
       
       bool v = Input.GetButtonDown("Vertical");
       if (v) {
-        AbilityIndex -= Mathf.RoundToInt(Input.GetAxis("Vertical"));
-
-        var max = 0;
-        if (ui.ActiveActor) {
-          max = ui.ActiveActor.Abilities.Count() - 1;
-        } 
-        
-        AbilityIndex = Mathf.Clamp(AbilityIndex, 0, max);
+        int dy = Mathf.RoundToInt(Input.GetAxis("Vertical"));
+        CycleAbility(actor, dy);
       }
+    }
+
+    private void SelectAbility(Actor.Actor actor) {
+      var ability = actor.Abilities
+                                 .Skip(AbilityIndex)
+                                 .First();
+              
+      // TODO: Select ability
+      Debug.Log($"Selecting ability: {ability.Name}");
+
+      // TODO: Cache on Start
+      // var go = GameObject.FindWithTag("BattleController");
+      // var abilityScriptRunner = go.GetComponent<AbilityScriptRunner>();
+      // 
+      // abilityScriptRunner.Load(ability);
+      // abilityScriptRunner.Execute_(ability, ...);
+    }
+
+    private void CycleAbility(Actor.Actor actor, int dy) {
+      AbilityIndex -= dy;
+
+      var max = actor.Abilities.Count() - 1;
+      AbilityIndex = Mathf.Clamp(AbilityIndex, 0, max);
     }
   }
 }
