@@ -10,7 +10,6 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(ResourcesCache), typeof(Team))]
 public class GameController : MonoBehaviour {
   [SerializeField] private GameMode mode = GameMode.World;
-  // TODO: Move to Team definition?
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 
@@ -18,8 +17,10 @@ public class GameController : MonoBehaviour {
   private readonly LuaRunner luaRunner = new LuaRunner();
 
   public GameMode Mode => mode;
+  // ReSharper disable once MemberCanBePrivate.Global
   public BattleController Battle { get; private set; }
 
+  // ReSharper disable once EventNeverSubscribedTo.Global
   public event Action<GameMode> OnModeChanged;
 
   protected void Awake() {
