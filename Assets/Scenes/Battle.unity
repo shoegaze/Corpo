@@ -301,7 +301,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3287052850557026133, guid: d34d5b4ce63014406a383147e118bc9f, type: 3}
       propertyPath: m_Name
-      value: Battlefield
+      value: Battle Controller
       objectReference: {fileID: 0}
     - target: {fileID: 3287052850557026134, guid: d34d5b4ce63014406a383147e118bc9f, type: 3}
       propertyPath: m_RootOrder

@@ -1,3 +1,5 @@
+using System;
+
 namespace Battle.UI {
   public enum BattleUIMode {
     Grid,
@@ -14,7 +16,7 @@ namespace Battle.UI {
           return BattleUIMode.Grid;
         
         default:
-          return BattleUIMode.Grid;
+          throw new ArgumentOutOfRangeException();
       }
     }
   }

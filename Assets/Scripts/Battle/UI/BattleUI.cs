@@ -4,13 +4,18 @@ using UnityEngine;
 // ReSharper disable EventNeverSubscribedTo.Global
 
 namespace Battle.UI {
+  [RequireComponent(typeof(BattleUIMenu))]
   public class BattleUI : MonoBehaviour {
     [SerializeField] private BattleController battle;
+
+    private BattleUIMenu menu;
     
     // Menu
     public Actor.Actor ActiveActor { get; private set; }
-
+    public int AbilityIndex { get; private set; }
+    
     public event Action<Actor.Actor> OnActiveActorChanged;
+    public event Action<int> OnAbilityIndexChanged;
     
     // Statusbar
     public BattleUIMode Mode { get; private set; }
@@ -28,9 +33,16 @@ namespace Battle.UI {
     public event Action<bool> OnDoAlliesWinChanged;
     public event Action<bool> OnDoEnemiesWinChanged;
 
+    protected void Awake() {
+      menu = GetComponent<BattleUIMenu>();
+    }
+
     protected void Start() {
       ActiveActor = null;
+      AbilityIndex = 0;
+      
       OnActiveActorChanged?.Invoke(ActiveActor);
+      OnAbilityIndexChanged?.Invoke(AbilityIndex);
     
       Mode = BattleUIMode.Grid;
       // HACK:
@@ -49,7 +61,7 @@ namespace Battle.UI {
     }
 
     protected void Update() {
-      // Move input reading to BattleUIModeManager
+      // Move input read to BattleUIModeManager
       if (Input.GetButtonDown("Toggle")) {
         Mode = Mode.Next();
         OnModeChanged?.Invoke(Mode);
@@ -62,6 +74,12 @@ namespace Battle.UI {
 
         Team = activeActor.Alignment;
         OnTeamChanged?.Invoke(Team);
+      }
+
+      int abilityIndex = menu.AbilityIndex;
+      if (abilityIndex != AbilityIndex) {
+        AbilityIndex = abilityIndex;
+        OnAbilityIndexChanged?.Invoke(AbilityIndex);
       }
 
       int turn = battle.Turn;

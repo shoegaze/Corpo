@@ -3,8 +3,9 @@ import { h } from "preact"
 import { font } from "preload"
 
 export const Menu = ({ battleUI }: { battleUI: any }) => {
-  const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
   const [mode, _setMode] = useEventfulState(battleUI, 'Mode')
+  const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
+  const [abilityIndex, _setAbilityIndex] = useEventfulState(battleUI, 'AbilityIndex')
 
   return (
     <div class='absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700' style={{
@@ -33,7 +34,10 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
         {/* TODO: Change ability type to Ability def */}
         {activeActor?.Abilities.map((ability: any, i: number) => (
           <div class='flex flex-row px-6 py-3' style={{
-            backgroundColor: i % 2 === 0 ? '#7DAFBD' : '#51778A'
+            backgroundColor: i % 2 === 0 ? '#7DAFBD' : '#51778A',
+            borderColor: 'white',
+            borderTopWidth: mode === 1 && i === abilityIndex ? 4 : 0,
+            borderBottomWidth: mode === 1 && i === abilityIndex ? 4 : 0
           }}>
             <image sprite={ability.Icon} class='w-[64px] h-[64px] bg-slate-700' />
             <div class='grow'></div>

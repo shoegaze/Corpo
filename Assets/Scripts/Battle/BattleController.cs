@@ -7,6 +7,8 @@ using UnityEngine;
 namespace Battle {
   [RequireComponent(typeof(BattleScreen))]
   public class BattleController : MonoBehaviour {
+    [SerializeField] private BattleUI battleUI;
+    
     // TODO: Make configurable from GameController
     [SerializeField] private uint width;
     [SerializeField] private uint height;
@@ -136,7 +138,12 @@ namespace Battle {
       game.EndBattle();
     }
     
+    // @return bool decided 
     private bool DoPlayerTurn() {
+      if (battleUI.Mode == BattleUIMode.Menu) {
+        return false;
+      }
+      
       var h = Input.GetButtonDown("Horizontal");
       var v = Input.GetButtonDown("Vertical");
 
