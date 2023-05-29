@@ -326,7 +326,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4293651445
+    rgba: 15461365
   m_fontColor: {r: 0.9622642, g: 0.92141336, b: 0.92141336, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -595,8 +595,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Virtue may have been lost in the new world, but it was also never with
-    the ancients.
+  m_text: Virtue may have been lost in the new world, but the ancients never knew
+    it.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4bf6803a9adca403a9df8b28766a83a5, type: 2}
   m_sharedMaterial: {fileID: -3903676021476721238, guid: 4bf6803a9adca403a9df8b28766a83a5, type: 2}
@@ -1527,7 +1527,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4293651445
+    rgba: 4260097013
   m_fontColor: {r: 0.9622642, g: 0.92141336, b: 0.92141336, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1653,7 +1653,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: The civilized world has won.
+  m_text: The civilized world has won
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4bf6803a9adca403a9df8b28766a83a5, type: 2}
   m_sharedMaterial: {fileID: -3903676021476721238, guid: 4bf6803a9adca403a9df8b28766a83a5, type: 2}
