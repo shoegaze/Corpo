@@ -29,6 +29,9 @@ namespace Battle.UI {
     public event Action<bool> OnDoEnemiesWinChanged;
 
     protected void Start() {
+      ActiveActor = null;
+      OnActiveActorChanged?.Invoke(ActiveActor);
+    
       Mode = BattleUIMode.Grid;
       // HACK:
       Team = ActorAlignment.Ally;
@@ -37,7 +40,6 @@ namespace Battle.UI {
       OnModeChanged?.Invoke(Mode);
       OnTeamChanged?.Invoke(Team);
       OnTurnChanged?.Invoke(Turn);
-      
       
       DoAlliesWin = false;
       DoEnemiesWin = false;
