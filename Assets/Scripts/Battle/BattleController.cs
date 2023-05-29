@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Battle {
   [RequireComponent(typeof(BattleScreen))]
   public class BattleController : MonoBehaviour {
-    [SerializeField] private BattleUI battleUI;
+    [SerializeField] private BattleUI ui;
     
     // TODO: Make configurable from GameController
     [SerializeField] private uint width;
@@ -140,7 +140,7 @@ namespace Battle {
     
     // @return bool decided 
     private bool DoPlayerTurn() {
-      if (battleUI.Mode == BattleUIMode.Menu) {
+      if (ui.Mode == Mode.Menu) {
         return false;
       }
       

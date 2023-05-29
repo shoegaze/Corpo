@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaf08658cb9054c598a8fc19e5363fe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  battleUI: {fileID: 3923555545008741647}
+  ui: {fileID: 3923555545008741647}
   width: 5
   height: 5
   order: []

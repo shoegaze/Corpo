@@ -1,20 +1,28 @@
-using System;
 using System.Linq;
 using UnityEngine;
 
 namespace Battle.UI {
   [RequireComponent(typeof(BattleUI))]
-  public class BattleUIMenu : MonoBehaviour {
+  public class Menu : MonoBehaviour {
     private BattleUI ui;
     
+    public Mode Mode { get; private set; }
     public int AbilityIndex { get; private set; }
 
     protected void Awake() {
       ui = GetComponent<BattleUI>();
     }
 
+    // 1. Handle input mode toggle
+    // if mode is menu:
+    //  2. Handle input ability select
+    //  3. Handle input ability cycling
     protected void Update() {
-      if (ui.Mode != BattleUIMode.Menu) {
+      if (Input.GetButtonDown("Toggle")) {
+        Mode = Mode.Cycle();
+      }
+
+      if (ui.Mode != Mode.Menu) {
         return;
       }
       

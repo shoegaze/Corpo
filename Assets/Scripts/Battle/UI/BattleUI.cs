@@ -4,11 +4,11 @@ using UnityEngine;
 // ReSharper disable EventNeverSubscribedTo.Global
 
 namespace Battle.UI {
-  [RequireComponent(typeof(BattleUIMenu))]
+  [RequireComponent(typeof(Menu))]
   public class BattleUI : MonoBehaviour {
     [SerializeField] private BattleController battle;
 
-    private BattleUIMenu menu;
+    private Menu menu;
     
     // Menu
     public Actor.Actor ActiveActor { get; private set; }
@@ -18,11 +18,11 @@ namespace Battle.UI {
     public event Action<int> OnAbilityIndexChanged;
     
     // Statusbar
-    public BattleUIMode Mode { get; private set; }
+    public Mode Mode { get; private set; }
     public ActorAlignment Team { get; private set; }
     public int Turn { get; private set; }
     
-    public event Action<BattleUIMode> OnModeChanged;
+    public event Action<Mode> OnModeChanged;
     public event Action<ActorAlignment> OnTeamChanged;
     public event Action<int> OnTurnChanged;
     
@@ -34,7 +34,7 @@ namespace Battle.UI {
     public event Action<bool> OnDoEnemiesWinChanged;
 
     protected void Awake() {
-      menu = GetComponent<BattleUIMenu>();
+      menu = GetComponent<Menu>();
     }
 
     protected void Start() {
@@ -44,7 +44,7 @@ namespace Battle.UI {
       OnActiveActorChanged?.Invoke(ActiveActor);
       OnAbilityIndexChanged?.Invoke(AbilityIndex);
     
-      Mode = BattleUIMode.Grid;
+      Mode = Mode.Grid;
       // HACK:
       Team = ActorAlignment.Ally;
       Turn = battle.Turn;
@@ -61,9 +61,9 @@ namespace Battle.UI {
     }
 
     protected void Update() {
-      // Move input read to BattleUIModeManager
-      if (Input.GetButtonDown("Toggle")) {
-        Mode = Mode.Next();
+      var mode = menu.Mode;
+      if (mode != Mode) {
+        Mode = mode;
         OnModeChanged?.Invoke(Mode);
       }
 
