@@ -4,12 +4,17 @@ import { font } from "preload"
 
 export const Menu = ({ battleUI }: { battleUI: any }) => {
   const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
+  const [mode, _setMode] = useEventfulState(battleUI, 'Mode')
 
   return (
     <div class='absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700' style={{
-      unityFontDefinition: font
+      unityFontDefinition: font,
+      borderColor: 'white',
+      borderWidth: mode === 0 ? 0 : 6
     }}>
-      <div class='flex flex-row px-6 py-2 text-5xl bg-cyan-500'>
+      <div class='flex flex-row px-6 py-2 text-5xl bg-cyan-500' style={{
+        backgroundColor: mode === 0 ? '#A9D4DE' : '#06B6DD'
+      }}>
         <label text='*' class='mr-6' />
         <label text={activeActor?.Name ?? ''} />
         <div class='grow'></div>

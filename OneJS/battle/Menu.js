@@ -8,10 +8,15 @@ var Menu = function (_a) {
     var _b, _c, _d, _e;
     var battleUI = _a.battleUI;
     var _f = (0, onejs_1.useEventfulState)(battleUI, 'ActiveActor'), activeActor = _f[0], _setActiveActor = _f[1];
+    var _g = (0, onejs_1.useEventfulState)(battleUI, 'Mode'), mode = _g[0], _setMode = _g[1];
     return ((0, preact_1.h)("div", { class: 'absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700', style: {
-            unityFontDefinition: preload_1.font
+            unityFontDefinition: preload_1.font,
+            borderColor: 'white',
+            borderWidth: mode === 0 ? 0 : 6
         } },
-        (0, preact_1.h)("div", { class: 'flex flex-row px-6 py-2 text-5xl bg-cyan-500' },
+        (0, preact_1.h)("div", { class: 'flex flex-row px-6 py-2 text-5xl bg-cyan-500', style: {
+                backgroundColor: mode === 0 ? '#A9D4DE' : '#06B6DD'
+            } },
             (0, preact_1.h)("label", { text: '*', class: 'mr-6' }),
             (0, preact_1.h)("label", { text: (_b = activeActor === null || activeActor === void 0 ? void 0 : activeActor.Name) !== null && _b !== void 0 ? _b : '' }),
             (0, preact_1.h)("div", { class: 'grow' }),
