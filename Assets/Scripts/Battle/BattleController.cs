@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Battle.UI;
+using Lua;
 using UnityEngine;
 
 namespace Battle {
   [RequireComponent(typeof(BattleScreen))]
+  [RequireComponent(typeof(AbilityScriptRunner))]
   public class BattleController : MonoBehaviour {
     [SerializeField] private BattleUI ui;
     
@@ -16,10 +18,11 @@ namespace Battle {
     [SerializeField] private List<Actor.Actor> order = new List<Actor.Actor>();
     [SerializeField, Min(0)] private int turn;
 
-    private BattleGrid Grid { get; set; }
     private BattleScreen screen;
     private GameController game;
     private ResourcesCache cache;
+    
+    public BattleGrid Grid { get; private set; }
 
     public int Turn => turn;
     // GOTCHA: order.Count == 0 until SetUp is called

@@ -3,14 +3,14 @@ using UnityEngine;
 namespace Data {
   [System.Serializable]
   public class AbilityScript {
+    [SerializeField] private AbilityData data;
     [SerializeField] private string rawScript;
-    
-    // TODO: Store AbilityData to get animation parameters
-    // private AbilityData data;
-    
+
+    public AbilityData Data => data;
     public string RawScript => rawScript;
 
-    public AbilityScript(string rawScript) {
+    public AbilityScript(AbilityData data, string rawScript) {
+      this.data = data;
       this.rawScript = rawScript;
     }
 

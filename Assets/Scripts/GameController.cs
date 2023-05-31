@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Battle;
-using Lua;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,7 +13,6 @@ public class GameController : MonoBehaviour {
   [SerializeField, Range(0, 3)] private uint quarter;
 
   private Team allies;
-  private readonly LuaRunner luaRunner = new LuaRunner();
 
   public GameMode Mode => mode;
   // ReSharper disable once MemberCanBePrivate.Global

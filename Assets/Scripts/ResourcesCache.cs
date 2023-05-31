@@ -195,20 +195,26 @@ public class ResourcesCache : MonoBehaviour {
     Debug.Log("Loading abilities scripts...");
     
     foreach (var res in resources) {
-      var abilityScript = res.text;
-      var id = $"{res.name.ToLower()}";
-
-      Debug.Log($" > Loading ability script \"{id}\"");
+      var scriptID = $"{res.name.ToLower()}";
       
-      if (abilitiesScripts.ContainsKey(id)) {
+      // HACK:
+      var id = scriptID.Substring(0, scriptID.Length - 4);
+      var data = GetAbilityData(id);
+      Debug.Assert(data != null);
+      
+      string abilityRawScript = res.text;
+
+      Debug.Log($" > Loading ability script \"{scriptID}\"");
+      
+      if (abilitiesScripts.ContainsKey(scriptID)) {
         Debug.LogError(
-                $" ! Duplicate ability ID \"{id}\"!\n" + 
+                $" ! Duplicate ability ID \"{scriptID}\"!\n" + 
                 "   * Ignoring..."
         );
         continue;
       }
       
-      abilitiesScripts[id] = new AbilityScript(abilityScript);
+      abilitiesScripts[scriptID] = new AbilityScript(data, abilityRawScript);
     }
   }
 }
