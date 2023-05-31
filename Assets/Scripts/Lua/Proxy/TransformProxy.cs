@@ -5,23 +5,19 @@ namespace Lua.Proxy {
   public class TransformProxy {
     static TransformProxy() {
       UserData.RegisterProxyType<TransformProxy, Transform>(
-              t => new TransformProxy(t)
-      );
+              t => new TransformProxy(t));
     }
 
     private readonly Transform t;
+
+    public Vector3 Position {
+      get => t.position;
+      set => t.position = value;
+    }
     
     [MoonSharpHidden]
     public TransformProxy(Transform t) {
       this.t = t;
-    }
-
-    public Vector3 GetPosition() {
-      return t.position;
-    }
-
-    public void SetPosition(Vector3 position) {
-      t.position = position;
     }
   }
 }
