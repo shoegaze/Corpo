@@ -32,6 +32,7 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
 
       <div class='text-4xl'>
         {/* TODO: Change ability type to Ability def */}
+        {/* TODO: Store conditions as variables */}
         {activeActor?.Abilities.map((ability: any, i: number) => (
           <div class='flex flex-row px-6 py-3' style={{
             backgroundColor: i % 2 === 0 ? '#7DAFBD' : '#51778A',
