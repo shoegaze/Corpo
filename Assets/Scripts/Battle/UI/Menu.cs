@@ -6,11 +6,10 @@ namespace Battle.UI {
   [RequireComponent(typeof(BattleUI))]
   [RequireComponent(typeof(CandidateCells))]
   public class Menu : MonoBehaviour {
-    [SerializeField] private AbilityScriptRunner abilityScriptRunner;
-    
     public int AbilityIndex { get; private set; }
 
     private GameController game;
+    private AbilityScriptRunner abilityScriptRunner;
     private BattleUI ui;
     private CandidateCells candidateCells;
 
@@ -22,6 +21,10 @@ namespace Battle.UI {
     protected void Start() {
       var go = GameObject.FindWithTag("GameController");
       game = go.GetComponent<GameController>();
+      
+      Debug.Assert(game.Battle != null);
+
+      abilityScriptRunner = game.Battle.AbilityScriptRunner;
     }
 
     private Ability GetCurrentAbility(Actor.Actor actor) {

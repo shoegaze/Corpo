@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Lua;
 using Shapes;
 using UnityEngine;
 
 namespace Battle.UI {
   [RequireComponent(typeof(StateManager))]
   public class CandidateCells : ImmediateModeShapeDrawer {
-    [SerializeField] private BattleController battle;
     [SerializeField] private Transform origin;
     [SerializeField, Range(0f, 1f)] private float sideLength = 0.5f;
     [SerializeField, Range(0f, 1f)] private float borderSize = 0.1f;
@@ -16,15 +16,27 @@ namespace Battle.UI {
     private readonly List<Vector2Int> cells = new();
     private int cursor = -1;
 
+    private GameController game;
+    private AbilityScriptRunner abilityScriptRunner;
     private BattleGrid grid;
 
     public FocusState FocusState { get; set; }
     
     protected void Start() {
-      grid = battle.Grid;
+      var go = GameObject.FindWithTag("GameController");
+      game = go.GetComponent<GameController>();
+      
+      Debug.Assert(game.Battle != null);
+
+      abilityScriptRunner = game.Battle.AbilityScriptRunner;
+      grid = game.Battle.Grid;
     }
 
     public override void DrawShapes(Camera cam) {
+      if (FocusState == FocusState.Select) {
+        return;
+      }
+      
       using (Draw.Command(cam)) {
         for (var i = 0; i < cells.Count; i++) {
           var cell = cells[i];
@@ -66,18 +78,25 @@ namespace Battle.UI {
       }
 
       if (stateManager.FocusState == FocusState.Free) {
-        // TODO
-        Debug.Log("TODO: Focus mode");
-        
         stateManager.Transition(FocusState.Focus);
       }
       else if (stateManager.FocusState == FocusState.Focus) {
-        // TODO: Activate ability
-        var target = cells[cursor];
+        stateManager.Transition(FocusState.Select);
+
+        var battle = game.Battle;
+        
+        var sourceActor = battle.ActiveActor;
+        var sourceCell = battle.Grid.GetPosition(sourceActor).Value;
+        var source = new CellData(sourceActor, sourceCell);
+        
+        var targetCell = cells[cursor];
+        // Nullable:
+        var targetActor = battle.Grid.GetActor(targetCell);
+        var target = new CellData(targetActor, targetCell);
         
         Debug.LogFormat("TODO: Activating ability at {0}", target);
         
-        stateManager.Transition(FocusState.Select);
+        abilityScriptRunner.ExecuteAnimate(game, source, target);
       }
     }
 
