@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 2194897165953324124}
   - component: {fileID: 2194897165953324125}
   - component: {fileID: 5918519727422810686}
-  - component: {fileID: 2192795793450926019}
+  - component: {fileID: 2291061563562549158}
   - component: {fileID: 6492715662685522634}
+  - component: {fileID: 1076559792810026073}
   m_Layer: 5
   m_Name: Battle UI
   m_TagString: Untagged
@@ -35,7 +36,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -118,7 +119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battle: {fileID: 0}
---- !u!114 &2192795793450926019
+--- !u!114 &2291061563562549158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,10 +128,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2194897165953324126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b4013a293c341b88c98eb4963b8db9e, type: 3}
+  m_Script: {fileID: 11500000, guid: f0a804f1ad0f45358fce5cba596fdf1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useCullingMasks: 0
+  panelState: 0
+  focusState: 0
 --- !u!114 &6492715662685522634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,3 +146,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityScriptRunner: {fileID: 0}
+--- !u!114 &1076559792810026073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2194897165953324126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b4013a293c341b88c98eb4963b8db9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useCullingMasks: 0
+  battle: {fileID: 0}
+  origin: {fileID: 0}
+  sideLength: 0.5
+  borderSize: 0.1

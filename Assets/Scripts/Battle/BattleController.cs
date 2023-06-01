@@ -141,7 +141,7 @@ namespace Battle {
     
     // @return bool decided 
     private bool DoPlayerTurn() {
-      if (ui.Mode == Mode.Menu) {
+      if (ui.PanelState == PanelState.Menu) {
         return false;
       }
       

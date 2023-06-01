@@ -3,11 +3,6 @@ using UnityEngine;
 
 namespace Lua.Proxy {
   public class ActorProxy {
-    static ActorProxy() {
-      UserData.RegisterProxyType<ActorProxy, Actor.Actor>(
-              a => new ActorProxy(a));
-    }
-    
     public Actor.Actor Actor { get; }
 
     [MoonSharpHidden]

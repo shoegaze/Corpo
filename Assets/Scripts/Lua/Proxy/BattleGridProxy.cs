@@ -4,11 +4,6 @@ using Battle;
 
 namespace Lua.Proxy {
   public class BattleGridProxy {
-    static BattleGridProxy() {
-      UserData.RegisterProxyType<BattleGridProxy, BattleGrid>(
-              grid => new BattleGridProxy(grid));
-    }
-    
     private readonly BattleGrid grid;
 
     [MoonSharpHidden]

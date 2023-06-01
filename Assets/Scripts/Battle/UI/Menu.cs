@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using Lua;
 
@@ -8,61 +8,20 @@ namespace Battle.UI {
   public class Menu : MonoBehaviour {
     [SerializeField] private AbilityScriptRunner abilityScriptRunner;
     
-    public Mode Mode { get; private set; }
     public int AbilityIndex { get; private set; }
 
     private GameController game;
     private BattleUI ui;
-    // private CandidateCells candidateCells;
-    
+    private CandidateCells candidateCells;
+
     protected void Awake() {
       ui = GetComponent<BattleUI>();
-      // candidateCells = GetComponent<CandidateCells>();
+      candidateCells = GetComponent<CandidateCells>();
     }
 
     protected void Start() {
       var go = GameObject.FindWithTag("GameController");
       game = go.GetComponent<GameController>();
-    }
-
-    // 1. Handle input mode toggle
-    // if mode is menu:
-    //  2. Handle input ability select
-    //  3. Handle input ability cycling
-    protected void Update() {
-      var actor = ui.ActiveActor;
-      if (actor == null || actor.Alignment != ActorAlignment.Ally) {
-        return;
-      }
-      
-      if (Input.GetButtonDown("Toggle")) {
-        Mode = Mode.Cycle();
-        
-        // Load ability at current index on Mode.Menu
-        //  TODO: Avoid by keeping track of loaded ability
-        if (Mode == Mode.Menu) { 
-          // TODO: Refactor into LoadAbility(game, actor)
-          var ability = GetCurrentAbility(actor);
-          abilityScriptRunner.Load(ability.Script);
-          abilityScriptRunner.ExecuteStart(game);
-        }
-      }
-
-      if (ui.Mode != Mode.Menu) {
-        return;
-      }
-      
-      bool select = Input.GetButtonDown("Submit");
-      if (select) {
-        SelectAbility(actor);
-        return;
-      }
-      
-      bool v = Input.GetButtonDown("Vertical");
-      if (v) {
-        int dy = Mathf.RoundToInt(Input.GetAxis("Vertical"));
-        CycleAbility(actor, dy);
-      }
     }
 
     private Ability GetCurrentAbility(Actor.Actor actor) {
@@ -81,11 +40,8 @@ namespace Battle.UI {
     //    5. Increment turn
     //   * On cancel:
     //    1. Go back to cycling mode
-    private void SelectAbility(Actor.Actor actor) {
-      var ability = GetCurrentAbility(actor);
-              
-      // TODO: Select ability
-      Debug.Log($"Selecting ability: {ability.Name}");
+    private void SelectAbility(StateManager stateManager) {
+      stateManager.Transition(FocusState.Focus);
     }
 
     private void CycleAbility(Actor.Actor actor, int dy) {
@@ -101,11 +57,70 @@ namespace Battle.UI {
         var ability = GetCurrentAbility(actor);
         abilityScriptRunner.Load(ability.Script);
         abilityScriptRunner.ExecuteStart(game);
+        
+        // Precondition: Script should be loaded
+        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
+        candidateCells.Queue(candidates);
+      }
+    }
+    
+    public void LoadAbility() {
+      var actor = ui.ActiveActor;
+      if (actor == null || actor.Alignment != ActorAlignment.Ally) {
+        return;
       }
       
+      // Load ability at current index on Mode.Menu
+      // TODO: Avoid by keeping track of loaded ability
+      // TODO: Refactor into LoadAbility(game, actor)
+      var ability = GetCurrentAbility(actor);
+      abilityScriptRunner.Load(ability.Script);
+      abilityScriptRunner.ExecuteStart(game);
+
       // Precondition: Script should be loaded
-      // var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
-      // candidateCells.Queue(candidates);
+      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
+      candidateCells.Queue(candidates);
+    }
+    
+    private void TryInputModeToggle(StateManager stateManager, Actor.Actor actor) {
+      if (Input.GetButtonDown("Toggle")) {
+        stateManager.Transition(PanelState.Grid);
+      }
+    }
+
+    private void TryExit(StateManager stateManager) {
+      if (!Input.GetButtonDown("Cancel")) {
+        return;
+      }
+
+      stateManager.Transition(PanelState.Grid);
+    }
+    
+    // 1. Handle input mode toggle
+    // if mode is menu:
+    //  2. Handle input ability select
+    //  3. Handle input ability cycling
+    public void HandleInput(StateManager stateManager) {
+      TryExit(stateManager);
+      
+      var actor = ui.ActiveActor;
+      if (actor == null || actor.Alignment != ActorAlignment.Ally) {
+        return;
+      }
+      
+      TryInputModeToggle(stateManager, actor);
+      
+      bool select = Input.GetButtonDown("Submit");
+      if (select) {
+        SelectAbility(stateManager);
+        return;
+      }
+      
+      bool v = Input.GetButtonDown("Vertical");
+      if (v) {
+        int dy = Mathf.RoundToInt(Input.GetAxis("Vertical"));
+        CycleAbility(actor, dy);
+      }
     }
   }
 }

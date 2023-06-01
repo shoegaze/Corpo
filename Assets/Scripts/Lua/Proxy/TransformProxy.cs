@@ -3,11 +3,6 @@ using UnityEngine;
 
 namespace Lua.Proxy {
   public class TransformProxy {
-    static TransformProxy() {
-      UserData.RegisterProxyType<TransformProxy, Transform>(
-              t => new TransformProxy(t));
-    }
-
     private readonly Transform t;
 
     public Vector3 Position {

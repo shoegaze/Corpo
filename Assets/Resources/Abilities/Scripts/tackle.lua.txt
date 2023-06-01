@@ -1,13 +1,14 @@
 -- globals:
---
+--  log: s => ()
 --  warn: s => ()
 --  err: s => ()
+--
 --  duration: float [seconds] :: [0,+inf)
 --  grid: BattleGrid
 
 -- @return success_flag: bool
 function start()
-  log("TODO: Make async?")
+  warn("TODO: Make async?")
   warn("TODO: Get ref to Tackle: AnimatedSprite")
 
   return true
@@ -16,25 +17,20 @@ end
 -- source: CellData
 -- @return cells: { {x: int, y: int} }
 function get_candidate_cells(source)
-  -- local cell = source.cell
-  -- print(cell)
+  local cell = source.cell
+  local x = cell.x
+  local y = cell.y
 
-  -- local i = cell.x
-  -- local j = cell.y
+  warn("TODO: Helper function for these types of constructs\n" ..
+       " => addv(vec2 a, vec2 b) -> vec2\n" ..
+       " => zip(addv, [vec2] as, [vec2] bs) -> [vec2]")
 
-  warn("TODO: Filter cells that collide with wall")
-  warn("TODO: Helper function for these types of constructs")
-
-  --  => addv(vec2 a, vec2 b) -> vec2
-  --  => zip(addv, [vec2] as, [vec2] bs) -> [vec2]
-  --  => can_access(BattleGrid grid, [i,j] source, [i,j] target) -> bool
-  --  => filter(can_access, ...)
   return {
-    -- { x = i - 1, y = j + 1 },
-    -- { x = i    , y = j + 1 },
-    -- { x = i + 1, y = j + 1 },
-    -- { x = i - 1, y = j - 1 },
-    -- { x = i + 1, y = j + 1 }
+    { x - 1, y + 1 },
+    { x    , y + 1 },
+    { x + 1, y + 1 },
+    { x - 1, y - 1 },
+    { x + 1, y - 1 }
   }
 end
 

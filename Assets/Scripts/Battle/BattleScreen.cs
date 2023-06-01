@@ -21,6 +21,7 @@ namespace Battle {
     }
     
     private void BuildBackgroundView(BattleGrid grid) {
+      // TODO: Configure this from inspector
       const float w = 5f;
       const float h = 5f;
       

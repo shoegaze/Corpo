@@ -4,10 +4,12 @@ using UnityEngine;
 // ReSharper disable EventNeverSubscribedTo.Global
 
 namespace Battle.UI {
-  [RequireComponent(typeof(Menu))]
+  [RequireComponent(typeof(StateManager), 
+                    typeof(Menu))]
   public class BattleUI : MonoBehaviour {
     [SerializeField] private BattleController battle;
 
+    private StateManager stateManager;
     private Menu menu;
     
     // Menu
@@ -18,11 +20,11 @@ namespace Battle.UI {
     public event Action<int> OnAbilityIndexChanged;
     
     // Statusbar
-    public Mode Mode { get; private set; }
+    public PanelState PanelState { get; private set; }
     public ActorAlignment Team { get; private set; }
     public int Turn { get; private set; }
     
-    public event Action<Mode> OnModeChanged;
+    public event Action<PanelState> OnPanelStateChanged;
     public event Action<ActorAlignment> OnTeamChanged;
     public event Action<int> OnTurnChanged;
     
@@ -34,6 +36,7 @@ namespace Battle.UI {
     public event Action<bool> OnDoEnemiesWinChanged;
 
     protected void Awake() {
+      stateManager = GetComponent<StateManager>();
       menu = GetComponent<Menu>();
     }
 
@@ -44,12 +47,12 @@ namespace Battle.UI {
       OnActiveActorChanged?.Invoke(ActiveActor);
       OnAbilityIndexChanged?.Invoke(AbilityIndex);
     
-      Mode = Mode.Grid;
-      // HACK:
+      PanelState = PanelState.Grid;
+      // HACK: Should probably add ActorAlignment.None
       Team = ActorAlignment.Ally;
       Turn = battle.Turn;
       
-      OnModeChanged?.Invoke(Mode);
+      OnPanelStateChanged?.Invoke(PanelState);
       OnTeamChanged?.Invoke(Team);
       OnTurnChanged?.Invoke(Turn);
       
@@ -61,10 +64,14 @@ namespace Battle.UI {
     }
 
     protected void Update() {
-      var mode = menu.Mode;
-      if (mode != Mode) {
-        Mode = mode;
-        OnModeChanged?.Invoke(Mode);
+      UpdateStates();
+    }
+
+    private void UpdateStates() {
+      var mode = stateManager.PanelState;
+      if (mode != PanelState) {
+        PanelState = mode;
+        OnPanelStateChanged?.Invoke(PanelState);
       }
 
       var activeActor = battle.ActiveActor;
@@ -98,7 +105,7 @@ namespace Battle.UI {
       if (doEnemiesWin != DoEnemiesWin) {
         DoEnemiesWin = doEnemiesWin;
         OnDoEnemiesWinChanged?.Invoke(DoEnemiesWin);
-      }
+      }     
     }
   }
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 
 namespace Lua {
+  // TODO: Move up namespaces
   public class CellData {
     public Actor.Actor Actor { get; }
     public Vector2Int Cell { get; }

@@ -21,6 +21,11 @@ namespace Battle {
       
       GridActors = new List<(Actor.Actor, Vector2Int)>();
     }
+
+    public bool IsValidCell(Vector2Int cell) {
+      return cell.x >= 0 && cell.x < Width && 
+             cell.y >= 0 && cell.y < Height;
+    }
   
     private void BuildEdges() {
       for (var x = 0; x < Width; x++) {
@@ -137,13 +142,11 @@ namespace Battle {
     }
 
     public bool AreConnected(Vector2Int from, Vector2Int to) {
-      if (from.x < 0 || from.x >= Width ||
-          from.y < 0 || from.y >= Height) {
+      if (!IsValidCell(from)) {
         return false;
       }
-      
-      if (to.x < 0 || to.x >= Width ||
-          to.y < 0 || to.y >= Height) {
+
+      if (!IsValidCell(to)) {
         return false;
       }
 

@@ -14,6 +14,7 @@ namespace Data {
       this.rawScript = rawScript;
     }
 
+    // TODO:
     // public bool IsValid() { ... }
   }
 }

@@ -3,18 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Lua.Proxy;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
 namespace Lua {
+  [RequireComponent(typeof(ScriptRunner))]
   public class AbilityScriptRunner : MonoBehaviour {
-    static AbilityScriptRunner() {
-      UserData.RegisterAssembly();
-      
-      // TODO: Move this up
-      Script.DefaultOptions.DebugPrint = Debug.Log;
-    }
-  
     private AbilityData data;
     
     private readonly Script script = new(CoreModules.Preset_SoftSandbox);
@@ -77,15 +72,18 @@ namespace Lua {
       var actor = game.Battle.ActiveActor;
       Debug.Assert(actor != null);
        
-      var cell = game.Battle.Grid.GetPosition(actor).Value;
-      var candidates = script.Call(
-              scriptFnGetCandidateCells,
-              new CellData(actor, cell));
+      var cell = game.Battle.Grid.GetPosition(actor);
+      Debug.Assert(cell != null);
+      
+      var cellData = new CellData(actor, cell.Value); 
+      var candidates = script.Call(scriptFnGetCandidateCells, cellData);
 
-      return candidates.Table.Values.Select(v => {
-        var table = v.Table;
-        var x = (int)table["x"];
-        var y = (int)table["y"];
+      return candidates.Table.Values.Select(c => {
+        // TODO: Support coord chains (i.e. IEnumerable<(x,y)>)
+        var coord = c.Table.Values.ToArray();
+        
+        var x = (int)(coord[0].Number);
+        var y = (int)(coord[1].Number);
          
         return new Vector2Int(x, y);
       });
@@ -106,9 +104,9 @@ namespace Lua {
       while (t <= 1f) {
         // script.Call(
         //         scriptFnAnimate,
-        //         t,
         //         { actor: 10, cell: (11, 12) },
-        //         { actor: 13, cell: (14, 15) }
+        //         { actor: 13, cell: (14, 15) },
+        //         t
         // );
        
         yield return new WaitForEndOfFrame();
