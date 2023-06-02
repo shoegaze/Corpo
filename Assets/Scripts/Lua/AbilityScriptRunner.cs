@@ -23,7 +23,7 @@ namespace Lua {
     private object scriptFnAnimate;
 
     // HACK:
-    private string ScriptName => data.Name + ".lua";
+    public string ScriptName => data.Name + ".lua";
      
     // TODO: Return bool based on validation
     public void Load(AbilityScript abilityScript) {

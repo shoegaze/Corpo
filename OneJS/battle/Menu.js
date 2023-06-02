@@ -8,8 +8,9 @@ var Menu = function (_a) {
     var _b, _c, _d, _e;
     var battleUI = _a.battleUI;
     var _f = (0, onejs_1.useEventfulState)(battleUI, 'PanelState'), panelState = _f[0], _setPanelState = _f[1];
-    var _g = (0, onejs_1.useEventfulState)(battleUI, 'ActiveActor'), activeActor = _g[0], _setActiveActor = _g[1];
-    var _h = (0, onejs_1.useEventfulState)(battleUI, 'AbilityIndex'), abilityIndex = _h[0], _setAbilityIndex = _h[1];
+    var _g = (0, onejs_1.useEventfulState)(battleUI, 'FocusState'), focusState = _g[0], _setFocusState = _g[1];
+    var _h = (0, onejs_1.useEventfulState)(battleUI, 'ActiveActor'), activeActor = _h[0], _setActiveActor = _h[1];
+    var _j = (0, onejs_1.useEventfulState)(battleUI, 'AbilityIndex'), abilityIndex = _j[0], _setAbilityIndex = _j[1];
     return ((0, preact_1.h)("div", { class: 'absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700', style: {
             unityFontDefinition: preload_1.font,
             borderColor: 'white',
@@ -28,16 +29,24 @@ var Menu = function (_a) {
             (0, preact_1.h)("label", { text: "Name" }),
             (0, preact_1.h)("div", { class: 'grow' }),
             (0, preact_1.h)("label", { text: "Cost" })),
-        (0, preact_1.h)("div", { class: 'text-4xl' }, (_e = activeActor === null || activeActor === void 0 ? void 0 : activeActor.Abilities.map(function (ability, i) { return ((0, preact_1.h)("div", { class: 'flex flex-row px-6 py-3', style: {
-                backgroundColor: i % 2 === 0 ? '#7DAFBD' : '#51778A',
-                borderColor: 'white',
-                borderTopWidth: panelState === 1 && i === abilityIndex ? 4 : 0,
-                borderBottomWidth: panelState === 1 && i === abilityIndex ? 4 : 0
-            } },
-            (0, preact_1.h)("image", { sprite: ability.Icon, class: 'w-[64px] h-[64px] bg-slate-700' }),
-            (0, preact_1.h)("div", { class: 'grow' }),
-            (0, preact_1.h)("label", { text: ability.Name }),
-            (0, preact_1.h)("div", { class: 'grow' }),
-            (0, preact_1.h)("label", { text: ability.Cost.toString() }))); })) !== null && _e !== void 0 ? _e : '')));
+        (0, preact_1.h)("div", { class: 'text-4xl' }, (_e = activeActor === null || activeActor === void 0 ? void 0 : activeActor.Abilities.map(function (ability, i) {
+            var isEvenEntry = i % 2 === 0;
+            var isMenuFocused = panelState === 1;
+            var isAbilityFocused = focusState === 1 || focusState === 2;
+            var isSelected = i === abilityIndex;
+            return ((0, preact_1.h)("div", { class: 'flex flex-row px-6 py-3', style: {
+                    backgroundColor: isEvenEntry ? '#7DAFBD' : '#51778A',
+                    borderColor: 'white',
+                    borderTopWidth: isSelected && isMenuFocused ? 4 : 0,
+                    borderBottomWidth: isSelected && isMenuFocused ? 4 : 0,
+                    marginLeft: isSelected && isAbilityFocused ? -16 : 0,
+                    marginRight: isSelected && isAbilityFocused ? 16 : 0
+                } },
+                (0, preact_1.h)("image", { sprite: ability.Icon, class: 'w-[64px] h-[64px] bg-slate-700' }),
+                (0, preact_1.h)("div", { class: 'grow' }),
+                (0, preact_1.h)("label", { text: ability.Name }),
+                (0, preact_1.h)("div", { class: 'grow' }),
+                (0, preact_1.h)("label", { text: ability.Cost.toString() })));
+        })) !== null && _e !== void 0 ? _e : '')));
 };
 exports.Menu = Menu;

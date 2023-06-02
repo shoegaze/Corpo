@@ -65,6 +65,8 @@ namespace Battle {
     }
 
     private void IncrementTurn() {
+      // TODO: Reset panelState, focusState
+      
       turn++;
     }
 
@@ -139,6 +141,18 @@ namespace Battle {
    
     private void EndBattle() {
       Game.EndBattle();
+    }
+
+    public void TryDoAbility(CellData source, CellData target) {
+      Debug.LogFormat(
+              "Executing ability [{0}]: source => {1}, target => {2}",
+              AbilityScriptRunner.ScriptName,
+              source,
+              target);
+      
+      AbilityScriptRunner.ExecuteAnimate(Game, source, target);
+      // TODO: Increment turn only after animation ends
+      IncrementTurn();
     }
     
     // @return bool decided 

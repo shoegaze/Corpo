@@ -85,9 +85,8 @@ namespace Battle.UI {
         var targetActor = battle.Grid.GetActor(targetCell);
         var target = new CellData(targetActor, targetCell);
         
-        Debug.LogFormat("TODO: Activating ability at {0}", target);
-        
-        abilityScriptRunner.ExecuteAnimate(battle.Game, source, target);
+        // TODO: Move below to
+        battle.TryDoAbility(source, target);
       }
     }
 
@@ -152,28 +151,49 @@ namespace Battle.UI {
       cursor = -1;
     }
 
-    private Vector2Int? ClosestCellTo(Vector2Int position) {
+    private Vector2Int? ClosestCell(Vector2Int position) {
       if (cells.Count == 0) {
         return null;
       }
       
       return cells.Aggregate(
-              cells.First(),
-              (minCoord, coord) => { 
-                // TODO: What to do in a tie?
-                //  => Prioritize different cell
-                //   -> Calculate AABB for cells
-                //   -> position = mod(position, AABB)
-                //   -> distance = (p - c).sqrMagnitude
-                int distance = (position - coord).sqrMagnitude;
-                int minDistance = (position - minCoord).sqrMagnitude; 
+          cells.First(),
+          (minCoord, coord) => { 
+            int distance = (position - coord).sqrMagnitude;
+            int minDistance = (position - minCoord).sqrMagnitude; 
                 
-                if (distance < minDistance) { 
-                  return coord;
-                }
+            if (distance < minDistance) { 
+              return coord;
+            }
                 
-                return minCoord;
-      });
+            return minCoord;
+          }); 
+    }
+
+    // TODO: What to do in a tie?
+    //  => Prioritize different cell
+    //   -> Calculate AABB for cells
+    //   -> position = mod(position, AABB)
+    //   -> distance = (p - c).sqrMagnitude
+    private Vector2Int? ChooseCell(Vector2Int position, Vector2Int direction) {
+      if (cells.Count == 0) {
+        return null;
+      }
+
+      var p = position + direction;
+      var result = ClosestCell(p);
+      
+      // TODO:
+      // while (battle.Grid.IsValidCell(p)) {
+      //   p += direction;
+      //   var cell = ClosestCell(p);
+      //
+      //   if (cell != result) {
+      //     break;
+      //   }
+      // }
+
+      return result;
     }
 
     private void MoveCursor(Vector2Int direction) {
@@ -184,7 +204,7 @@ namespace Battle.UI {
       Debug.Assert(cursor >= 0);
       
       var source = cells[cursor];
-      var target = ClosestCellTo(source + direction);
+      var target = ChooseCell(source, direction);
       Debug.Assert(target != null);
 
       cursor = cells.IndexOf(target.Value);

@@ -4,6 +4,7 @@ import { font } from "preload"
 
 export const Menu = ({ battleUI }: { battleUI: any }) => {
   const [panelState, _setPanelState] = useEventfulState(battleUI, 'PanelState')
+  const [focusState, _setFocusState] = useEventfulState(battleUI, 'FocusState')
   const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
   const [abilityIndex, _setAbilityIndex] = useEventfulState(battleUI, 'AbilityIndex')
 
@@ -33,20 +34,29 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
       <div class='text-4xl'>
         {/* TODO: Change ability type to Ability def */}
         {/* TODO: Store conditions as variables */}
-        {activeActor?.Abilities.map((ability: any, i: number) => (
-          <div class='flex flex-row px-6 py-3' style={{
-            backgroundColor: i % 2 === 0 ? '#7DAFBD' : '#51778A',
-            borderColor: 'white',
-            borderTopWidth: panelState === 1 && i === abilityIndex ? 4 : 0,
-            borderBottomWidth: panelState === 1 && i === abilityIndex ? 4 : 0
-          }}>
-            <image sprite={ability.Icon} class='w-[64px] h-[64px] bg-slate-700' />
-            <div class='grow'></div>
-            <label text={ability.Name} />
-            <div class='grow'></div>
-            <label text={ability.Cost.toString()} />
-          </div>
-        )) ?? ''}
+        {activeActor?.Abilities.map((ability: any, i: number) => {
+          const isEvenEntry = i % 2 === 0
+          const isMenuFocused = panelState === 1
+          const isAbilityFocused = focusState === 1 || focusState === 2
+          const isSelected = i === abilityIndex
+
+          return (
+            <div class='flex flex-row px-6 py-3' style={{
+              backgroundColor: isEvenEntry ? '#7DAFBD' : '#51778A',
+              borderColor: 'white',
+              borderTopWidth: isSelected && isMenuFocused ? 4 : 0,
+              borderBottomWidth: isSelected && isMenuFocused ? 4 : 0,
+              marginLeft: isSelected && isAbilityFocused ? -16 : 0,
+              marginRight: isSelected && isAbilityFocused ? 16 : 0
+            }}>
+              <image sprite={ability.Icon} class='w-[64px] h-[64px] bg-slate-700' />
+              <div class='grow'></div>
+              <label text={ability.Name} />
+              <div class='grow'></div>
+              <label text={ability.Cost.toString()} />
+            </div>
+          )
+        }) ?? ''}
       </div>
     </div>
   )

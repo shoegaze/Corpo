@@ -21,10 +21,12 @@ namespace Battle.UI {
     
     // Statusbar
     public PanelState PanelState { get; private set; }
+    public FocusState FocusState { get; private set; }
     public ActorAlignment Team { get; private set; }
     public int Turn { get; private set; }
     
     public event Action<PanelState> OnPanelStateChanged;
+    public event Action<FocusState> OnFocusStateChanged;
     public event Action<ActorAlignment> OnTeamChanged;
     public event Action<int> OnTurnChanged;
     
@@ -48,11 +50,13 @@ namespace Battle.UI {
       OnAbilityIndexChanged?.Invoke(AbilityIndex);
     
       PanelState = PanelState.Grid;
+      FocusState = FocusState.Free;
       // HACK: Should probably add ActorAlignment.None
       Team = ActorAlignment.Ally;
       Turn = battle.Turn;
       
       OnPanelStateChanged?.Invoke(PanelState);
+      OnFocusStateChanged?.Invoke(FocusState);
       OnTeamChanged?.Invoke(Team);
       OnTurnChanged?.Invoke(Turn);
       
@@ -68,10 +72,16 @@ namespace Battle.UI {
     }
 
     private void UpdateStates() {
-      var mode = stateManager.PanelState;
-      if (mode != PanelState) {
-        PanelState = mode;
+      var panelState = stateManager.PanelState;
+      if (panelState != PanelState) {
+        PanelState = panelState;
         OnPanelStateChanged?.Invoke(PanelState);
+      }
+
+      var focusState = stateManager.FocusState;
+      if (focusState != FocusState) {
+        FocusState = focusState;
+        OnFocusStateChanged?.Invoke(FocusState);
       }
 
       var activeActor = battle.ActiveActor;
