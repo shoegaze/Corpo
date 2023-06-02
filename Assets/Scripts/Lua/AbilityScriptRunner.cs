@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Battle;
 using Data;
 using MoonSharp.Interpreter;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Lua {
     
     // TODO: Lock script execution when animation loop is running
     // private bool locked;
+    private BattleController battle;
     
     private readonly Script script = new(CoreModules.Preset_SoftSandbox);
     // TODO: Replace object types with Func<...>
@@ -24,7 +26,12 @@ namespace Lua {
 
     // HACK:
     public string ScriptName => data.Name + ".lua";
-     
+
+    protected void Start() {
+      var go = GameObject.FindWithTag("BattleController");
+      battle = go.GetComponent<BattleController>();
+    }
+
     // TODO: Return bool based on validation
     public void Load(AbilityScript abilityScript) {
       data = abilityScript.Data;
@@ -71,10 +78,10 @@ namespace Lua {
        
       UpdateScriptGlobals(game);
        
-      var actor = game.Battle.ActiveActor;
+      var actor = battle.ActiveActor;
       Debug.Assert(actor != null);
        
-      var cell = game.Battle.Grid.GetPosition(actor);
+      var cell = battle.Grid.GetPosition(actor);
       Debug.Assert(cell != null);
       
       var cellData = new CellData(actor, cell.Value); 

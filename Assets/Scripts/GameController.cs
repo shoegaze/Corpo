@@ -18,7 +18,6 @@ public class GameController : MonoBehaviour {
   // public GameMode GameMode => gameMode;
   // public ResourcesCache Resources => ... 
   // ReSharper disable once MemberCanBePrivate.Global
-  public BattleController Battle { get; private set; }
 
   // ReSharper disable once EventNeverSubscribedTo.Global
   public event Action<GameMode> OnModeChanged;
@@ -46,15 +45,10 @@ public class GameController : MonoBehaviour {
     var battleScene = SceneManager.GetSceneByName("Battle");
     SceneManager.SetActiveScene(battleScene);
     
-    var battleRoot = battleScene.GetRootGameObjects().First();
-    Battle = battleRoot.GetComponent<BattleController>();
-    
     StartBattle();
   }
 
   private IEnumerator UnloadBattleScene() {
-    Battle = null;
-    
     var load = SceneManager.UnloadSceneAsync("Battle");
 
     while (!load.isDone) {
@@ -69,17 +63,20 @@ public class GameController : MonoBehaviour {
   private void StartBattle() {
     gameMode = GameMode.Battle;
     OnModeChanged?.Invoke(gameMode);
+
+    var go = GameObject.FindWithTag("BattleController");
+    var battle = go.GetComponent<BattleController>();
     
     var enemies = new List<Actor.Actor>();
     { // Generate random battle
       const uint n = 1;
       for (var i = 0; i < n; i++) {
-        var enemy = Battle.GetRandomEnemy();
+        var enemy = battle.GetRandomEnemy();
         enemies.Add(enemy);  
       }
     }
     
-    Battle.StartBattle(allies.Actors, enemies);
+    battle.StartBattle(allies.Actors, enemies);
   }
 
   public void EndBattle() {
