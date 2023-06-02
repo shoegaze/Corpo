@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Lua;
 using Shapes;
 using UnityEngine;
 
@@ -16,15 +17,19 @@ namespace Battle.UI {
     private readonly List<Vector2Int> cells = new();
     private int cursor = -1;
 
-    private BattleGrid grid;
+    private AbilityScriptRunner abilityScriptRunner;
 
     public FocusState FocusState { get; set; }
     
     protected void Start() {
-      grid = battle.Grid;
+      abilityScriptRunner = battle.AbilityScriptRunner;
     }
 
     public override void DrawShapes(Camera cam) {
+      if (FocusState == FocusState.Select) {
+        return;
+      }
+      
       using (Draw.Command(cam)) {
         for (var i = 0; i < cells.Count; i++) {
           var cell = cells[i];
@@ -66,18 +71,23 @@ namespace Battle.UI {
       }
 
       if (stateManager.FocusState == FocusState.Free) {
-        // TODO
-        Debug.Log("TODO: Focus mode");
-        
         stateManager.Transition(FocusState.Focus);
       }
       else if (stateManager.FocusState == FocusState.Focus) {
-        // TODO: Activate ability
-        var target = cells[cursor];
+        stateManager.Transition(FocusState.Select);
+        
+        var sourceActor = battle.ActiveActor;
+        var sourceCell = battle.Grid.GetPosition(sourceActor).Value;
+        var source = new CellData(sourceActor, sourceCell);
+        
+        var targetCell = cells[cursor];
+        // Nullable:
+        var targetActor = battle.Grid.GetActor(targetCell);
+        var target = new CellData(targetActor, targetCell);
         
         Debug.LogFormat("TODO: Activating ability at {0}", target);
         
-        stateManager.Transition(FocusState.Select);
+        abilityScriptRunner.ExecuteAnimate(battle.Game, source, target);
       }
     }
 
@@ -122,7 +132,7 @@ namespace Battle.UI {
       
       foreach (var candidate in candidates) {
         // Cull OOB
-        if (!grid.IsValidCell(candidate)) {
+        if (!battle.Grid.IsValidCell(candidate)) {
           continue;
         }
         

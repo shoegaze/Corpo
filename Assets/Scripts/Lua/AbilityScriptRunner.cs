@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
-using Lua.Proxy;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -11,6 +10,9 @@ namespace Lua {
   [RequireComponent(typeof(ScriptRunner))]
   public class AbilityScriptRunner : MonoBehaviour {
     private AbilityData data;
+    
+    // TODO: Lock script execution when animation loop is running
+    // private bool locked;
     
     private readonly Script script = new(CoreModules.Preset_SoftSandbox);
     // TODO: Replace object types with Func<...>
@@ -21,7 +23,7 @@ namespace Lua {
     private object scriptFnAnimate;
 
     // HACK:
-    public string ScriptName => data.Name + ".lua";
+    private string ScriptName => data.Name + ".lua";
      
     // TODO: Return bool based on validation
     public void Load(AbilityScript abilityScript) {
@@ -90,8 +92,9 @@ namespace Lua {
     }
 
     // TODO
-    private IEnumerator DoAnimationLoop() {
+    private IEnumerator DoAnimationLoop(CellData source, CellData target) {
       // TODO: Lock input until animation loop is done
+      // locked = true;
       
       // DEBUG:
       const float duration = 1f;
@@ -99,29 +102,26 @@ namespace Lua {
       float startTime = Time.time;
       var t = 0f;
        
-      // script.Call(scriptFnBeforeAnimation, { actor: 4, cell: (5, 6) });
+      script.Call(scriptFnBeforeAnimation, source);
 
       while (t <= 1f) {
-        // script.Call(
-        //         scriptFnAnimate,
-        //         { actor: 10, cell: (11, 12) },
-        //         { actor: 13, cell: (14, 15) },
-        //         t
-        // );
+        script.Call(scriptFnAnimate, source, target, t);
        
         yield return new WaitForEndOfFrame();
 
         t = (Time.time - startTime) / duration;
       }
        
-      // script.Call(scriptFnAfterAnimation, { actor: 7, cell: (8, 9) });
+      script.Call(scriptFnAfterAnimation, source);
+
+      // locked = false;
     }
 
-    public void ExecuteAnimate(GameController game, float t) {
+    public void ExecuteAnimate(GameController game, CellData source, CellData target) {
       Debug.Assert(enabled && script != null);
        
       UpdateScriptGlobals(game);
-      StartCoroutine(DoAnimationLoop());
+      StartCoroutine(DoAnimationLoop(source, target));
     }
   }
 }

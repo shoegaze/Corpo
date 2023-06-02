@@ -6,15 +6,17 @@ using Battle;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(ResourcesCache), typeof(Team))]
+[RequireComponent(typeof(ResourcesCache), 
+                  typeof(Team))]
 public class GameController : MonoBehaviour {
-  [SerializeField] private GameMode mode = GameMode.World;
+  [SerializeField] private GameMode gameMode = GameMode.World;
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 
   private Team allies;
 
-  public GameMode Mode => mode;
+  // public GameMode GameMode => gameMode;
+  // public ResourcesCache Resources => ... 
   // ReSharper disable once MemberCanBePrivate.Global
   public BattleController Battle { get; private set; }
 
@@ -65,8 +67,8 @@ public class GameController : MonoBehaviour {
   }
   
   private void StartBattle() {
-    mode = GameMode.Battle;
-    OnModeChanged?.Invoke(mode);
+    gameMode = GameMode.Battle;
+    OnModeChanged?.Invoke(gameMode);
     
     var enemies = new List<Actor.Actor>();
     { // Generate random battle
@@ -81,8 +83,8 @@ public class GameController : MonoBehaviour {
   }
 
   public void EndBattle() {
-    mode = GameMode.World;
-    OnModeChanged?.Invoke(mode);
+    gameMode = GameMode.World;
+    OnModeChanged?.Invoke(gameMode);
     
     Debug.Log("Unloading battle scene");
     

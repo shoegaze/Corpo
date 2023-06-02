@@ -6,11 +6,10 @@ namespace Battle.UI {
   [RequireComponent(typeof(BattleUI))]
   [RequireComponent(typeof(CandidateCells))]
   public class Menu : MonoBehaviour {
-    [SerializeField] private AbilityScriptRunner abilityScriptRunner;
-    
+    [SerializeField] private BattleController battle;
     public int AbilityIndex { get; private set; }
 
-    private GameController game;
+    private AbilityScriptRunner abilityScriptRunner;
     private BattleUI ui;
     private CandidateCells candidateCells;
 
@@ -20,8 +19,7 @@ namespace Battle.UI {
     }
 
     protected void Start() {
-      var go = GameObject.FindWithTag("GameController");
-      game = go.GetComponent<GameController>();
+      abilityScriptRunner = battle.AbilityScriptRunner;
     }
 
     private Ability GetCurrentAbility(Actor.Actor actor) {
@@ -56,10 +54,10 @@ namespace Battle.UI {
         // TODO: Refactor into LoadAbility(game, actor)
         var ability = GetCurrentAbility(actor);
         abilityScriptRunner.Load(ability.Script);
-        abilityScriptRunner.ExecuteStart(game);
+        abilityScriptRunner.ExecuteStart(battle.Game);
         
         // Precondition: Script should be loaded
-        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
+        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
         candidateCells.Queue(candidates);
       }
     }
@@ -75,14 +73,14 @@ namespace Battle.UI {
       // TODO: Refactor into LoadAbility(game, actor)
       var ability = GetCurrentAbility(actor);
       abilityScriptRunner.Load(ability.Script);
-      abilityScriptRunner.ExecuteStart(game);
+      abilityScriptRunner.ExecuteStart(battle.Game);
 
       // Precondition: Script should be loaded
-      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
+      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
       candidateCells.Queue(candidates);
     }
     
-    private void TryInputModeToggle(StateManager stateManager, Actor.Actor actor) {
+    private void TryInputModeToggle(StateManager stateManager) {
       if (Input.GetButtonDown("Toggle")) {
         stateManager.Transition(PanelState.Grid);
       }
@@ -108,7 +106,7 @@ namespace Battle.UI {
         return;
       }
       
-      TryInputModeToggle(stateManager, actor);
+      TryInputModeToggle(stateManager);
       
       bool select = Input.GetButtonDown("Submit");
       if (select) {

@@ -1116,6 +1116,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6492715662685522634, guid: 9036912fd359349feaf0aaf1f97d203c, type: 3}
+      propertyPath: battle
+      value: 
+      objectReference: {fileID: 5674961173881966448}
+    - target: {fileID: 6492715662685522634, guid: 9036912fd359349feaf0aaf1f97d203c, type: 3}
       propertyPath: abilityScriptRunner
       value: 
       objectReference: {fileID: 7561543873490440857}
