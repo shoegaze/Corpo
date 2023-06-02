@@ -18,13 +18,12 @@ namespace Battle {
     [SerializeField] private List<Actor.Actor> order = new List<Actor.Actor>();
     [SerializeField, Min(0)] private int turn;
 
-    private GameController game;
     private ResourcesCache cache;
-    private AbilityScriptRunner abilityScriptRunner;
     private BattleScreen screen;
-    
+
+    public GameController Game { get; private set; }
     public BattleGrid Grid { get; private set; }
-    public AbilityScriptRunner AbilityScriptRunner => abilityScriptRunner;
+    public AbilityScriptRunner AbilityScriptRunner { get; private set; }
 
     public int Turn => turn;
     // GOTCHA: order.Count == 0 until SetUp is called
@@ -40,15 +39,15 @@ namespace Battle {
 
     protected void Awake() {
       Grid = new BattleGrid(width, height);
-      abilityScriptRunner = GetComponent<AbilityScriptRunner>();
+      AbilityScriptRunner = GetComponent<AbilityScriptRunner>();
       screen = GetComponent<BattleScreen>();
-    }
-
-    protected void Start() {
+      
+      
+      // Safe if Battle scene is loaded after Base
       var go = GameObject.FindWithTag("GameController");
       Debug.Assert(go != null);
       
-      game = go.GetComponent<GameController>();
+      Game = go.GetComponent<GameController>();
       cache = go.GetComponent<ResourcesCache>();
     }
 
@@ -139,7 +138,7 @@ namespace Battle {
     }
    
     private void EndBattle() {
-      game.EndBattle();
+      Game.EndBattle();
     }
     
     // @return bool decided 

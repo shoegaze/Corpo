@@ -7,6 +7,7 @@ using UnityEngine;
 namespace Battle.UI {
   [RequireComponent(typeof(StateManager))]
   public class CandidateCells : ImmediateModeShapeDrawer {
+    [SerializeField] private BattleController battle;
     [SerializeField] private Transform origin;
     [SerializeField, Range(0f, 1f)] private float sideLength = 0.5f;
     [SerializeField, Range(0f, 1f)] private float borderSize = 0.1f;
@@ -16,20 +17,12 @@ namespace Battle.UI {
     private readonly List<Vector2Int> cells = new();
     private int cursor = -1;
 
-    private GameController game;
     private AbilityScriptRunner abilityScriptRunner;
-    private BattleGrid grid;
 
     public FocusState FocusState { get; set; }
     
     protected void Start() {
-      var go = GameObject.FindWithTag("GameController");
-      game = go.GetComponent<GameController>();
-      
-      Debug.Assert(game.Battle != null);
-
-      abilityScriptRunner = game.Battle.AbilityScriptRunner;
-      grid = game.Battle.Grid;
+      abilityScriptRunner = battle.AbilityScriptRunner;
     }
 
     public override void DrawShapes(Camera cam) {
@@ -82,8 +75,6 @@ namespace Battle.UI {
       }
       else if (stateManager.FocusState == FocusState.Focus) {
         stateManager.Transition(FocusState.Select);
-
-        var battle = game.Battle;
         
         var sourceActor = battle.ActiveActor;
         var sourceCell = battle.Grid.GetPosition(sourceActor).Value;
@@ -96,7 +87,7 @@ namespace Battle.UI {
         
         Debug.LogFormat("TODO: Activating ability at {0}", target);
         
-        abilityScriptRunner.ExecuteAnimate(game, source, target);
+        abilityScriptRunner.ExecuteAnimate(battle.Game, source, target);
       }
     }
 
@@ -141,7 +132,7 @@ namespace Battle.UI {
       
       foreach (var candidate in candidates) {
         // Cull OOB
-        if (!grid.IsValidCell(candidate)) {
+        if (!battle.Grid.IsValidCell(candidate)) {
           continue;
         }
         
