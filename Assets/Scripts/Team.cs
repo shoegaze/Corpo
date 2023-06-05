@@ -13,12 +13,14 @@ public class Team {
   public ActorAlignment Alignment { get; }
   public int Money { get; private set; }
 
-  public Team(ActorAlignment alignment) {
+  public Team(ActorAlignment alignment, int money) {
     Alignment = alignment;
+    Money = money;
   }
 
-  public Team(ActorAlignment alignment, IEnumerable<Actor.Actor> actors) {
+  public Team(ActorAlignment alignment, int money, IEnumerable<Actor.Actor> actors) {
     Alignment = alignment;
+    Money = money;
     
     foreach (var actor in actors) {
       this.actors.Add(actor);

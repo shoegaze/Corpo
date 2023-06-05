@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {

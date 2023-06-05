@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour {
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 
-  private Team allies = new Team(ActorAlignment.Ally);
+  private Team allies = new(ActorAlignment.Ally, 1000);
   public Team Allies => allies; 
   
   private ResourcesCache resources;
@@ -67,7 +67,7 @@ public class GameController : MonoBehaviour {
     var go = GameObject.FindWithTag("BattleController");
     var battle = go.GetComponent<BattleController>();
     
-    var enemies = new Team(ActorAlignment.Enemy);
+    var enemies = new Team(ActorAlignment.Enemy, 1000);
     { // Generate random battle
       const uint n = 1;
       for (var i = 0; i < n; i++) {

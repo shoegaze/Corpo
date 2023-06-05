@@ -26,28 +26,36 @@ function get_candidate_cells(source)
        " => zip(addv, [vec2] as, [vec2] bs) -> [vec2]")
 
   return {
-    { x - 1, y + 1 },
-    { x    , y + 1 },
-    { x + 1, y + 1 },
-    { x - 1, y - 1 },
-    { x + 1, y - 1 }
+    { x = x - 1, y = y + 1 },
+    { x = x    , y = y + 1 },
+    { x = x + 1, y = y + 1 },
+    { x = x - 1, y = y - 1 },
+    { x = x + 1, y = y - 1 }
   }
 end
 
+local position
+
 -- @params
 --  source: CellData
 -- @return void
-function before_animation(source)
-  warn("TODO: Store actor's original position")
+function before_animation(source, target)
+  position = source.cell
 
+  if target.has_actor then
+    target.actor:take_health(1)
+  end
 end
 
 -- @params
 --  source: CellData
 -- @return void
-function after_animation(source)
-  warn("TODO: Set actor position to its original position")
-
+function after_animation(source, target)
+  source.actor.view_position = {
+    x = position.x,
+    y = position.y,
+    z = 0.0
+  }
 end
 
 -- @params
@@ -56,7 +64,19 @@ end
 --  t: float :: [0,1]
 -- @return void
 function animate(source, target, t)
-  print("TODO: Helper function for procedural animations\n" ..
-        "      such as 'hurt', 'death', 'heal', etc.")
+  -- log("TODO: Helper function for procedural animations\n" ..
+  --     "      such as 'hurt', 'death', 'heal', etc.")
 
+  local from = source.cell
+  local to = target.cell
+
+  log("from: (" .. from.x .. ", " .. from.y .. ")")
+  log("to: (" .. to.x .. ", " .. to.y .. ")")
+  log("interpolation: (" .. proc.boomerang_cubic(from.x, to.x, t) .. ", " .. proc.boomerang_cubic(from.y, to.y, t) .. ")")
+
+  source.actor.view_position = {
+    x = proc.boomerang_cubic(from.x, to.x, t),
+    y = proc.boomerang_cubic(from.y, to.y, t),
+    z = 0.0
+  }
 end

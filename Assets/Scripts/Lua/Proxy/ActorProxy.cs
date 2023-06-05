@@ -1,18 +1,20 @@
-using MoonSharp.Interpreter;
+﻿using MoonSharp.Interpreter;
 using UnityEngine;
 
 namespace Lua.Proxy {
   public class ActorProxy {
-    public Actor.Actor Actor { get; }
+    private Actor.Actor Actor { get; }
 
     [MoonSharpHidden]
     public ActorProxy(Actor.Actor actor) {
       Actor = actor;
     }
     
-    // Manipulate Actor.View instead?
-    public Transform Transform => Actor.transform; 
-    
+    public Vector3 ViewPosition {
+      get => Actor.View.transform.localPosition;
+      set => Actor.View.transform.localPosition = value;
+    }
+
     public string Name => Actor.Name;
     public uint MaxHealth => Actor.MaxHealth;
     public ActorAlignment Alignment => Actor.Alignment;

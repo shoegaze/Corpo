@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -51,7 +52,7 @@ namespace Battle {
                 continue;
               }
   
-              // Index Space
+              // Cell Space
               long i = y * Width + x; // :: [0, n)
               long j = t * Width + s; // :: [0, n)
             
@@ -228,7 +229,7 @@ namespace Battle {
         return false;
       }
 
-      // Index Space
+      // Cell Space
       long i = from.y * Width + from.x;
       long j = to.y * Width + to.x;
     

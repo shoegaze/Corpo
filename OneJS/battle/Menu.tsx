@@ -44,8 +44,8 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
             <div class='flex flex-row px-6 py-3' style={{
               backgroundColor: isEvenEntry ? '#7DAFBD' : '#51778A',
               borderColor: 'white',
-              borderTopWidth: isSelected && isMenuFocused ? 4 : 0,
-              borderBottomWidth: isSelected && isMenuFocused ? 4 : 0,
+              // borderTopWidth: isSelected && isMenuFocused ? 4 : 0,
+              // borderBottomWidth: isSelected && isMenuFocused ? 4 : 0,
               marginLeft: isSelected && isAbilityFocused ? -16 : 0,
               marginRight: isSelected && isAbilityFocused ? 16 : 0
             }}>

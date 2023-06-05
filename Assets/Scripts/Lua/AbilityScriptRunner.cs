@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +40,12 @@ namespace Lua {
       //  script.LoadString(abilityScript.RawScript);
 
       script.DoString(abilityScript.RawScript);
+
+      script.Globals["vector2"] = typeof(Vector2);
+      script.Globals["vector2i"] = typeof(Vector2Int);
+      script.Globals["vector3"] = typeof(Vector3);
+
+      script.Globals["proc"] = new Procedural();
 
       scriptFnStart = script.Globals["start"];
       scriptFnGetCandidateCells = script.Globals["get_candidate_cells"];
@@ -83,16 +89,14 @@ namespace Lua {
        
       var cell = battle.Grid.GetPosition(actor);
       Debug.Assert(cell != null);
-      
+
       var cellData = new CellData(actor, cell.Value); 
       var candidates = script.Call(scriptFnGetCandidateCells, cellData);
 
       return candidates.Table.Values.Select(c => {
         // TODO: Support coord chains (i.e. IEnumerable<(x,y)>)
-        var coord = c.Table.Values.ToArray();
-        
-        var x = (int)(coord[0].Number);
-        var y = (int)(coord[1].Number);
+        int x = (int)c.Table.Get("x").Number;
+        int y = (int)c.Table.Get("y").Number;
          
         return new Vector2Int(x, y);
       });
@@ -109,9 +113,11 @@ namespace Lua {
       float startTime = Time.time;
       var t = 0f;
        
-      script.Call(scriptFnBeforeAnimation, source);
+      Debug.Log("Calling script.before_animation");
+      script.Call(scriptFnBeforeAnimation, source, target);
 
       while (t <= 1f) {
+        Debug.Log("Calling script.animate");
         script.Call(scriptFnAnimate, source, target, t);
        
         yield return new WaitForEndOfFrame();
@@ -119,7 +125,8 @@ namespace Lua {
         t = (Time.time - startTime) / duration;
       }
        
-      script.Call(scriptFnAfterAnimation, source);
+      Debug.Log("Calling script.after_animation");
+      script.Call(scriptFnAfterAnimation, source, target);
 
       // locked = false;
     }

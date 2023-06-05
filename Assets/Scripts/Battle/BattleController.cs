@@ -19,14 +19,14 @@ namespace Battle {
     [SerializeField, Min(0)] private int turn;
 
     private ResourcesCache resources;
-    private BattleScreen screen;
-    
+
     private readonly List<Team> teams = new();
     
     public Team Allies => teams.First(t => t.Alignment == ActorAlignment.Ally);
     public Team Enemies => teams.First(t => t.Alignment == ActorAlignment.Enemy);
 
     public GameController Game { get; private set; }
+    public BattleScreen Screen { get; private set; }
     public BattleGrid Grid { get; private set; }
     public AbilityScriptRunner AbilityScriptRunner { get; private set; }
 
@@ -43,10 +43,9 @@ namespace Battle {
                                          .Any(e => e.IsAlive);
 
     protected void Awake() {
+      Screen = GetComponent<BattleScreen>();
       Grid = new BattleGrid(width, height);
       AbilityScriptRunner = GetComponent<AbilityScriptRunner>();
-      screen = GetComponent<BattleScreen>();
-      
       
       // Safe if Battle scene is loaded after Base
       var go = GameObject.FindWithTag("GameController");
@@ -70,8 +69,10 @@ namespace Battle {
     }
 
     private void IncrementTurn() {
+      // TODO: if (IsPlayerTurn) { 
       ui.StateManager.Transition(PanelState.Grid);
       ui.StateManager.Transition(FocusState.Free);
+      // }
       
       turn++;
     }
@@ -88,7 +89,7 @@ namespace Battle {
         Grid.RandomlyPlaceActors(order);
       }
       
-      screen.BuildViews(Grid, resources);
+      Screen.BuildViews(Grid, resources);
     }
 
     public void StartBattle(Team allies, Team enemies) {
@@ -152,7 +153,7 @@ namespace Battle {
     public void TryDoAbility(CellData source, CellData target) {
       var team = source.Actor.Team;
       
-      // HACK:
+      // HACK: Strip .lua extension
       string name = AbilityScriptRunner.ScriptName;
       name = name[..^4];
       
@@ -172,8 +173,9 @@ namespace Battle {
               AbilityScriptRunner.ScriptName,
               source,
               target);
-      
+
       AbilityScriptRunner.ExecuteAnimate(Game, source, target);
+      
       // TODO: Increment turn only after animation ends
       IncrementTurn();
     }

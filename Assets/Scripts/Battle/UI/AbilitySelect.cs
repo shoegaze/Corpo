@@ -17,13 +17,7 @@ namespace Battle.UI {
     private readonly List<Vector2Int> candidates = new();
     private int cursor = -1;
 
-    private AbilityScriptRunner abilityScriptRunner;
-
     public FocusState FocusState { get; set; }
-    
-    protected void Start() {
-      abilityScriptRunner = battle.AbilityScriptRunner;
-    }
 
     public override void DrawShapes(Camera cam) {
       if (FocusState == FocusState.Select) {

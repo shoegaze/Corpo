@@ -75,7 +75,6 @@ GameObject:
   - component: {fileID: 3701496312312920736}
   - component: {fileID: 3873889800685364556}
   - component: {fileID: 1619703684}
-  - component: {fileID: 7207554669875506877}
   m_Layer: 0
   m_Name: Game Controller
   m_TagString: GameController
@@ -126,24 +125,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b89e9786a724b75b946507b02dd846, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 0
+  gameMode: 0
   year: 0
   quarter: 0
---- !u!114 &7207554669875506877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3701496312312920751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dde70ee876f2542f89b5a3a72781e870, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  money: 1000
-  maxMembers: 4
-  actors: []
 --- !u!1 &4906571615916227682
 GameObject:
   m_ObjectHideFlags: 0
