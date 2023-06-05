@@ -104,19 +104,20 @@ namespace Lua {
 
     // TODO
     private IEnumerator DoAnimationLoop(CellData source, CellData target) {
-      // TODO: Lock input until animation loop is done
-      // locked = true;
+      battle.LockTurn();
       
       // DEBUG:
       const float duration = 1f;
        
       float startTime = Time.time;
-      var t = 0f;
+      float t = 0f;
        
       Debug.Log("Calling script.before_animation");
       script.Call(scriptFnBeforeAnimation, source, target);
 
       while (t <= 1f) {
+        // TODO: Calculate float seconds = duration * t;
+        
         Debug.Log("Calling script.animate");
         script.Call(scriptFnAnimate, source, target, t);
        
@@ -128,12 +129,16 @@ namespace Lua {
       Debug.Log("Calling script.after_animation");
       script.Call(scriptFnAfterAnimation, source, target);
 
-      // locked = false;
+      battle.UnlockTurn();
+
+      while (!battle.IncrementTurn()) {
+        yield return new WaitForEndOfFrame();
+      }
     }
 
     public void ExecuteAnimate(GameController game, CellData source, CellData target) {
       Debug.Assert(script != null);
-       
+
       UpdateScriptGlobals(game);
       StartCoroutine(DoAnimationLoop(source, target));
     }

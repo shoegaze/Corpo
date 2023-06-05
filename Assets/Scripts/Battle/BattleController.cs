@@ -19,6 +19,7 @@ namespace Battle {
     [SerializeField, Min(0)] private int turn;
 
     private ResourcesCache resources;
+    private int turnLock;
 
     private readonly List<Team> teams = new();
     
@@ -29,7 +30,7 @@ namespace Battle {
     public BattleScreen Screen { get; private set; }
     public BattleGrid Grid { get; private set; }
     public AbilityScriptRunner AbilityScriptRunner { get; private set; }
-
+    
     public int Turn => turn;
     // GOTCHA: order.Count == 0 until SetUp is called
     public Actor.Actor ActiveActor => order.Count > 0 ? order[turn % order.Count] : null;
@@ -68,13 +69,32 @@ namespace Battle {
       return Instantiate(actor, instanceRoot);
     }
 
-    private void IncrementTurn() {
-      // TODO: if (IsPlayerTurn) { 
-      ui.StateManager.Transition(PanelState.Grid);
-      ui.StateManager.Transition(FocusState.Free);
-      // }
+    public void LockTurn() {
+      turnLock++;
+    }
+    
+    public void UnlockTurn() {
+      turnLock--;
+      turnLock = Mathf.Max(turnLock, 0);
+    }
+
+    public bool IncrementTurn() {
+      if (turnLock > 0) {
+        return false;
+      }
       
+      // TODO:
+      if (ui.StateManager.PanelState != PanelState.Grid) { 
+        ui.StateManager.Transition(PanelState.Grid);
+      }
+      
+      if (ui.StateManager.FocusState != FocusState.Free) {
+        ui.StateManager.Transition(FocusState.Free);
+      }
+
       turn++;
+
+      return true;
     }
 
     private void SetUp(Team allies, Team enemies) {
@@ -100,6 +120,11 @@ namespace Battle {
     private IEnumerator DoBattle() {
       while (!DoAlliesWin && !DoEnemiesWin) {
         while (true) { // Do turn
+          if (turnLock > 0) {
+            yield return new WaitForEndOfFrame();
+            continue;
+          }
+          
           bool decided;
 
           if (ActiveActor.Alignment == ActorAlignment.Ally) {
@@ -118,21 +143,10 @@ namespace Battle {
 
           yield return null;
         }
-        
-        { // Wait for actor animations to end
-          var anims = Grid.GridActors
-                          .Select(v => v.actor)
-                          .Where(a => a.IsAlive)
-                          .Select(a => a.View.GetComponent<ActorAnimation>());
-          
-          while (anims.Any(a => a.IsPlaying)) {
-            yield return null;
-          }
-        }
-        
-        IncrementTurn();
 
-        yield return null;
+        while (!IncrementTurn()) {
+          yield return null;
+        }
       }
       
       // Wait for t seconds before input
@@ -175,9 +189,6 @@ namespace Battle {
               target);
 
       AbilityScriptRunner.ExecuteAnimate(Game, source, target);
-      
-      // TODO: Increment turn only after animation ends
-      IncrementTurn();
     }
     
     // @return bool decided 

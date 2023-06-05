@@ -13,9 +13,17 @@ namespace Lua {
 		}
 
 		// TODO:
-		// public static void Hurt(Actor.Actor actor, float t) {
-		// 	
-		// }
+		public static void Hurt(Actor.Actor actor, Vector3 originalPosition, float t) {
+			// DEBUG:
+			const float a1 = 0.07f;
+			const float f1 = 5f;
+			const float a2 = 0.05f;
+			const float f2 = 7f;
+
+			actor.View.transform.localPosition = new Vector3(
+					originalPosition.x + a1 * Mathf.Sin(2f * Mathf.PI * f1 * t), 
+					originalPosition.y + a2 * Mathf.Sin(2f * Mathf.PI * f2 * t));
+		}
 		
 		// TODO:
 		// public static void Heal(Actor.Actor actor, float t) {

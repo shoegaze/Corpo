@@ -34,13 +34,15 @@ function get_candidate_cells(source)
   }
 end
 
-local position
+local source_position
+local target_position
 
 -- @params
---  source: CellData
+--  source: celldata
 -- @return void
 function before_animation(source, target)
-  position = source.cell
+  source_position = source.cell
+  target_position = target.cell
 
   if target.has_actor then
     target.actor:take_health(1)
@@ -48,12 +50,12 @@ function before_animation(source, target)
 end
 
 -- @params
---  source: CellData
+--  source: celldata
 -- @return void
 function after_animation(source, target)
   source.actor.view_position = {
-    x = position.x,
-    y = position.y,
+    x = source_position.x,
+    y = source_position.y,
     z = 0.0
   }
 end
@@ -67,12 +69,12 @@ function animate(source, target, t)
   -- log("TODO: Helper function for procedural animations\n" ..
   --     "      such as 'hurt', 'death', 'heal', etc.")
 
+  if target.has_actor then
+    proc.hurt(target.actor, target_position, t)
+  end
+
   local from = source.cell
   local to = target.cell
-
-  log("from: (" .. from.x .. ", " .. from.y .. ")")
-  log("to: (" .. to.x .. ", " .. to.y .. ")")
-  log("interpolation: (" .. proc.boomerang_cubic(from.x, to.x, t) .. ", " .. proc.boomerang_cubic(from.y, to.y, t) .. ")")
 
   source.actor.view_position = {
     x = proc.boomerang_cubic(from.x, to.x, t),
