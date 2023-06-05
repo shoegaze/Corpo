@@ -34,6 +34,7 @@ function get_candidate_cells(source)
   }
 end
 
+local duration = 0.5
 local source_position
 local target_position
 
@@ -69,12 +70,14 @@ end
 -- @params
 --  source: CellData
 --  target: CellData
---  t: float :: [0,1]
+--  seconds: float :: [0,+inf)
 -- @return void
-function animate(source, target, t)
+function animate(source, target, seconds)
   -- log("TODO: Add method to end animation early")
   -- log("TODO: Helper function for procedural animations\n" ..
   --     "      such as 'hurt', 'death', 'heal', etc.")
+
+  local t = seconds / duration
 
   -- BUG: Error for target_position
   if target.has_actor then
@@ -89,4 +92,6 @@ function animate(source, target, t)
     y = proc.boomerang_cubic(from.y, to.y, t),
     z = 0.0
   }
+
+  return t < 1.0
 end

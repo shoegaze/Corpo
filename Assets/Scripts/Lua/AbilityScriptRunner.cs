@@ -106,24 +106,19 @@ namespace Lua {
     private IEnumerator DoAnimationLoop(CellData source, CellData target) {
       battle.LockTurn();
       
-      // DEBUG:
-      const float duration = 1f;
-       
       float startTime = Time.time;
-      float t = 0f;
        
       Debug.Log("Calling script.before_animation");
       script.Call(scriptFnBeforeAnimation, source, target);
 
-      while (t <= 1f) {
-        // TODO: Calculate float seconds = duration * t;
-        
+      bool keep = true;
+      while (keep) {
         Debug.Log("Calling script.animate");
-        script.Call(scriptFnAnimate, source, target, t);
+
+        float seconds = Time.time - startTime;
+        keep = script.Call(scriptFnAnimate, source, target, seconds).Boolean;
        
         yield return new WaitForEndOfFrame();
-
-        t = (Time.time - startTime) / duration;
       }
        
       Debug.Log("Calling script.after_animation");
