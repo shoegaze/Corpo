@@ -66,12 +66,14 @@ end
 --  t: float :: [0,1]
 -- @return void
 function animate(source, target, t)
+  -- log("TODO: Add method to end animation early")
   -- log("TODO: Helper function for procedural animations\n" ..
   --     "      such as 'hurt', 'death', 'heal', etc.")
 
-  if target.has_actor then
-    proc.hurt(target.actor, target_position, t)
-  end
+  -- TODO:
+  -- if target.has_actor then
+  --   proc.hurt(target.actor, target_position, t)
+  -- end
 
   local from = source.cell
   local to = target.cell
