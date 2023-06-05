@@ -42,7 +42,13 @@ local target_position
 -- @return void
 function before_animation(source, target)
   source_position = source.cell
-  target_position = target.cell
+
+  -- HACK: Convert Vector2Int -> Vector3
+  target_position = {
+    x = target.cell.x,
+    y = target.cell.y,
+    z = 0.0
+  }
 
   if target.has_actor then
     target.actor:take_health(1)
@@ -70,10 +76,10 @@ function animate(source, target, t)
   -- log("TODO: Helper function for procedural animations\n" ..
   --     "      such as 'hurt', 'death', 'heal', etc.")
 
-  -- TODO:
-  -- if target.has_actor then
-  --   proc.hurt(target.actor, target_position, t)
-  -- end
+  -- BUG: Error for target_position
+  if target.has_actor then
+    proc.hurt(target.actor, target_position, t)
+  end
 
   local from = source.cell
   local to = target.cell

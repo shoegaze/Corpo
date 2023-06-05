@@ -16,6 +16,7 @@ namespace Lua {
       UserData.RegisterType<Vector2Int>();
       UserData.RegisterType<Vector3>();
       
+      // TODO: Convert between Vector2(Int) <-> Vector3
       Script.GlobalOptions.CustomConverters.SetScriptToClrCustomConversion(
 		      DataType.Table,
 		      typeof(Vector2),
@@ -26,7 +27,7 @@ namespace Lua {
 
 			      return new Vector2(x, y);
 		      });
-
+      
       Script.GlobalOptions.CustomConverters.SetScriptToClrCustomConversion(
 		      DataType.Table,
 		      typeof(Vector2Int),
@@ -37,7 +38,7 @@ namespace Lua {
 
 			      return new Vector2Int(x, y);
 		      });
-     
+      
       Script.GlobalOptions.CustomConverters.SetScriptToClrCustomConversion(
 		      DataType.Table,
 		      typeof(Vector3),
@@ -48,8 +49,7 @@ namespace Lua {
 			      float z = (float)t.Get("z").Number;
 
 			      return new Vector3(x, y, z);
-		      });
-
+		      }); 
       
       UserData.RegisterProxyType<ActorProxy, Actor.Actor>(
               a => new ActorProxy(a));
