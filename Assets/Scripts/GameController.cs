@@ -2,33 +2,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Battle;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Battle;
 
-[RequireComponent(typeof(ResourcesCache), 
-                  typeof(Team))]
+[RequireComponent(typeof(ResourcesCache))]
 public class GameController : MonoBehaviour {
   [SerializeField] private GameMode gameMode = GameMode.World;
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 
-  private Team allies;
-
-  // public GameMode GameMode => gameMode;
-  // public ResourcesCache Resources => ... 
-  // ReSharper disable once MemberCanBePrivate.Global
+  private Team allies = new Team(ActorAlignment.Ally);
+  public Team Allies => allies; 
+  
+  private ResourcesCache resources;
 
   // ReSharper disable once EventNeverSubscribedTo.Global
   public event Action<GameMode> OnModeChanged;
 
   protected void Awake() {
-    allies = GetComponent<Team>();
+    // TODO: Get this via DI?
+    resources = GetComponent<ResourcesCache>();
   }
 
   protected void Start() {
     // DEBUG
-    allies.Add("dimpp");
+    var dimpp = resources.GetActor("dimpp");
+    allies.Add(dimpp);
     
     // DEBUG
     StartCoroutine(LoadBattleScene());
@@ -67,16 +67,16 @@ public class GameController : MonoBehaviour {
     var go = GameObject.FindWithTag("BattleController");
     var battle = go.GetComponent<BattleController>();
     
-    var enemies = new List<Actor.Actor>();
+    var enemies = new Team(ActorAlignment.Enemy);
     { // Generate random battle
       const uint n = 1;
       for (var i = 0; i < n; i++) {
         var enemy = battle.GetRandomEnemy();
-        enemies.Add(enemy);  
+        enemies.Add(enemy);
       }
     }
     
-    battle.StartBattle(allies.Actors, enemies);
+    battle.StartBattle(Allies, enemies);
   }
 
   public void EndBattle() {

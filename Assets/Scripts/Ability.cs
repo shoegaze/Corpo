@@ -14,11 +14,11 @@ public class Ability : MonoBehaviour {
   public int Cost => data.Cost;
   public AbilityScript Script => script;
 
-  public static void Load(ref Ability ability, ResourcesCache cache, string abilityID) {
+  public static void Load(ref Ability ability, ResourcesCache resources, string abilityID) {
     { // Set sprite
       // TODO
       var renderer = ability.GetComponent<SpriteRenderer>();
-      var sprite = cache.GetSprite(abilityID);
+      var sprite = resources.GetSprite(abilityID);
 
       if (sprite == null) {
         Debug.LogError($"Sprite with ability ID \"{abilityID}\" could not be found!");
@@ -31,7 +31,7 @@ public class Ability : MonoBehaviour {
     }
 
     { // Set ability data
-      var abilityData = cache.GetAbilityData(abilityID);
+      var abilityData = resources.GetAbilityData(abilityID);
 
       if (abilityData == null) {
         Debug.LogError($"Ability data with ability ID \"{abilityID}\" could not be found!");
@@ -43,7 +43,7 @@ public class Ability : MonoBehaviour {
     }
 
     { // Set ability script
-      var abilityScript = cache.GetAbilityScript(abilityID);
+      var abilityScript = resources.GetAbilityScript(abilityID);
 
       if (abilityScript == null) {
         Debug.LogError($"Ability script with ability ID \"{abilityID}\" could not be found!");

@@ -1,44 +1,56 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 // TODO: Make ally/enemy agnostic
 // TODO: Attach to GameController then copy to BattleController
-public class Team : MonoBehaviour {
-  [SerializeField] private int money;
-  [SerializeField] private uint maxMembers = 4;
-  [SerializeField] private List<Actor.Actor> actors;
+public class Team {
+  private const uint MaxMembers = 4;
   
-  private ResourcesCache cache;
+  private readonly List<Actor.Actor> actors = new();
 
   public IEnumerable<Actor.Actor> Actors => actors;
-  
-  protected void Start() {
-    var game = GameObject.FindGameObjectWithTag("GameController");
+  public ActorAlignment Alignment { get; }
+  public int Money { get; private set; }
+
+  public Team(ActorAlignment alignment) {
+    Alignment = alignment;
+  }
+
+  public Team(ActorAlignment alignment, IEnumerable<Actor.Actor> actors) {
+    Alignment = alignment;
     
-    cache = game.GetComponent<ResourcesCache>();
-    Debug.Assert(cache != null);
-  }
-  
-  public bool CanAdd(/*string actorID*/) {
-    // TODO: actorID not in actors.Select(a => a.name)
-    return (actors.Count + 1) < maxMembers;
-  }
-  
-  public void Add(string actorID) {
-    if (!CanAdd()) {
-      Debug.LogWarning($"Cannot add actor {actorID} to team...");
-      return;
+    foreach (var actor in actors) {
+      this.actors.Add(actor);
     }
-    
-    // GameController/Instances
-    var instanceRoot = transform.Find("Instances");
-    Debug.Assert(instanceRoot != null);
-    
-    var actor = cache.GetActor(actorID, ActorAlignment.Ally);
-    var instance = Instantiate(actor, instanceRoot);
-    actors.Add(instance);
+  }
+  
+  public bool CanAdd(/*Actor.Actor actor*/) {
+    // TODO: Ensure unique actors i.e. !actors.Any(a => a.id == actor.id)
+    return (actors.Count + 1) < MaxMembers;
+  }
+
+  public void Add(Actor.Actor actor) {
+    Debug.Assert(CanAdd());
+
+    actor.SetTeam(this);
+    actors.Add(actor);
   }
   
   //public bool CanRemove() {}
   //public void Remove() {}
+
+  public void TakeMoney(int cost) {
+    if (cost > Money) {
+      Debug.LogErrorFormat(
+          "Team {0} doesn't have enough money! {1}/{2}", 
+          Alignment,
+          cost,
+          Money);
+      
+      return;
+    }
+    
+    Money -= cost;
+  }
 }

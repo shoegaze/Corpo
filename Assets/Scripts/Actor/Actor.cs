@@ -9,16 +9,19 @@ namespace Actor {
   public class Actor : MonoBehaviour {
     // TODO: Move to single file
     // TODO: Separate to ActorModel and ActorView
-
+    
     [SerializeField] private ActorData data;
-    [SerializeField] private ActorAlignment alignment;
+    // [SerializeField] private ActorAlignment alignment;
     [SerializeField] private List<Ability> abilities;
     [SerializeField] private uint health;
 
+    private Team team;
+
+    public Team Team => team;
     public string Name => data.Name;
     public uint MaxHealth => data.MaxHealth;
   
-    public ActorAlignment Alignment => alignment;
+    public ActorAlignment Alignment => team.Alignment;
     public IEnumerable<Ability> Abilities => abilities.ToArray();
     public uint Health => health;
     public bool IsAlive => health > 0;
@@ -26,10 +29,10 @@ namespace Actor {
     // TODO: Change type to ActorView
     public GameObject View { get; private set; }
 
-    public static void Load(ref Actor actor, ResourcesCache cache, string actorID, ActorAlignment team) {
+    public static void Load(ref Actor actor, ResourcesCache resources, string actorID) {
       { // Set sprite
         var renderer = actor.GetComponent<SpriteRenderer>();
-        var sprite = cache.GetSprite(actorID);
+        var sprite = resources.GetSprite(actorID);
 
         if (sprite == null) {
           Debug.LogError($"Sprite with actor ID \"{actorID}\" could not be found!");
@@ -41,7 +44,7 @@ namespace Actor {
       }
 
       { // Set actor data
-        var actorData = cache.GetActorData(actorID);
+        var actorData = resources.GetActorData(actorID);
 
         if (actorData == null) {
           Debug.LogError($"Actor data with actor ID \"{actorID}\" could not be found!");
@@ -51,10 +54,9 @@ namespace Actor {
       
         actor.data = actorData;
         actor.health = actorData.MaxHealth;
-        actor.alignment = team;
       
         { // Set abilities
-          var jobData = cache.GetJobData(actorData.Job);
+          var jobData = resources.GetJobData(actorData.Job);
 
           if (jobData == null) {
             Debug.LogError($"Job data with job ID \"{actorData.Job}\" could not be found!");
@@ -62,7 +64,7 @@ namespace Actor {
             return;
           }
         
-          var abilities = jobData.BaseAbilities.Select(cache.GetAbility);
+          var abilities = jobData.BaseAbilities.Select(resources.GetAbility);
           actor.abilities = abilities.ToList();
         }
       }
@@ -75,6 +77,10 @@ namespace Actor {
 
       return View;
     }
+
+    public void SetTeam(Team team) {
+      this.team = team;
+    } 
   
     public void TakeHealth(uint damage) {
       if (damage >= health) {

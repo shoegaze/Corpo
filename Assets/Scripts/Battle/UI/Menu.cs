@@ -4,18 +4,18 @@ using Lua;
 
 namespace Battle.UI {
   [RequireComponent(typeof(BattleUI))]
-  [RequireComponent(typeof(CandidateCells))]
+  [RequireComponent(typeof(AbilitySelect))]
   public class Menu : MonoBehaviour {
     [SerializeField] private BattleController battle;
     public int AbilityIndex { get; private set; }
 
     private AbilityScriptRunner abilityScriptRunner;
     private BattleUI ui;
-    private CandidateCells candidateCells;
+    private AbilitySelect abilitySelect;
 
     protected void Awake() {
       ui = GetComponent<BattleUI>();
-      candidateCells = GetComponent<CandidateCells>();
+      abilitySelect = GetComponent<AbilitySelect>();
     }
 
     protected void Start() {
@@ -58,7 +58,7 @@ namespace Battle.UI {
         
         // Precondition: Script should be loaded
         var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
-        candidateCells.Queue(candidates);
+        abilitySelect.Queue(candidates);
       }
     }
     
@@ -77,7 +77,7 @@ namespace Battle.UI {
 
       // Precondition: Script should be loaded
       var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
-      candidateCells.Queue(candidates);
+      abilitySelect.Queue(candidates);
     }
     
     private void TryInputModeToggle(StateManager stateManager) {

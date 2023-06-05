@@ -15,11 +15,16 @@ namespace Battle {
     [SerializeField] private uint width;
     [SerializeField] private uint height;
 
-    [SerializeField] private List<Actor.Actor> order = new List<Actor.Actor>();
+    [SerializeField] private List<Actor.Actor> order = new();
     [SerializeField, Min(0)] private int turn;
 
-    private ResourcesCache cache;
+    private ResourcesCache resources;
     private BattleScreen screen;
+    
+    private readonly List<Team> teams = new();
+    
+    public Team Allies => teams.First(t => t.Alignment == ActorAlignment.Ally);
+    public Team Enemies => teams.First(t => t.Alignment == ActorAlignment.Enemy);
 
     public GameController Game { get; private set; }
     public BattleGrid Grid { get; private set; }
@@ -48,7 +53,7 @@ namespace Battle {
       Debug.Assert(go != null);
       
       Game = go.GetComponent<GameController>();
-      cache = go.GetComponent<ResourcesCache>();
+      resources = go.GetComponent<ResourcesCache>();
     }
 
     // DEBUG:
@@ -60,19 +65,20 @@ namespace Battle {
       var actorIDs = new[] {"oeur", "floton", "kabey"};
       var actorID = actorIDs[(int)(actorIDs.Length * Random.value)];
       
-      var actor = cache.GetActor(actorID, ActorAlignment.Enemy);
+      var actor = resources.GetActor(actorID);
       return Instantiate(actor, instanceRoot);
     }
 
     private void IncrementTurn() {
-      // TODO: Reset panelState, focusState
+      ui.StateManager.Transition(PanelState.Grid);
+      ui.StateManager.Transition(FocusState.Free);
       
       turn++;
     }
 
-    private void SetUp(IEnumerable<Actor.Actor> allies, IEnumerable<Actor.Actor> enemies) {
+    private void SetUp(Team allies, Team enemies) {
       // TODO: Shuffle order?
-      order = allies.Concat(enemies).ToList();
+      order = allies.Actors.Concat(enemies.Actors).ToList();
       turn = 0;
       
       // TODO: Read level from presets?
@@ -82,10 +88,10 @@ namespace Battle {
         Grid.RandomlyPlaceActors(order);
       }
       
-      screen.BuildViews(Grid, cache);
+      screen.BuildViews(Grid, resources);
     }
 
-    public void StartBattle(IEnumerable<Actor.Actor> allies, IEnumerable<Actor.Actor> enemies) {
+    public void StartBattle(Team allies, Team enemies) {
       SetUp(allies, enemies);
       StartCoroutine(DoBattle());
     }
@@ -144,6 +150,23 @@ namespace Battle {
     }
 
     public void TryDoAbility(CellData source, CellData target) {
+      var team = source.Actor.Team;
+      
+      // HACK:
+      string name = AbilityScriptRunner.ScriptName;
+      name = name[..^4];
+      
+      var data = resources.GetAbilityData(name);
+      Debug.Assert(data != null);
+      
+      var cost = data.Cost;
+      
+      if (cost > team.Money) {
+        return;
+      }
+
+      team.TakeMoney(cost);
+      
       Debug.LogFormat(
               "Executing ability [{0}]: source => {1}, target => {2}",
               AbilityScriptRunner.ScriptName,

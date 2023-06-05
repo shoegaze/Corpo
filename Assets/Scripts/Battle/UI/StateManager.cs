@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Battle.UI {
   [RequireComponent(typeof(Menu), 
-                    typeof(CandidateCells))]
+                    typeof(AbilitySelect))]
   public class StateManager : MonoBehaviour {
     [SerializeField, ReadOnly] private PanelState panelState;
     [SerializeField, ReadOnly] private FocusState focusState;
 
     private Menu menu;
-    private CandidateCells candidateCells;
+    private AbilitySelect abilitySelect;
 
     public PanelState PanelState => panelState;
     public FocusState FocusState => focusState;
@@ -19,7 +19,7 @@ namespace Battle.UI {
       focusState = FocusState.Free;
 
       menu = GetComponent<Menu>();
-      candidateCells = GetComponent<CandidateCells>();
+      abilitySelect = GetComponent<AbilitySelect>();
     }
 
     protected void Update() {
@@ -28,7 +28,7 @@ namespace Battle.UI {
           menu.HandleInput(this);
         }
         else {
-          candidateCells.HandleInput(this);
+          abilitySelect.HandleInput(this);
         }
       }
       else { // panelState == PanelState.Grid
@@ -56,7 +56,7 @@ namespace Battle.UI {
       focusState = FocusState.Free;
 
       if (panelState == PanelState.Grid) {
-        candidateCells.Reset();
+        abilitySelect.Reset();
       }
       else { // panelState == PanelState.Menu
         menu.LoadAbility();
@@ -83,7 +83,7 @@ namespace Battle.UI {
       }
 
       focusState = state;
-      candidateCells.FocusState = focusState;
+      abilitySelect.FocusState = focusState;
     }
   }
 }

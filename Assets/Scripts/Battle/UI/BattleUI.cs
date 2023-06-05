@@ -9,9 +9,10 @@ namespace Battle.UI {
   public class BattleUI : MonoBehaviour {
     [SerializeField] private BattleController battle;
 
-    private StateManager stateManager;
     private Menu menu;
     
+    public StateManager StateManager { get; private set; }
+
     // Menu
     public Actor.Actor ActiveActor { get; private set; }
     public int AbilityIndex { get; private set; }
@@ -38,7 +39,7 @@ namespace Battle.UI {
     public event Action<bool> OnDoEnemiesWinChanged;
 
     protected void Awake() {
-      stateManager = GetComponent<StateManager>();
+      StateManager = GetComponent<StateManager>();
       menu = GetComponent<Menu>();
     }
 
@@ -72,13 +73,13 @@ namespace Battle.UI {
     }
 
     private void UpdateStates() {
-      var panelState = stateManager.PanelState;
+      var panelState = StateManager.PanelState;
       if (panelState != PanelState) {
         PanelState = panelState;
         OnPanelStateChanged?.Invoke(PanelState);
       }
 
-      var focusState = stateManager.FocusState;
+      var focusState = StateManager.FocusState;
       if (focusState != FocusState) {
         FocusState = focusState;
         OnFocusStateChanged?.Invoke(FocusState);

@@ -46,7 +46,7 @@ public class ResourcesCache : MonoBehaviour {
     return abilityScript;
   }
 
-  public Actor.Actor GetActor(string actorID, ActorAlignment team) {
+  public Actor.Actor GetActor(string actorID) {
     if (!actors.ContainsKey(actorID)) {
       var go = Instantiate(prototypeActor, actorsRoot);
       go.gameObject.SetActive(false);
@@ -54,7 +54,7 @@ public class ResourcesCache : MonoBehaviour {
       var actor = go.GetComponent<Actor.Actor>();
       actor.name = $"{actorID}";
       
-      Actor.Actor.Load(ref actor, this, actorID, team);
+      Actor.Actor.Load(ref actor, this, actorID);
 
       if (actor == null) {
         Debug.LogError($"Could not create actor \"{actorID}\"!");

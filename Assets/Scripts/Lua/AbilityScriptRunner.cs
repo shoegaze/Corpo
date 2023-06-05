@@ -64,7 +64,7 @@ namespace Lua {
 
     // TODO: Add error handling for Execute_ methods
     public void ExecuteStart(GameController game) {
-      Debug.Assert(enabled && script != null);
+      Debug.Assert(script != null);
       
       UpdateScriptGlobals(game);
       bool success = script.Call(scriptFnStart).Boolean;
@@ -74,7 +74,7 @@ namespace Lua {
     }
      
     public IEnumerable<Vector2Int> ExecuteGetCandidateCells(GameController game) {
-      Debug.Assert(enabled && script != null);
+      Debug.Assert(script != null);
        
       UpdateScriptGlobals(game);
        
@@ -125,7 +125,7 @@ namespace Lua {
     }
 
     public void ExecuteAnimate(GameController game, CellData source, CellData target) {
-      Debug.Assert(enabled && script != null);
+      Debug.Assert(script != null);
        
       UpdateScriptGlobals(game);
       StartCoroutine(DoAnimationLoop(source, target));

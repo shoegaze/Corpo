@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Lua;
 using Shapes;
@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Battle.UI {
   [RequireComponent(typeof(StateManager))]
-  public class CandidateCells : ImmediateModeShapeDrawer {
+  public class AbilitySelect : ImmediateModeShapeDrawer {
     [SerializeField] private BattleController battle;
     [SerializeField] private Transform origin;
     [SerializeField, Range(0f, 1f)] private float sideLength = 0.5f;
@@ -14,7 +14,7 @@ namespace Battle.UI {
     // [SerializeField, Range(0f, 1f)] private float unselectedAlpha = 0.25f;
     // [SerializeField, Range(0f, 1f)] private float selectedAlpha = 0.5f;
     
-    private readonly List<Vector2Int> cells = new();
+    private readonly List<Vector2Int> candidates = new();
     private int cursor = -1;
 
     private AbilityScriptRunner abilityScriptRunner;
@@ -31,8 +31,8 @@ namespace Battle.UI {
       }
       
       using (Draw.Command(cam)) {
-        for (var i = 0; i < cells.Count; i++) {
-          var cell = cells[i];
+        for (var i = 0; i < candidates.Count; i++) {
+          var cell = candidates[i];
           var position = cell - 0.5f * sideLength * Vector2.one;
           var size = sideLength * Vector2.one;
           var rect = new Rect(position, size);
@@ -80,13 +80,127 @@ namespace Battle.UI {
         var sourceCell = battle.Grid.GetPosition(sourceActor).Value;
         var source = new CellData(sourceActor, sourceCell);
         
-        var targetCell = cells[cursor];
+        var targetCell = candidates[cursor];
         // Nullable:
         var targetActor = battle.Grid.GetActor(targetCell);
         var target = new CellData(targetActor, targetCell);
         
         // TODO: Move below to
         battle.TryDoAbility(source, target);
+      }
+    }
+
+    public void HandleInput(StateManager stateManager) {
+      TryExit(stateManager);
+      
+      if (candidates.Count == 0) {
+        return;
+      }
+
+      Debug.Assert(cursor >= 0);
+      
+      TrySubmit(stateManager);
+      TryMoveCursor(stateManager);
+    }
+
+    public void Queue(IEnumerable<Vector2Int> cells) {
+      Reset();
+      
+      foreach (var candidate in cells) {
+        // Cull OOB
+        if (!battle.Grid.IsValidCell(candidate)) {
+          continue;
+        }
+        
+        // TODO: Cull wall collisions
+        // if (...) { continue; }
+        
+        candidates.Add(candidate);
+      }
+
+      if (this.candidates.Count > 0) {
+        cursor = 0;
+      }
+    }
+
+    public void Reset() {
+      candidates.RemoveAll(_ => true);
+      cursor = -1;
+    }
+
+    private Vector2Int? ClosestCell(Vector2Int position) {
+      if (candidates.Count == 0) {
+        return null;
+      }
+      
+      return candidates.Aggregate(
+          candidates.First(),
+          (minCoord, coord) => { 
+            int distance = (position - coord).sqrMagnitude;
+            int minDistance = (position - minCoord).sqrMagnitude; 
+                
+            if (distance < minDistance) { 
+              return coord;
+            }
+                
+            return minCoord;
+          }); 
+    }
+
+    // TODO: What to do in a tie?
+    //  => Prioritize different cell
+    //   -> Calculate AABB for cells
+    //   -> position = mod(position, AABB)
+    //   -> distance = (p - c).sqrMagnitude
+    private Vector2Int? ChooseCell(Vector2Int position, Vector2Int direction) {
+      if (candidates.Count == 0) {
+        return null;
+      }
+
+      var aabb = new Rect();
+      foreach (var cell in candidates) {
+        aabb.min = Vector2.Min(aabb.min, cell - 0.5f * Vector2.one);
+        aabb.max = Vector2.Max(aabb.max, cell + 0.5f * Vector2.one);
+      }
+
+      { // 1. March towards direction
+        // TODO: Normalize direction?
+        var p = position + direction;
+        while (aabb.Contains(p)) {
+          int i = candidates.IndexOf(p);
+          
+          if (i >= 0) {
+            return p;
+          }
+
+          p += direction;
+        } 
+      }
+      
+      { // 2. Go to closest cell     
+        var p = position + direction;
+        var closest = ClosestCell(p + direction);
+
+        if (closest != null && closest.Value != position) {
+          return closest;
+        }
+      }
+
+      return null;
+    }
+
+    private void MoveCursor(Vector2Int direction) {
+      if (candidates.Count == 0) {
+        return;
+      }
+      
+      Debug.Assert(cursor >= 0);
+      
+      var source = candidates[cursor];
+      var target = ChooseCell(source, direction);
+      
+      if (target != null) {
+        cursor = candidates.IndexOf(target.Value);
       }
     }
 
@@ -111,103 +225,6 @@ namespace Battle.UI {
               Mathf.RoundToInt(Input.GetAxis("Vertical")));
      
       MoveCursor(direction);
-    }
-
-    public void HandleInput(StateManager stateManager) {
-      TryExit(stateManager);
-      
-      if (cells.Count == 0) {
-        return;
-      }
-
-      Debug.Assert(cursor >= 0);
-      
-      TrySubmit(stateManager);
-      TryMoveCursor(stateManager);
-    }
-
-    public void Queue(IEnumerable<Vector2Int> candidates) {
-      Reset();
-      
-      foreach (var candidate in candidates) {
-        // Cull OOB
-        if (!battle.Grid.IsValidCell(candidate)) {
-          continue;
-        }
-        
-        // TODO: Cull wall collisions
-        // if (...) { continue; }
-        
-        cells.Add(candidate);
-      }
-
-      if (cells.Count > 0) {
-        cursor = 0;
-      }
-    }
-
-    public void Reset() {
-      cells.RemoveAll(_ => true);
-      cursor = -1;
-    }
-
-    private Vector2Int? ClosestCell(Vector2Int position) {
-      if (cells.Count == 0) {
-        return null;
-      }
-      
-      return cells.Aggregate(
-          cells.First(),
-          (minCoord, coord) => { 
-            int distance = (position - coord).sqrMagnitude;
-            int minDistance = (position - minCoord).sqrMagnitude; 
-                
-            if (distance < minDistance) { 
-              return coord;
-            }
-                
-            return minCoord;
-          }); 
-    }
-
-    // TODO: What to do in a tie?
-    //  => Prioritize different cell
-    //   -> Calculate AABB for cells
-    //   -> position = mod(position, AABB)
-    //   -> distance = (p - c).sqrMagnitude
-    private Vector2Int? ChooseCell(Vector2Int position, Vector2Int direction) {
-      if (cells.Count == 0) {
-        return null;
-      }
-
-      var p = position + direction;
-      var result = ClosestCell(p);
-      
-      // TODO:
-      // while (battle.Grid.IsValidCell(p)) {
-      //   p += direction;
-      //   var cell = ClosestCell(p);
-      //
-      //   if (cell != result) {
-      //     break;
-      //   }
-      // }
-
-      return result;
-    }
-
-    private void MoveCursor(Vector2Int direction) {
-      if (cells.Count == 0) {
-        return;
-      }
-      
-      Debug.Assert(cursor >= 0);
-      
-      var source = cells[cursor];
-      var target = ChooseCell(source, direction);
-      Debug.Assert(target != null);
-
-      cursor = cells.IndexOf(target.Value);
     }
   }
 }

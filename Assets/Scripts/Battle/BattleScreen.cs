@@ -13,10 +13,10 @@ namespace Battle {
       view.transform.localPosition = new Vector3(position.x, position.y);
     }
     
-    public void BuildViews(BattleGrid grid, ResourcesCache cache) {
+    public void BuildViews(BattleGrid grid, ResourcesCache resources) {
       BuildBackgroundView(grid);
       BuildFloorViews(grid);
-      BuildActorViews(grid, cache);
+      BuildActorViews(grid, resources);
       BuildWallViews(grid);
     }
     
@@ -51,7 +51,7 @@ namespace Battle {
       }
     }
 
-    private void BuildActorViews(BattleGrid grid, ResourcesCache cache) {
+    private void BuildActorViews(BattleGrid grid, ResourcesCache resources) {
       var viewAllies = transform.Find("Actors/Allies");
       var viewEnemies = transform.Find("Actors/Enemies");
       
