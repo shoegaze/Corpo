@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Make ally/enemy agnostic
 // TODO: Attach to GameController then copy to BattleController
 public class Team {
   private const uint MaxMembers = 4;

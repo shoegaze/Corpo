@@ -1,26 +1,18 @@
 ﻿using System.Linq;
 using UnityEngine;
 using Lua;
+using Zenject;
 
 namespace Battle.UI {
-  [RequireComponent(typeof(BattleUI))]
-  [RequireComponent(typeof(AbilitySelect))]
   public class Menu : MonoBehaviour {
     [SerializeField] private BattleController battle;
+
+    [Inject] private GameController game;
+    [Inject] private AbilityScriptRunner abilityScriptRunner;
+    [Inject] private BattleUI ui;
+    [Inject] private AbilitySelect abilitySelect;
+    
     public int AbilityIndex { get; private set; }
-
-    private AbilityScriptRunner abilityScriptRunner;
-    private BattleUI ui;
-    private AbilitySelect abilitySelect;
-
-    protected void Awake() {
-      ui = GetComponent<BattleUI>();
-      abilitySelect = GetComponent<AbilitySelect>();
-    }
-
-    protected void Start() {
-      abilityScriptRunner = battle.AbilityScriptRunner;
-    }
 
     private Ability GetCurrentAbility(Actor.Actor actor) {
       return actor.Abilities
@@ -54,10 +46,10 @@ namespace Battle.UI {
         // TODO: Refactor into LoadAbility(game, actor)
         var ability = GetCurrentAbility(actor);
         abilityScriptRunner.Load(ability.Script);
-        abilityScriptRunner.ExecuteStart(battle.Game);
+        abilityScriptRunner.ExecuteStart(game);
         
         // Precondition: Script should be loaded
-        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
+        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
         abilitySelect.Queue(candidates);
       }
     }
@@ -73,10 +65,10 @@ namespace Battle.UI {
       // TODO: Refactor into LoadAbility(game, actor)
       var ability = GetCurrentAbility(actor);
       abilityScriptRunner.Load(ability.Script);
-      abilityScriptRunner.ExecuteStart(battle.Game);
+      abilityScriptRunner.ExecuteStart(game);
 
       // Precondition: Script should be loaded
-      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
+      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
       abilitySelect.Queue(candidates);
     }
     

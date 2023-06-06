@@ -3,16 +3,18 @@ using System.Linq;
 using Lua;
 using Shapes;
 using UnityEngine;
+using Zenject;
 
 namespace Battle.UI {
   [RequireComponent(typeof(StateManager))]
   public class AbilitySelect : ImmediateModeShapeDrawer {
-    [SerializeField] private BattleController battle;
     [SerializeField] private Transform origin;
     [SerializeField, Range(0f, 1f)] private float sideLength = 0.5f;
     [SerializeField, Range(0f, 1f)] private float borderSize = 0.1f;
     // [SerializeField, Range(0f, 1f)] private float unselectedAlpha = 0.25f;
     // [SerializeField, Range(0f, 1f)] private float selectedAlpha = 0.5f;
+    
+    [Inject] private BattleController battle;
     
     private readonly List<Vector2Int> candidates = new();
     private int cursor = -1;

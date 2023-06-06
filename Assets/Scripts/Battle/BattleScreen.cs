@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using Esprima;
-using UnityEngine;
-using Color = UnityEngine.Color;
+﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Battle {
