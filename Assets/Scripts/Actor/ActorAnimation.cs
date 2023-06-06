@@ -5,22 +5,14 @@ using UnityEngine;
 public class ActorAnimation : MonoBehaviour {
   [SerializeField, Min(0f)] private float attackDuration;
   [SerializeField, Min(0f)] private float hurtDuration;
-  
-  public bool IsPlaying { get; private set; }
+
+  private bool IsPlaying { get; set; }
   
   // private static float BoomerangLerp(float a, float b, float t) {
   //   // f(t) := saturate(1.0 - 2 * abs(t - 0.5))
   //   return a + (b - a) * Mathf.Clamp01(1f - 2f  * Mathf.Abs(t - 0.5f));
   // }
 
-  private static float BoomerangCubic(float a, float b, float t) {
-    // f(t) := saturate(1.0 - (2*t - 1)**2)
-    float s = 2f*t - 1f;
-    s *= s;
-    
-    return a + (b - a) * Mathf.Clamp01(1f - s);
-  }
-  
   public void StartAttack(AttackContext ctx) {
     StartCoroutine(DoAttack(ctx));
   }
@@ -35,15 +27,15 @@ public class ActorAnimation : MonoBehaviour {
     var source = new Vector3(ctx.From.x, ctx.From.y);
     var dir = ctx.To - ctx.From;
     var destination = source + new Vector3(dir.x, dir.y).normalized / 2f;
-    var startTime = Time.time;
+    float startTime = Time.time;
     
     // Interpolate to target, then back to source
     while (Time.time < startTime + attackDuration) {
-      var t = (Time.time - startTime) / attackDuration;
+      float t = (Time.time - startTime) / attackDuration;
 
       transform.localPosition = new Vector3(
-        BoomerangCubic(source.x, destination.x, t),
-        BoomerangCubic(source.y, destination.y, t)
+        Battle.Animation.Procedural.BoomerangCubic(source.x, destination.x, t),
+        Battle.Animation.Procedural.BoomerangCubic(source.y, destination.y, t)
       );
       
       yield return null;

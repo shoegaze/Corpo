@@ -1,5 +1,6 @@
 ﻿using MoonSharp.Interpreter;
 using UnityEngine;
+// ReSharper disable UnusedMember.Global
 
 namespace Lua.Proxy {
   public class ActorProxy {

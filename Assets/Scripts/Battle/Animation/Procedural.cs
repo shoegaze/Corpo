@@ -1,7 +1,10 @@
 ﻿using MoonSharp.Interpreter;
 using UnityEngine;
 
-namespace Lua {
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
+
+namespace Battle.Animation {
 	[MoonSharpUserData]
 	public class Procedural {
 		public static float BoomerangCubic(float a, float b, float t) {
@@ -12,8 +15,13 @@ namespace Lua {
 			return a + (b - a) * Mathf.Clamp01(1f - s);
 		}
 
-		// TODO:
-		public static void Hurt(Actor.Actor actor, Vector3 originalPosition, float t) {
+		public static void Attack(Actor.Actor actor, Vector3 from, Vector3 to, float t) {
+			actor.View.transform.localPosition = new Vector3(
+							BoomerangCubic(from.x, to.x, t),
+							BoomerangCubic(from.y, to.y, t));
+		}
+
+		public static void Hurt(Actor.Actor actor, Vector3 from, float t) {
 			// DEBUG:
 			const float a1 = 0.07f;
 			const float f1 = 5f;
@@ -21,8 +29,8 @@ namespace Lua {
 			const float f2 = 7f;
 
 			actor.View.transform.localPosition = new Vector3(
-					originalPosition.x + a1 * Mathf.Sin(2f * Mathf.PI * f1 * t), 
-					originalPosition.y + a2 * Mathf.Sin(2f * Mathf.PI * f2 * t));
+					from.x + a1 * Mathf.Sin(2f * Mathf.PI * f1 * t), 
+					from.y + a2 * Mathf.Sin(2f * Mathf.PI * f2 * t));
 		}
 		
 		// TODO:

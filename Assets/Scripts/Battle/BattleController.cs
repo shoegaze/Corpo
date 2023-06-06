@@ -98,6 +98,9 @@ namespace Battle {
     }
 
     private void SetUp(Team allies, Team enemies) {
+      teams.Add(allies);
+      teams.Add(enemies);
+      
       // TODO: Shuffle order?
       order = allies.Actors.Concat(enemies.Actors).ToList();
       turn = 0;
@@ -121,7 +124,7 @@ namespace Battle {
       while (!DoAlliesWin && !DoEnemiesWin) {
         while (true) { // Do turn
           if (turnLock > 0) {
-            yield return new WaitForEndOfFrame();
+            yield return null;
             continue;
           }
           

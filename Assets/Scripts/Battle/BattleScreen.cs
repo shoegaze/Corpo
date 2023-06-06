@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Drawing;
+using Esprima;
+using UnityEngine;
+using Color = UnityEngine.Color;
 using Random = UnityEngine.Random;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {
+    // TODO: Inject this from somewhere
     [SerializeField] private GameObject[] viewsFloor;
-    
+   
     public static void UpdateActorView(Actor.Actor actor, BattleGrid grid) {
       var view = actor.View;
       var position = grid.GridActors
@@ -13,7 +17,7 @@ namespace Battle {
 
       view.transform.localPosition = new Vector3(position.x, position.y);
     }
-    
+
     public void BuildViews(BattleGrid grid, ResourcesCache resources) {
       BuildBackgroundView(grid);
       BuildFloorViews(grid);
@@ -172,5 +176,6 @@ namespace Battle {
         }
       }
     }
+    
   }
 }

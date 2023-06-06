@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using Battle;
+using Battle.Animation;
 using Data;
 using UnityEngine;
 
 namespace Actor {
   [RequireComponent(typeof(SpriteRenderer))]
+  [RequireComponent(typeof(ActorAnimation))]
   public class Actor : MonoBehaviour {
     // TODO: Move to single file
     // TODO: Separate to ActorModel and ActorView
     
     [SerializeField] private ActorData data;
-    // [SerializeField] private ActorAlignment alignment;
     [SerializeField] private List<Ability> abilities;
     [SerializeField] private uint health;
 
@@ -83,6 +84,8 @@ namespace Actor {
     } 
   
     public void TakeHealth(uint damage) {
+      Effect.ShowDamagePopup(View.transform.position, damage);
+      
       if (damage >= health) {
         health = 0;
         return;
@@ -92,6 +95,8 @@ namespace Actor {
     }
   
     // public void GiveHealth(uint heal) {
+    //   Effect.ShowHealPopup(View.transform.position, heal);
+    //   
     //   health += heal;
     //   health = health > data.maxHealth ? data.maxHealth : health;
     // }
@@ -102,7 +107,7 @@ namespace Actor {
         var anim = View.GetComponent<ActorAnimation>();
         anim.StartAttack(ctx);
       }
-
+      
       { // TODO: Make hurt animation public
         var anim = ctx.Target.View.GetComponent<ActorAnimation>();
         anim.StartHurt(ctx);
@@ -120,7 +125,7 @@ namespace Actor {
       var grid = ctx.Grid;
       var target = ctx.Target;
     
-      var removed = grid.TryRemoveActor(target);
+      bool removed = grid.TryRemoveActor(target);
       Debug.Assert(removed);
     
       // Deactivate view

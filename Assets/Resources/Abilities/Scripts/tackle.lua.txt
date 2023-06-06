@@ -3,7 +3,9 @@
 --  warn: s => ()
 --  err: s => ()
 --
---  duration: float [seconds] :: [0,+inf)
+--  math: Lua.Math
+--  proc: Animation.Procedural
+--
 --  grid: BattleGrid
 
 -- @return success_flag: bool
@@ -42,14 +44,8 @@ local target_position
 --  source: celldata
 -- @return void
 function before_animation(source, target)
-  source_position = source.cell
-
-  -- HACK: Convert Vector2Int -> Vector3
-  target_position = {
-    x = target.cell.x,
-    y = target.cell.y,
-    z = 0.0
-  }
+  source_position = math.to_vector_3(source.cell)
+  target_position = math.to_vector_3(target.cell)
 
   if target.has_actor then
     target.actor:take_health(1)
@@ -60,27 +56,23 @@ end
 --  source: celldata
 -- @return void
 function after_animation(source, target)
-  source.actor.view_position = {
-    x = source_position.x,
-    y = source_position.y,
-    z = 0.0
-  }
+  source.actor.view_position = source_position
 end
 
 -- @params
 --  source: CellData
 --  target: CellData
 --  seconds: float :: [0,+inf)
--- @return void
+-- @return bool
 function animate(source, target, seconds)
-  -- log("TODO: Add method to end animation early")
   -- log("TODO: Helper function for procedural animations\n" ..
   --     "      such as 'hurt', 'death', 'heal', etc.")
+  -- log("TODO: Math utilites e.g. min, max, clamp")
 
   local t = seconds / duration
 
-  -- BUG: Error for target_position
   if target.has_actor then
+    local t = 2.0 * math.saturate(t - 0.5)
     proc.hurt(target.actor, target_position, t)
   end
 

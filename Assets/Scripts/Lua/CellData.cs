@@ -9,6 +9,7 @@ namespace Lua {
     public Vector2Int Cell { get; }
 
     public bool HasActor => Actor != null;
+    public Vector3 Position => new(Cell.x, Cell.y, 0f);
     
     public CellData(Actor.Actor actor, Vector2Int cell) {
       Actor = actor;
