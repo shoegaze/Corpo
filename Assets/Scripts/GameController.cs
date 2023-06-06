@@ -1,46 +1,43 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Battle;
+using Zenject;
 
-[RequireComponent(typeof(ResourcesCache))]
 public class GameController : MonoBehaviour {
   [SerializeField] private GameMode gameMode = GameMode.World;
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
 
-  private Team allies = new(ActorAlignment.Ally, 1000);
-  public Team Allies => allies; 
-  
-  private ResourcesCache resources;
+  [Inject] private ResourcesCache resources;
+
+  // DEBUG:
+  public Team Allies { get; } = new(ActorAlignment.Ally, 1000);
 
   // ReSharper disable once EventNeverSubscribedTo.Global
   public event Action<GameMode> OnModeChanged;
 
-  protected void Awake() {
-    // TODO: Get this via DI?
-    resources = GetComponent<ResourcesCache>();
-  }
-
   protected void Start() {
-    // DEBUG
+    // DEBUG:
     var dimpp = resources.GetActor("dimpp");
-    allies.Add(dimpp);
+    Allies.Add(dimpp);
     
-    // DEBUG
+    // DEBUG: Move this to World scene
     StartCoroutine(LoadBattleScene());
   }
 
   // ReSharper disable Unity.PerformanceAnalysis
   private IEnumerator LoadBattleScene() {
+    Debug.Log("Loading Battle scene ...");
+  
     var load = SceneManager.LoadSceneAsync("Scenes/Battle", LoadSceneMode.Additive);
     
     while (!load.isDone) {
       yield return null;
     }
+    
+    Debug.Log("Done loading Battle scene!");
 
     var battleScene = SceneManager.GetSceneByName("Battle");
     SceneManager.SetActiveScene(battleScene);
@@ -49,11 +46,15 @@ public class GameController : MonoBehaviour {
   }
 
   private IEnumerator UnloadBattleScene() {
+    Debug.Log("Unloading Battle scene ...");
+    
     var load = SceneManager.UnloadSceneAsync("Battle");
 
     while (!load.isDone) {
       yield return null;
     }
+    
+    Debug.Log("Done unloading Battle scene!");
 
     // TODO: Set WorldScene as active scene 
     var baseScene = SceneManager.GetSceneByName("Base");
@@ -64,6 +65,7 @@ public class GameController : MonoBehaviour {
     gameMode = GameMode.Battle;
     OnModeChanged?.Invoke(gameMode);
 
+    // HACK: GameController should be decoupled from BattleController
     var go = GameObject.FindWithTag("BattleController");
     var battle = go.GetComponent<BattleController>();
     
@@ -83,9 +85,6 @@ public class GameController : MonoBehaviour {
     gameMode = GameMode.World;
     OnModeChanged?.Invoke(gameMode);
     
-    Debug.Log("Unloading battle scene");
-    
-    // TODO
     StartCoroutine(UnloadBattleScene());
   }
 }

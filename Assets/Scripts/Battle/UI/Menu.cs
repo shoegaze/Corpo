@@ -1,17 +1,22 @@
 ﻿using System.Linq;
 using UnityEngine;
 using Lua;
+using Zenject;
 
 namespace Battle.UI {
   [RequireComponent(typeof(BattleUI))]
   [RequireComponent(typeof(AbilitySelect))]
   public class Menu : MonoBehaviour {
     [SerializeField] private BattleController battle;
-    public int AbilityIndex { get; private set; }
+
+    [Inject] private GameController game;
 
     private AbilityScriptRunner abilityScriptRunner;
+    // TODO: Inject this
     private BattleUI ui;
     private AbilitySelect abilitySelect;
+    
+    public int AbilityIndex { get; private set; }
 
     protected void Awake() {
       ui = GetComponent<BattleUI>();
@@ -54,10 +59,10 @@ namespace Battle.UI {
         // TODO: Refactor into LoadAbility(game, actor)
         var ability = GetCurrentAbility(actor);
         abilityScriptRunner.Load(ability.Script);
-        abilityScriptRunner.ExecuteStart(battle.Game);
+        abilityScriptRunner.ExecuteStart(game);
         
         // Precondition: Script should be loaded
-        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
+        var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
         abilitySelect.Queue(candidates);
       }
     }
@@ -73,10 +78,10 @@ namespace Battle.UI {
       // TODO: Refactor into LoadAbility(game, actor)
       var ability = GetCurrentAbility(actor);
       abilityScriptRunner.Load(ability.Script);
-      abilityScriptRunner.ExecuteStart(battle.Game);
+      abilityScriptRunner.ExecuteStart(game);
 
       // Precondition: Script should be loaded
-      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(battle.Game);
+      var candidates = abilityScriptRunner.ExecuteGetCandidateCells(game);
       abilitySelect.Queue(candidates);
     }
     

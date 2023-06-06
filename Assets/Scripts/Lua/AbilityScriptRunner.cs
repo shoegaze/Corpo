@@ -7,15 +7,15 @@ using Battle.Animation;
 using Data;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using Zenject;
 
 namespace Lua {
+  // Register this binding for injection? 
   [RequireComponent(typeof(ScriptRunner))]
   public class AbilityScriptRunner : MonoBehaviour {
-    private AbilityData data;
+    [Inject] private BattleController battle;
     
-    // TODO: Lock script execution when animation loop is running
-    // private bool locked;
-    private BattleController battle;
+    private AbilityData data;
     
     private readonly Script script = new(CoreModules.Preset_SoftSandbox);
     // TODO: Replace object types with Func<...>
@@ -27,11 +27,6 @@ namespace Lua {
 
     // HACK:
     public string ScriptName => data.Name + ".lua";
-
-    protected void Start() {
-      var go = GameObject.FindWithTag("BattleController");
-      battle = go.GetComponent<BattleController>();
-    }
 
     // TODO: Return bool based on validation
     public void Load(AbilityScript abilityScript) {
@@ -66,10 +61,9 @@ namespace Lua {
               s => Debug.LogErrorFormat("[{0}]: {1}", ScriptName, s));
 
       // TODO
-      // script.Globals["grid"] = ...;
+      // script.Globals["grid"] = battle.Grid;
     }
 
-    // TODO: Add error handling for Execute_ methods
     public void ExecuteStart(GameController game) {
       Debug.Assert(script != null);
 

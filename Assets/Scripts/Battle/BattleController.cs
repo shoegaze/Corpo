@@ -4,9 +4,9 @@ using System.Linq;
 using Battle.UI;
 using Lua;
 using UnityEngine;
+using Zenject;
 
 namespace Battle {
-  [RequireComponent(typeof(BattleScreen))]
   [RequireComponent(typeof(AbilityScriptRunner))]
   public class BattleController : MonoBehaviour {
     [SerializeField] private BattleUI ui;
@@ -18,16 +18,16 @@ namespace Battle {
     [SerializeField] private List<Actor.Actor> order = new();
     [SerializeField, Min(0)] private int turn;
 
-    private ResourcesCache resources;
+    [Inject] private ResourcesCache resources;
+    [Inject] private GameController game;
+    [Inject] private BattleScreen screen;
+    
     private int turnLock;
-
     private readonly List<Team> teams = new();
     
     public Team Allies => teams.First(t => t.Alignment == ActorAlignment.Ally);
     public Team Enemies => teams.First(t => t.Alignment == ActorAlignment.Enemy);
 
-    public GameController Game { get; private set; }
-    public BattleScreen Screen { get; private set; }
     public BattleGrid Grid { get; private set; }
     public AbilityScriptRunner AbilityScriptRunner { get; private set; }
     
@@ -44,16 +44,8 @@ namespace Battle {
                                          .Any(e => e.IsAlive);
 
     protected void Awake() {
-      Screen = GetComponent<BattleScreen>();
       Grid = new BattleGrid(width, height);
       AbilityScriptRunner = GetComponent<AbilityScriptRunner>();
-      
-      // Safe if Battle scene is loaded after Base
-      var go = GameObject.FindWithTag("GameController");
-      Debug.Assert(go != null);
-      
-      Game = go.GetComponent<GameController>();
-      resources = go.GetComponent<ResourcesCache>();
     }
 
     // DEBUG:
@@ -112,7 +104,7 @@ namespace Battle {
         Grid.RandomlyPlaceActors(order);
       }
       
-      Screen.BuildViews(Grid, resources);
+      screen.BuildViews(Grid, resources);
     }
 
     public void StartBattle(Team allies, Team enemies) {
@@ -164,7 +156,7 @@ namespace Battle {
     }
    
     private void EndBattle() {
-      Game.EndBattle();
+      game.EndBattle();
     }
 
     public void TryDoAbility(CellData source, CellData target) {
@@ -191,7 +183,7 @@ namespace Battle {
               source,
               target);
 
-      AbilityScriptRunner.ExecuteAnimate(Game, source, target);
+      AbilityScriptRunner.ExecuteAnimate(game, source, target);
     }
     
     // @return bool decided 

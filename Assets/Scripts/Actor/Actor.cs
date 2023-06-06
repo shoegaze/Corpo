@@ -4,6 +4,7 @@ using Battle;
 using Battle.Animation;
 using Data;
 using UnityEngine;
+using Zenject;
 
 namespace Actor {
   [RequireComponent(typeof(SpriteRenderer))]
@@ -15,6 +16,9 @@ namespace Actor {
     [SerializeField] private ActorData data;
     [SerializeField] private List<Ability> abilities;
     [SerializeField] private uint health;
+
+    // [Inject] private BattleController battle;
+    // [Inject] private BattleScreen screen;
 
     private Team team;
 
@@ -84,7 +88,7 @@ namespace Actor {
     } 
   
     public void TakeHealth(uint damage) {
-      Effect.ShowDamagePopup(View.transform.position, damage);
+      Effect.ShowDamagePopup(/*BattleScreen screen,*/ View.transform.position, damage);
       
       if (damage >= health) {
         health = 0;

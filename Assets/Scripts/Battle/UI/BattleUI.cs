@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using Zenject;
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
 
@@ -7,7 +9,8 @@ namespace Battle.UI {
   [RequireComponent(typeof(StateManager), 
                     typeof(Menu))]
   public class BattleUI : MonoBehaviour {
-    [SerializeField] private BattleController battle;
+    [Inject] private BattleController battle;
+    // [Inject] private StateManager stateManager;
 
     private Menu menu;
     

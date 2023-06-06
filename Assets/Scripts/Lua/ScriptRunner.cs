@@ -4,6 +4,7 @@ using MoonSharp.Interpreter;
 using UnityEngine;
 
 namespace Lua {
+  // Register this binding for injection? 
   [RequireComponent(typeof(AbilityScriptRunner))]
   public class ScriptRunner : MonoBehaviour {
     static ScriptRunner() {

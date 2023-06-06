@@ -1,10 +1,11 @@
 using Battle;
 using UnityEngine;
+using Zenject;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Animator))]
 public class ActiveIndicatorController : MonoBehaviour {
-  [SerializeField] private BattleController battle;
+  [Inject] private BattleController battle;
 
   private new SpriteRenderer renderer;
   private Animator animator;
