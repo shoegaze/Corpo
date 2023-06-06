@@ -20,6 +20,7 @@ namespace Battle {
 
     [Inject] private ResourcesCache resources;
     [Inject] private GameController game;
+    [Inject] private AbilityScriptRunner abilityScriptRunner;
     [Inject] private BattleScreen screen;
     
     private int turnLock;
@@ -29,7 +30,6 @@ namespace Battle {
     public Team Enemies => teams.First(t => t.Alignment == ActorAlignment.Enemy);
 
     public BattleGrid Grid { get; private set; }
-    public AbilityScriptRunner AbilityScriptRunner { get; private set; }
     
     public int Turn => turn;
     // GOTCHA: order.Count == 0 until SetUp is called
@@ -45,7 +45,6 @@ namespace Battle {
 
     protected void Awake() {
       Grid = new BattleGrid(width, height);
-      AbilityScriptRunner = GetComponent<AbilityScriptRunner>();
     }
 
     // DEBUG:
@@ -163,7 +162,7 @@ namespace Battle {
       var team = source.Actor.Team;
       
       // HACK: Strip .lua extension
-      string name = AbilityScriptRunner.ScriptName;
+      string name = abilityScriptRunner.ScriptName;
       name = name[..^4];
       
       var data = resources.GetAbilityData(name);
@@ -179,11 +178,11 @@ namespace Battle {
       
       Debug.LogFormat(
               "Executing ability [{0}]: source => {1}, target => {2}",
-              AbilityScriptRunner.ScriptName,
+              abilityScriptRunner.ScriptName,
               source,
               target);
 
-      AbilityScriptRunner.ExecuteAnimate(game, source, target);
+      abilityScriptRunner.ExecuteAnimate(game, source, target);
     }
     
     // @return bool decided 

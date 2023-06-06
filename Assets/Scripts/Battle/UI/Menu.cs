@@ -4,28 +4,15 @@ using Lua;
 using Zenject;
 
 namespace Battle.UI {
-  [RequireComponent(typeof(BattleUI))]
-  [RequireComponent(typeof(AbilitySelect))]
   public class Menu : MonoBehaviour {
     [SerializeField] private BattleController battle;
 
     [Inject] private GameController game;
-
-    private AbilityScriptRunner abilityScriptRunner;
-    // TODO: Inject this
-    private BattleUI ui;
-    private AbilitySelect abilitySelect;
+    [Inject] private AbilityScriptRunner abilityScriptRunner;
+    [Inject] private BattleUI ui;
+    [Inject] private AbilitySelect abilitySelect;
     
     public int AbilityIndex { get; private set; }
-
-    protected void Awake() {
-      ui = GetComponent<BattleUI>();
-      abilitySelect = GetComponent<AbilitySelect>();
-    }
-
-    protected void Start() {
-      abilityScriptRunner = battle.AbilityScriptRunner;
-    }
 
     private Ability GetCurrentAbility(Actor.Actor actor) {
       return actor.Abilities
