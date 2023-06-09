@@ -1,5 +1,7 @@
+import { ScrollerVisibility } from "UnityEngine/UIElements"
 import { useEventfulState } from "onejs"
 import { h } from "preact"
+import { useState } from "preact/hooks"
 import { font } from "preload"
 
 export const Menu = ({ battleUI }: { battleUI: any }) => {
@@ -8,13 +10,16 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
   const [activeActor, _setActiveActor] = useEventfulState(battleUI, 'ActiveActor')
   const [abilityIndex, _setAbilityIndex] = useEventfulState(battleUI, 'AbilityIndex')
 
+  const [hoveredAbility, setHoveredAbility] = useState(null)
+
   return (
-    <div class='absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700' style={{
+    <div class='menu-container absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700' style={{
       unityFontDefinition: font,
       borderColor: 'white',
       borderWidth: panelState === 0 ? 0 : 6
     }}>
-      <div class='flex flex-row px-6 py-2 text-5xl bg-cyan-500' style={{
+
+      <div class='actor-info flex flex-row px-6 py-2 text-5xl bg-cyan-500' style={{
         backgroundColor: panelState === 0 ? '#A9D4DE' : '#06B6DD'
       }}>
         <label text='*' class='mr-6' />
@@ -23,7 +28,7 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
         <label text={`${activeActor?.Health ?? 0} / ${activeActor?.MaxHealth ?? 0}`} />
       </div>
 
-      <div class='flex flex-row mb-2 px-6 text-4xl text-slate-200 bg-cyan-700'>
+      <div class='ability-labels flex flex-row mb-2 px-6 text-4xl text-slate-200 bg-cyan-700'>
         <label text="Icon" />
         <div class='grow'></div>
         <label text="Name" />
@@ -31,24 +36,34 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
         <label text="Cost" />
       </div>
 
-      <div class='text-4xl'>
+      <scrollview
+        class='abilities-container grow text-4xl'
+        vertical-scroller-visibility={ScrollerVisibility.Auto}>
+
         {/* TODO: Change ability type to Ability def */}
         {/* TODO: Store conditions as variables */}
         {activeActor?.Abilities.map((ability: any, i: number) => {
           const isEvenEntry = i % 2 === 0
           const isMenuFocused = panelState === 1
           const isAbilityFocused = focusState === 1 || focusState === 2
-          const isSelected = i === abilityIndex
+          const isHovered = i === abilityIndex
+
+          // TODO: Will set...() on re-render, probably not a good idea
+          if (isHovered) {
+            setHoveredAbility(ability)
+          }
 
           return (
-            <div class='flex flex-row px-6 py-3' style={{
-              backgroundColor: isEvenEntry ? '#7DAFBD' : '#51778A',
-              borderColor: 'white',
-              // borderTopWidth: isSelected && isMenuFocused ? 4 : 0,
-              // borderBottomWidth: isSelected && isMenuFocused ? 4 : 0,
-              marginLeft: isSelected && isAbilityFocused ? -16 : 0,
-              marginRight: isSelected && isAbilityFocused ? 16 : 0
-            }}>
+            <div class='ability-entry flex flex-row px-6 py-3'
+              key={i.toString()}
+              style={{
+                backgroundColor: isEvenEntry ? '#7DAFBD' : '#51778A',
+                borderColor: 'white',
+                // borderTopWidth: isSelected && isMenuFocused ? 4 : 0,
+                // borderBottomWidth: isSelected && isMenuFocused ? 4 : 0,
+                marginLeft: isHovered && isAbilityFocused ? -16 : 0,
+                marginRight: isHovered && isAbilityFocused ? 16 : 0
+              }}>
               <image sprite={ability.Icon} class='w-[64px] h-[64px] bg-slate-700' />
               <div class='grow'></div>
               <label text={ability.Name} />
@@ -57,7 +72,23 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
             </div>
           )
         }) ?? ''}
-      </div>
+      </scrollview>
+
+      {
+        hoveredAbility ? (
+          <div class='ability-desc relative bottom w-full bg-slate-100'>
+            <div class='ability-desc-title text-5xl flex flex-row'>
+              <label text={hoveredAbility.Name} />
+              <div class='grow'></div>
+              <label text={hoveredAbility.Cost.toString()} />
+            </div>
+
+            <div class='ability-desc-text h-64 text-4xl'>
+              <label text={hoveredAbility.Description ?? 'no desc.'} />
+            </div>
+          </div>
+        ) : ''
+      }
     </div>
   )
 }
