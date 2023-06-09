@@ -52,12 +52,12 @@ var Menu = function (_a) {
                 (0, preact_1.h)("div", { class: 'grow' }),
                 (0, preact_1.h)("label", { text: ability.Cost.toString() })));
         })) !== null && _e !== void 0 ? _e : ''),
-        hoveredAbility ? ((0, preact_1.h)("div", { class: 'ability-desc relative bottom w-full bg-slate-100' },
-            (0, preact_1.h)("div", { class: 'ability-desc-title text-5xl flex flex-row' },
+        hoveredAbility ? ((0, preact_1.h)("div", { class: 'ability-desc relative bottom w-full' },
+            (0, preact_1.h)("div", { class: 'ability-desc-title flex flex-row text-5xl bg-slate-400' },
                 (0, preact_1.h)("label", { text: hoveredAbility.Name }),
                 (0, preact_1.h)("div", { class: 'grow' }),
-                (0, preact_1.h)("label", { text: hoveredAbility.Cost.toString() })),
-            (0, preact_1.h)("div", { class: 'ability-desc-text h-64 text-4xl' },
+                (0, preact_1.h)("label", { text: "$".concat(hoveredAbility.Cost) })),
+            (0, preact_1.h)("scrollview", { class: 'ability-desc-text h-64 text-4xl bg-slate-200', "vertical-scroller-visibility": UIElements_1.ScrollerVisibility.Auto },
                 (0, preact_1.h)("label", { text: (_f = hoveredAbility.Description) !== null && _f !== void 0 ? _f : 'no desc.' })))) : ''));
 };
 exports.Menu = Menu;

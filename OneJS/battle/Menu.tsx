@@ -76,16 +76,19 @@ export const Menu = ({ battleUI }: { battleUI: any }) => {
 
       {
         hoveredAbility ? (
-          <div class='ability-desc relative bottom w-full bg-slate-100'>
-            <div class='ability-desc-title text-5xl flex flex-row'>
+          <div class='ability-desc relative bottom w-full'>
+            <div class='ability-desc-title flex flex-row text-5xl bg-slate-400'>
               <label text={hoveredAbility.Name} />
               <div class='grow'></div>
-              <label text={hoveredAbility.Cost.toString()} />
+              <label text={`$${hoveredAbility.Cost}`} />
             </div>
 
-            <div class='ability-desc-text h-64 text-4xl'>
+            <scrollview
+              class='ability-desc-text h-64 text-4xl bg-slate-200'
+              vertical-scroller-visibility={ScrollerVisibility.Auto}>
+
               <label text={hoveredAbility.Description ?? 'no desc.'} />
-            </div>
+            </scrollview>
           </div>
         ) : ''
       }
