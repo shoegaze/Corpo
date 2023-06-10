@@ -3,6 +3,10 @@ using Random = UnityEngine.Random;
 
 namespace Battle {
   public class BattleScreen : MonoBehaviour {
+    [SerializeField] private GameObject prototypeWall;
+    [SerializeField] private GameObject prototypeRow;
+    
+    // DEBUG:
     // TODO: Inject this from somewhere
     [SerializeField] private GameObject[] viewsFloor;
    
@@ -35,7 +39,7 @@ namespace Battle {
     
     private void BuildFloorViews(BattleGrid grid) {
       var viewFloorsRoot = transform.Find("Floors");
-      var viewRow = transform.Find("Prototypes/Row");
+      var viewRow = prototypeRow.transform;
 
       for (var y = 0; y < grid.Height; y++) {
         var viewRowInstance = Instantiate(viewRow, viewFloorsRoot);
@@ -70,7 +74,7 @@ namespace Battle {
   
     private void BuildWallViews(BattleGrid grid) {
       var viewEdgesRoot = transform.Find("Walls");
-      var viewEdge = transform.Find("Prototypes/Wall");
+      var viewEdge = prototypeWall.transform;
       
       { // Build outer walls
         var viewOuterEdgesTop = viewEdgesRoot.Find("Outer/Top");
@@ -114,7 +118,7 @@ namespace Battle {
         var viewInnerEdgesRoot = viewEdgesRoot.Find("Inner");
         
         { // Instantiate walls
-          var viewRow = transform.Find("Prototypes/Row");
+          var viewRow = prototypeRow.transform;
           
           long rows = 2 * grid.Height - 1;
           for (var r = 0; r < rows; r++) {
