@@ -7,17 +7,18 @@ var preact_1 = require("preact");
 var hooks_1 = require("preact/hooks");
 var preload_1 = require("preload");
 var Menu = function (_a) {
-    var _b, _c, _d, _e, _f;
-    var battleUI = _a.battleUI;
-    var _g = (0, onejs_1.useEventfulState)(battleUI, 'PanelState'), panelState = _g[0], _setPanelState = _g[1];
-    var _h = (0, onejs_1.useEventfulState)(battleUI, 'FocusState'), focusState = _h[0], _setFocusState = _h[1];
-    var _j = (0, onejs_1.useEventfulState)(battleUI, 'ActiveActor'), activeActor = _j[0], _setActiveActor = _j[1];
-    var _k = (0, onejs_1.useEventfulState)(battleUI, 'AbilityIndex'), abilityIndex = _k[0], _setAbilityIndex = _k[1];
-    var _l = (0, hooks_1.useState)(null), hoveredAbility = _l[0], setHoveredAbility = _l[1];
+    var _b, _c, _d, _e, _f, _g, _h;
+    var battleView = _a.battleView;
+    var _j = (0, onejs_1.useEventfulState)(battleView, 'PanelState'), panelState = _j[0], _setPanelState = _j[1];
+    var _k = (0, onejs_1.useEventfulState)(battleView, 'FocusState'), focusState = _k[0], _setFocusState = _k[1];
+    var _l = (0, onejs_1.useEventfulState)(battleView, 'ActiveActor'), activeActor = _l[0], _setActiveActor = _l[1];
+    var _m = (0, onejs_1.useEventfulState)(battleView, 'AbilityIndex'), abilityIndex = _m[0], _setAbilityIndex = _m[1];
+    var _o = (0, hooks_1.useState)(null), hoveredAbility = _o[0], setHoveredAbility = _o[1];
     return ((0, preact_1.h)("div", { class: 'menu-container absolute top-[10px] bottom-[50px] right-0 w-[890px] m-[8px] bg-slate-700', style: {
             unityFontDefinition: preload_1.font,
             borderColor: 'white',
-            borderWidth: panelState === 0 ? 0 : 6
+            borderTopWidth: panelState === 0 ? 0 : 6,
+            borderBottomWidth: panelState === 0 ? 0 : 6
         } },
         (0, preact_1.h)("div", { class: 'actor-info flex flex-row px-6 py-2 text-5xl bg-cyan-500', style: {
                 backgroundColor: panelState === 0 ? '#A9D4DE' : '#06B6DD'
@@ -54,10 +55,10 @@ var Menu = function (_a) {
         })) !== null && _e !== void 0 ? _e : ''),
         hoveredAbility ? ((0, preact_1.h)("div", { class: 'ability-desc relative bottom w-full' },
             (0, preact_1.h)("div", { class: 'ability-desc-title flex flex-row text-5xl bg-slate-400' },
-                (0, preact_1.h)("label", { text: hoveredAbility.Name }),
+                (0, preact_1.h)("label", { text: (_f = hoveredAbility.Name) !== null && _f !== void 0 ? _f : 'null' }),
                 (0, preact_1.h)("div", { class: 'grow' }),
-                (0, preact_1.h)("label", { text: "$".concat(hoveredAbility.Cost) })),
+                (0, preact_1.h)("label", { text: "$".concat((_g = hoveredAbility.Cost) !== null && _g !== void 0 ? _g : 'NaN') })),
             (0, preact_1.h)("scrollview", { class: 'ability-desc-text h-64 text-4xl bg-slate-200', "vertical-scroller-visibility": UIElements_1.ScrollerVisibility.Auto },
-                (0, preact_1.h)("label", { text: (_f = hoveredAbility.Description) !== null && _f !== void 0 ? _f : 'no desc.' })))) : ''));
+                (0, preact_1.h)("label", { text: (_h = hoveredAbility.Description) !== null && _h !== void 0 ? _h : 'no desc.' })))) : ''));
 };
 exports.Menu = Menu;

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Actor;
 using UnityEngine;
 
-// TODO: Attach to GameController then copy to BattleController
+// TODO: Attach to GameManager then copy to BattleController
 public class Team {
   private const uint MaxMembers = 4;
   

@@ -18,7 +18,7 @@ namespace Actor {
     [SerializeField] private uint health;
 
     // [Inject] private BattleController battle;
-    // [Inject] private BattleScreen screen;
+    // [Inject] private BattleGridView screen;
 
     private Team team;
 
@@ -88,7 +88,7 @@ namespace Actor {
     } 
   
     public void TakeHealth(uint damage) {
-      Effect.ShowDamagePopup(/*BattleScreen screen,*/ View.transform.position, damage);
+      Effect.ShowDamagePopup(/*BattleGridView screen,*/ View.transform.position, damage);
       
       if (damage >= health) {
         health = 0;

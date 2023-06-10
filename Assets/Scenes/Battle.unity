@@ -123,17 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &908578291 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3923555545008741647, guid: d34d5b4ce63014406a383147e118bc9f, type: 3}
-  m_PrefabInstance: {fileID: 3287052849781203868}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d2474ca6a04f46b5aaf98561bbf3c00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1049571129
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,9 +202,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _components:
   - {fileID: 3287052849781203869}
-  - {fileID: 3287052849781203870}
   - {fileID: 3287052849781203872}
-  - {fileID: 908578291}
+  - {fileID: 3287052849781203873}
+  - {fileID: 3287052849781203870}
   - {fileID: 3287052849781203871}
   _identifier: 
   _useSceneContext: 0
@@ -292,10 +281,10 @@ PrefabInstance:
     - target: {fileID: 6661873769672997518, guid: 171073f8a323d004f82984c58ed3049a, type: 3}
       propertyPath: _objects.Array.data[0].obj
       value: 
-      objectReference: {fileID: 908578291}
+      objectReference: {fileID: 3287052849781203873}
     - target: {fileID: 6661873769672997518, guid: 171073f8a323d004f82984c58ed3049a, type: 3}
       propertyPath: _objects.Array.data[0].module
-      value: battle_ui
+      value: battle_view
       objectReference: {fileID: 0}
     - target: {fileID: 6661873769672997518, guid: 171073f8a323d004f82984c58ed3049a, type: 3}
       propertyPath: _editorModeWorkingDirInfo.relativePath
@@ -414,5 +403,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9004441d80284ba080f9a4cbdc5870ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3287052849781203873 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8398912843807478693, guid: d34d5b4ce63014406a383147e118bc9f, type: 3}
+  m_PrefabInstance: {fileID: 3287052849781203868}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d2474ca6a04f46b5aaf98561bbf3c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

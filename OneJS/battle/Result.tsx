@@ -1,9 +1,9 @@
 import { useEventfulState } from "onejs"
 import { h } from "preact"
 
-export const Result = ({ battleUI }: { battleUI: any }) => {
-  const [doAlliesWin, _0] = useEventfulState(battleUI, 'DoAlliesWin')
-  const [doEnemiesWin, _1] = useEventfulState(battleUI, 'DoEnemiesWin')
+export const Result = ({ battleView }: { battleView: any }) => {
+  const [doAlliesWin, _0] = useEventfulState(battleView, 'DoAlliesWin')
+  const [doEnemiesWin, _1] = useEventfulState(battleView, 'DoEnemiesWin')
 
   const baseClass = 'w-full py-[40px] text-[120px] text-center font-bold italic bg-slate-400'
 

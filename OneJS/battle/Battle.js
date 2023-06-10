@@ -5,10 +5,10 @@ var Menu_1 = require("./Menu");
 var Statusbar_1 = require("./Statusbar");
 var Result_1 = require("./Result");
 var Battle = function () {
-    var battleUI = require('battle_ui');
+    var battleView = require('battle_view');
     return ((0, preact_1.h)("div", { class: "absolute flex w-full h-full" },
-        (0, preact_1.h)(Menu_1.Menu, { battleUI: battleUI }),
-        (0, preact_1.h)(Statusbar_1.Statusbar, { battleUI: battleUI }),
-        (0, preact_1.h)(Result_1.Result, { battleUI: battleUI })));
+        (0, preact_1.h)(Menu_1.Menu, { battleView: battleView }),
+        (0, preact_1.h)(Statusbar_1.Statusbar, { battleView: battleView }),
+        (0, preact_1.h)(Result_1.Result, { battleView: battleView })));
 };
 (0, preact_1.render)((0, preact_1.h)(Battle, null), document.body);

@@ -1,7 +1,7 @@
 using Unity.Collections;
 using UnityEngine;
 
-namespace Battle.UI {
+namespace Battle.View {
   [RequireComponent(typeof(Menu), 
                     typeof(AbilitySelect))]
   public class StateManager : MonoBehaviour {

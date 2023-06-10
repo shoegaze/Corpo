@@ -1,6 +1,6 @@
 using System;
 
-namespace Battle.UI {
+namespace Battle.View {
   public enum PanelState {
     Grid,
     Menu

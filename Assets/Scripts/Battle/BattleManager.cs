@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Battle.UI;
+using Actor;
+using Battle.View;
 using Lua;
 using UnityEngine;
 using Zenject;
@@ -9,9 +10,7 @@ using Zenject;
 namespace Battle {
   [RequireComponent(typeof(AbilityScriptRunner))]
   public class BattleController : MonoBehaviour {
-    [SerializeField] private BattleUI ui;
-    
-    // TODO: Make configurable from GameController
+    // TODO: Make configurable from GameManager
     [SerializeField] private uint width;
     [SerializeField] private uint height;
 
@@ -19,9 +18,12 @@ namespace Battle {
     [SerializeField, Min(0)] private int turn;
 
     [Inject] private ResourcesCache resources;
-    [Inject] private GameController game;
+    [Inject] private GameManager game;
+    // TODO: Get rid of this injection:
     [Inject] private AbilityScriptRunner abilityScriptRunner;
-    [Inject] private BattleScreen screen;
+    [Inject] private BattleView view;
+    // TODO: Get rid of this injection:
+    [Inject] private BattleGridView gridView;
     
     private int turnLock;
     private readonly List<Team> teams = new();
@@ -75,12 +77,12 @@ namespace Battle {
       }
       
       // TODO:
-      if (ui.StateManager.PanelState != PanelState.Grid) { 
-        ui.StateManager.Transition(PanelState.Grid);
+      if (view.StateManager.PanelState != PanelState.Grid) { 
+        view.StateManager.Transition(PanelState.Grid);
       }
       
-      if (ui.StateManager.FocusState != FocusState.Free) {
-        ui.StateManager.Transition(FocusState.Free);
+      if (view.StateManager.FocusState != FocusState.Free) {
+        view.StateManager.Transition(FocusState.Free);
       }
 
       turn++;
@@ -103,7 +105,7 @@ namespace Battle {
         Grid.RandomlyPlaceActors(order);
       }
       
-      screen.BuildViews(Grid, resources);
+      gridView.BuildViews(Grid, resources);
     }
 
     public void StartBattle(Team allies, Team enemies) {
@@ -187,7 +189,7 @@ namespace Battle {
     
     // @return bool decided 
     private bool DoPlayerTurn() {
-      if (ui.PanelState == PanelState.Menu) {
+      if (view.PanelState == PanelState.Menu) {
         return false;
       }
       
@@ -239,7 +241,7 @@ namespace Battle {
       
       // Try moving
       if (Grid.TryMoveActor(actor, to)) {
-        BattleScreen.UpdateActorView(actor, Grid);
+        BattleGridView.UpdateActorView(actor, Grid);
         return true;
       }
 
@@ -291,7 +293,7 @@ namespace Battle {
         }
       }
 
-      BattleScreen.UpdateActorView(actor, Grid);
+      BattleGridView.UpdateActorView(actor, Grid);
       
       return true;
     }

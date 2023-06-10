@@ -1,4 +1,6 @@
-public enum ActorAlignment {
-  Ally,
-  Enemy
+namespace Actor {
+  public enum ActorAlignment {
+    Ally,
+    Enemy
+  }
 }

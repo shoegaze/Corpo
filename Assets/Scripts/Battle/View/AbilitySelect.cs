@@ -5,7 +5,7 @@ using Shapes;
 using UnityEngine;
 using Zenject;
 
-namespace Battle.UI {
+namespace Battle.View {
   [RequireComponent(typeof(StateManager))]
   public class AbilitySelect : ImmediateModeShapeDrawer {
     [SerializeField] private Transform origin;

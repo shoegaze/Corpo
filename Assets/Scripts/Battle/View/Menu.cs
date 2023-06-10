@@ -1,15 +1,17 @@
 ﻿using System.Linq;
-using UnityEngine;
+using Actor;
 using Lua;
+using UnityEngine;
 using Zenject;
 
-namespace Battle.UI {
+namespace Battle.View {
   public class Menu : MonoBehaviour {
-    [SerializeField] private BattleController battle;
-
-    [Inject] private GameController game;
+    [Inject] private GameManager game;
+    [Inject] private BattleController battle;
+    // TODO: Get rid of this injection:
     [Inject] private AbilityScriptRunner abilityScriptRunner;
-    [Inject] private BattleUI ui;
+    [Inject] private BattleView view;
+    // TODO: Get rid of this injection:
     [Inject] private AbilitySelect abilitySelect;
     
     public int AbilityIndex { get; private set; }
@@ -55,7 +57,7 @@ namespace Battle.UI {
     }
     
     public void LoadAbility() {
-      var actor = ui.ActiveActor;
+      var actor = view.ActiveActor;
       if (actor == null || actor.Alignment != ActorAlignment.Ally) {
         return;
       }
@@ -93,7 +95,7 @@ namespace Battle.UI {
     public void HandleInput(StateManager stateManager) {
       TryExit(stateManager);
       
-      var actor = ui.ActiveActor;
+      var actor = view.ActiveActor;
       if (actor == null || actor.Alignment != ActorAlignment.Ally) {
         return;
       }

@@ -1,15 +1,17 @@
 ﻿using System;
+using Actor;
 using UnityEngine;
 using Zenject;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
 
-namespace Battle.UI {
+namespace Battle.View {
   [RequireComponent(typeof(StateManager), 
                     typeof(Menu))]
-  public class BattleUI : MonoBehaviour {
+  public class BattleView : MonoBehaviour {
     [Inject] private BattleController battle;
+    // TODO: Get rid of this injection via Menu.StateManager:
     // [Inject] private StateManager stateManager;
 
     private Menu menu;

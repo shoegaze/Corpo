@@ -1,4 +1,4 @@
-namespace Battle.UI {
+namespace Battle.View {
   public enum FocusState {
     Free,
     Focus,

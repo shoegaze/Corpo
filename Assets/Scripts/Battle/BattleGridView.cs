@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Actor;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Battle {
-  public class BattleScreen : MonoBehaviour {
+  public class BattleGridView : MonoBehaviour {
     [SerializeField] private GameObject prototypeWall;
     [SerializeField] private GameObject prototypeRow;
     

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
+using Actor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Battle;
 using Zenject;
 
-public class GameController : MonoBehaviour {
+public class GameManager : MonoBehaviour {
   [SerializeField] private GameMode gameMode = GameMode.World;
   [SerializeField] private uint year;
   [SerializeField, Range(0, 3)] private uint quarter;
@@ -65,7 +66,7 @@ public class GameController : MonoBehaviour {
     gameMode = GameMode.Battle;
     OnModeChanged?.Invoke(gameMode);
 
-    // HACK: GameController should be decoupled from BattleController
+    // HACK: GameManager should be decoupled from BattleController
     var go = GameObject.FindWithTag("BattleController");
     var battle = go.GetComponent<BattleController>();
     

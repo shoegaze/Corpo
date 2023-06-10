@@ -51,7 +51,7 @@ namespace Lua {
       scriptFnAnimate = script.Globals["animate"];
     }
 
-    private void UpdateScriptGlobals(GameController game) {
+    private void UpdateScriptGlobals(GameManager game) {
       // Convenient logging functions
       script.Globals["log"] = (Action<string>)(
               s => Debug.LogFormat("[{0}]: {1}", ScriptName, s));
@@ -64,7 +64,7 @@ namespace Lua {
       // script.Globals["grid"] = battle.Grid;
     }
 
-    public void ExecuteStart(GameController game) {
+    public void ExecuteStart(GameManager game) {
       Debug.Assert(script != null);
 
       bool success = false;
@@ -81,7 +81,7 @@ namespace Lua {
       Debug.Log($"[{ScriptName}].start() => {success}");
     }
 
-    public IEnumerable<Vector2Int> ExecuteGetCandidateCells(GameController game) {
+    public IEnumerable<Vector2Int> ExecuteGetCandidateCells(GameManager game) {
       Debug.Assert(script != null);
 
       var actor = battle.ActiveActor;
@@ -111,7 +111,7 @@ namespace Lua {
       });
     }
 
-    private IEnumerator DoAnimationLoop(GameController game, CellData source, CellData target) {
+    private IEnumerator DoAnimationLoop(GameManager game, CellData source, CellData target) {
       battle.LockTurn();
       
       // TODO: Refactor try-catches into separate methods?
@@ -158,7 +158,7 @@ namespace Lua {
       }
     }
 
-    public void ExecuteAnimate(GameController game, CellData source, CellData target) {
+    public void ExecuteAnimate(GameManager game, CellData source, CellData target) {
       Debug.Assert(script != null);
 
       StartCoroutine(DoAnimationLoop(game, source, target));
