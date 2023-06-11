@@ -2,7 +2,7 @@
 using Actor;
 using UnityEngine;
 
-// TODO: Attach to GameManager then copy to BattleController
+// TODO: Attach to GameManager then copy to BattleManager
 public class Team {
   private const uint MaxMembers = 4;
   

@@ -5,7 +5,7 @@ using Zenject;
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Animator))]
 public class ActiveIndicatorController : MonoBehaviour {
-  [Inject] private BattleController battle;
+  [Inject] private BattleManager battle;
 
   private new SpriteRenderer renderer;
   private Animator animator;

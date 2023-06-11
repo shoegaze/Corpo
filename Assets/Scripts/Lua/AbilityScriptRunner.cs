@@ -13,7 +13,7 @@ namespace Lua {
   // Register this binding for injection? 
   [RequireComponent(typeof(ScriptRunner))]
   public class AbilityScriptRunner : MonoBehaviour {
-    [Inject] private BattleController battle;
+    [Inject] private BattleManager battle;
     
     private AbilityData data;
     

@@ -1,27 +1,28 @@
 ﻿using System.Linq;
 using Actor;
+using Battle.View;
 using Lua;
 using UnityEngine;
 using Zenject;
 
-namespace Battle.View {
-  public class Menu : MonoBehaviour {
+namespace Battle.Model {
+  public class MenuModel : IMenuModel {
     [Inject] private GameManager game;
-    [Inject] private BattleController battle;
+    [Inject] private BattleManager battle;
+    [Inject] private BattleView view;
+    
     // TODO: Get rid of this injection:
     [Inject] private AbilityScriptRunner abilityScriptRunner;
-    [Inject] private BattleView view;
     // TODO: Get rid of this injection:
     [Inject] private AbilitySelect abilitySelect;
-    
+
+    public StateManager StateManager { get; private set; }
     public int AbilityIndex { get; private set; }
 
-    private Ability GetCurrentAbility(Actor.Actor actor) {
-      return actor.Abilities
-                  .Skip(AbilityIndex)
-                  .First();
+    public void Initialize() {
+      StateManager = new StateManager(this);
     }
-
+    
     // Select ability:
     //  1. Enter candidate cell selection mode
     //   * On select candidate:
@@ -32,15 +33,16 @@ namespace Battle.View {
     //    5. Increment turn
     //   * On cancel:
     //    1. Go back to cycling mode
-    private void SelectAbility(StateManager stateManager) {
-      stateManager.Transition(FocusState.Focus);
+    public void SelectAbility() {
+      StateManager.Transition(SelectState.Focus);
     }
 
-    private void CycleAbility(Actor.Actor actor, int dy) {
+    public void CycleAbility(int dy) {
       int index = AbilityIndex;
       
       AbilityIndex -= dy;
 
+      var actor = battle.ActiveActor;
       int max = actor.Abilities.Count() - 1;
       AbilityIndex = Mathf.Clamp(AbilityIndex, 0, max);
 
@@ -55,16 +57,15 @@ namespace Battle.View {
         abilitySelect.Queue(candidates);
       }
     }
-    
+   
     public void LoadAbility() {
-      var actor = view.ActiveActor;
+      var actor = battle.ActiveActor;
       if (actor == null || actor.Alignment != ActorAlignment.Ally) {
         return;
       }
       
-      // Load ability at current index on Mode.Menu
+      // Load ability at current index on Mode.MenuModel
       // TODO: Avoid by keeping track of loaded ability
-      // TODO: Refactor into LoadAbility(game, actor)
       var ability = GetCurrentAbility(actor);
       abilityScriptRunner.Load(ability.Script);
       abilityScriptRunner.ExecuteStart(game);
@@ -74,45 +75,10 @@ namespace Battle.View {
       abilitySelect.Queue(candidates);
     }
     
-    private void TryInputModeToggle(StateManager stateManager) {
-      if (Input.GetButtonDown("Toggle")) {
-        stateManager.Transition(PanelState.Grid);
-      }
-    }
-
-    private void TryExit(StateManager stateManager) {
-      if (!Input.GetButtonDown("Cancel")) {
-        return;
-      }
-
-      stateManager.Transition(PanelState.Grid);
-    }
-    
-    // 1. Handle input mode toggle
-    // if mode is menu:
-    //  2. Handle input ability select
-    //  3. Handle input ability cycling
-    public void HandleInput(StateManager stateManager) {
-      TryExit(stateManager);
-      
-      var actor = view.ActiveActor;
-      if (actor == null || actor.Alignment != ActorAlignment.Ally) {
-        return;
-      }
-      
-      TryInputModeToggle(stateManager);
-      
-      bool select = Input.GetButtonDown("Submit");
-      if (select) {
-        SelectAbility(stateManager);
-        return;
-      }
-      
-      bool v = Input.GetButtonDown("Vertical");
-      if (v) {
-        int dy = Mathf.RoundToInt(Input.GetAxis("Vertical"));
-        CycleAbility(actor, dy);
-      }
+    private Ability GetCurrentAbility(Actor.Actor actor) {
+      return actor.Abilities
+          .Skip(AbilityIndex)
+          .First();
     }
   }
 }

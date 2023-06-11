@@ -1,5 +1,5 @@
 namespace Battle.View {
-  public enum FocusState {
+  public enum SelectState {
     Free,
     Focus,
     Select

@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Battle {
   [RequireComponent(typeof(AbilityScriptRunner))]
-  public class BattleController : MonoBehaviour {
+  public class BattleManager : MonoBehaviour {
     // TODO: Make configurable from GameManager
     [SerializeField] private uint width;
     [SerializeField] private uint height;
@@ -77,12 +77,12 @@ namespace Battle {
       }
       
       // TODO:
-      if (view.StateManager.PanelState != PanelState.Grid) { 
-        view.StateManager.Transition(PanelState.Grid);
+      if (view.StateManager.FocusState != FocusState.Grid) { 
+        view.StateManager.Transition(FocusState.Grid);
       }
       
-      if (view.StateManager.FocusState != FocusState.Free) {
-        view.StateManager.Transition(FocusState.Free);
+      if (view.StateManager.SelectState != SelectState.Free) {
+        view.StateManager.Transition(SelectState.Free);
       }
 
       turn++;
@@ -189,7 +189,7 @@ namespace Battle {
     
     // @return bool decided 
     private bool DoPlayerTurn() {
-      if (view.PanelState == PanelState.Menu) {
+      if (view.FocusState == FocusState.Menu) {
         return false;
       }
       

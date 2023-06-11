@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Battle.Model;
 using Lua;
 using Shapes;
 using UnityEngine;
@@ -14,15 +15,15 @@ namespace Battle.View {
     // [SerializeField, Range(0f, 1f)] private float unselectedAlpha = 0.25f;
     // [SerializeField, Range(0f, 1f)] private float selectedAlpha = 0.5f;
     
-    [Inject] private BattleController battle;
+    [Inject] private BattleManager battle;
     
     private readonly List<Vector2Int> candidates = new();
     private int cursor = -1;
 
-    public FocusState FocusState { get; set; }
+    public SelectState SelectState { get; set; }
 
     public override void DrawShapes(Camera cam) {
-      if (FocusState == FocusState.Select) {
+      if (SelectState == SelectState.Select) {
         return;
       }
       
@@ -39,7 +40,7 @@ namespace Battle.View {
                   origin.lossyScale);
           
           // DEBUG: Set alpha in inspector
-          float alpha = FocusState == FocusState.Focus && i == cursor ? 0.5f : 0.25f;
+          float alpha = SelectState == SelectState.Focus && i == cursor ? 0.5f : 0.25f;
           Draw.Color = new Color(1f, 1f, 1f, alpha);
           Draw.DashStyle = DashStyle.defaultDashStyleRing;
           
@@ -54,7 +55,7 @@ namespace Battle.View {
         return;
       }
       
-      stateManager.Transition(PanelState.Grid);
+      stateManager.Transition(FocusState.Grid);
     }
 
     private void TrySubmit(StateManager stateManager) {
@@ -66,11 +67,11 @@ namespace Battle.View {
         return;
       }
 
-      if (stateManager.FocusState == FocusState.Free) {
-        stateManager.Transition(FocusState.Focus);
+      if (stateManager.SelectState == SelectState.Free) {
+        stateManager.Transition(SelectState.Focus);
       }
-      else if (stateManager.FocusState == FocusState.Focus) {
-        stateManager.Transition(FocusState.Select);
+      else if (stateManager.SelectState == SelectState.Focus) {
+        stateManager.Transition(SelectState.Select);
         
         var sourceActor = battle.ActiveActor;
         var sourceCell = battle.Grid.GetPosition(sourceActor).Value;
@@ -201,7 +202,7 @@ namespace Battle.View {
     }
 
     private void TryMoveCursor(StateManager stateManager) {
-      if (stateManager.FocusState != FocusState.Focus) {
+      if (stateManager.SelectState != SelectState.Focus) {
         return;
       }
       

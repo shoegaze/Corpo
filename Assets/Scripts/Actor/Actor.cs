@@ -17,7 +17,7 @@ namespace Actor {
     [SerializeField] private List<Ability> abilities;
     [SerializeField] private uint health;
 
-    // [Inject] private BattleController battle;
+    // [Inject] private BattleManager battle;
     // [Inject] private BattleGridView screen;
 
     private Team team;

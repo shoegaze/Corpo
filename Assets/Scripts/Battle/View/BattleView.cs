@@ -1,5 +1,6 @@
 ﻿using System;
 using Actor;
+using Battle.Model;
 using UnityEngine;
 using Zenject;
 
@@ -8,17 +9,17 @@ using Zenject;
 
 namespace Battle.View {
   [RequireComponent(typeof(StateManager), 
-                    typeof(Menu))]
+                    typeof(MenuModel))]
   public class BattleView : MonoBehaviour {
-    [Inject] private BattleController battle;
-    // TODO: Get rid of this injection via Menu.StateManager:
+    [Inject] private BattleManager battle;
+    // TODO: Get rid of this injection via MenuModel.StateManager:
     // [Inject] private StateManager stateManager;
 
-    private Menu menu;
+    private MenuModel menuModel;
     
     public StateManager StateManager { get; private set; }
 
-    // Menu
+    // MenuModel
     public Actor.Actor ActiveActor { get; private set; }
     public int AbilityIndex { get; private set; }
     
@@ -26,13 +27,13 @@ namespace Battle.View {
     public event Action<int> OnAbilityIndexChanged;
     
     // Statusbar
-    public PanelState PanelState { get; private set; }
     public FocusState FocusState { get; private set; }
+    public SelectState SelectState { get; private set; }
     public ActorAlignment Team { get; private set; }
     public int Turn { get; private set; }
     
-    public event Action<PanelState> OnPanelStateChanged;
-    public event Action<FocusState> OnFocusStateChanged;
+    public event Action<FocusState> OnPanelStateChanged;
+    public event Action<SelectState> OnFocusStateChanged;
     public event Action<ActorAlignment> OnTeamChanged;
     public event Action<int> OnTurnChanged;
     
@@ -45,7 +46,7 @@ namespace Battle.View {
 
     protected void Awake() {
       StateManager = GetComponent<StateManager>();
-      menu = GetComponent<Menu>();
+      menuModel = GetComponent<MenuModel>();
     }
 
     protected void Start() {
@@ -55,14 +56,14 @@ namespace Battle.View {
       OnActiveActorChanged?.Invoke(ActiveActor);
       OnAbilityIndexChanged?.Invoke(AbilityIndex);
     
-      PanelState = PanelState.Grid;
-      FocusState = FocusState.Free;
+      FocusState = FocusState.Grid;
+      SelectState = SelectState.Free;
       // HACK: Should probably add ActorAlignment.None
       Team = ActorAlignment.Ally;
       Turn = battle.Turn;
       
-      OnPanelStateChanged?.Invoke(PanelState);
-      OnFocusStateChanged?.Invoke(FocusState);
+      OnPanelStateChanged?.Invoke(FocusState);
+      OnFocusStateChanged?.Invoke(SelectState);
       OnTeamChanged?.Invoke(Team);
       OnTurnChanged?.Invoke(Turn);
       
@@ -78,16 +79,16 @@ namespace Battle.View {
     }
 
     private void UpdateStates() {
-      var panelState = StateManager.PanelState;
-      if (panelState != PanelState) {
-        PanelState = panelState;
-        OnPanelStateChanged?.Invoke(PanelState);
+      var panelState = StateManager.FocusState;
+      if (panelState != FocusState) {
+        FocusState = panelState;
+        OnPanelStateChanged?.Invoke(FocusState);
       }
 
-      var focusState = StateManager.FocusState;
-      if (focusState != FocusState) {
-        FocusState = focusState;
-        OnFocusStateChanged?.Invoke(FocusState);
+      var focusState = StateManager.SelectState;
+      if (focusState != SelectState) {
+        SelectState = focusState;
+        OnFocusStateChanged?.Invoke(SelectState);
       }
 
       var activeActor = battle.ActiveActor;
@@ -99,7 +100,7 @@ namespace Battle.View {
         OnTeamChanged?.Invoke(Team);
       }
 
-      int abilityIndex = menu.AbilityIndex;
+      int abilityIndex = menuModel.AbilityIndex;
       if (abilityIndex != AbilityIndex) {
         AbilityIndex = abilityIndex;
         OnAbilityIndexChanged?.Invoke(AbilityIndex);

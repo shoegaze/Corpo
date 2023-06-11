@@ -66,9 +66,9 @@ public class GameManager : MonoBehaviour {
     gameMode = GameMode.Battle;
     OnModeChanged?.Invoke(gameMode);
 
-    // HACK: GameManager should be decoupled from BattleController
-    var go = GameObject.FindWithTag("BattleController");
-    var battle = go.GetComponent<BattleController>();
+    // HACK: GameManager should be decoupled from BattleManager
+    var go = GameObject.FindWithTag("BattleManager");
+    var battle = go.GetComponent<BattleManager>();
     
     var enemies = new Team(ActorAlignment.Enemy, 1000);
     { // Generate random battle
